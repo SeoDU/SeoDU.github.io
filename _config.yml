@@ -1,5 +1,5 @@
 # Site settings
-title: A.P
+title: SDU
 baseurl: ""
 url: "https://seodu.github.io"
 google_analytics: # Tracking ID, e.g. "UA-000000-01"
@@ -7,7 +7,7 @@ google_analytics: # Tracking ID, e.g. "UA-000000-01"
 # Author
 author:
   name: Donguk Seo
-  desc: Hello 
+  desc: KAIST. Master degree candidate
   email: dongukseo@kaist.ac.kr
   selfie: assets/img/profile.jpg
 
@@ -19,7 +19,7 @@ social:
   dribbble:
   facebook:
   flickr:
-  github: kssim
+  github: SeoDU
   google_plus:
   instagram:
   keybase:
