@@ -3,10 +3,10 @@
   <channel>
     <title>A.P</title>
     <description></description>
-    <link>http://localhost:4000/ap/</link>
-    <atom:link href="http://localhost:4000/ap/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 22 Jul 2021 19:22:54 +0900</pubDate>
-    <lastBuildDate>Thu, 22 Jul 2021 19:22:54 +0900</lastBuildDate>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Thu, 22 Jul 2021 19:26:21 +0900</pubDate>
+    <lastBuildDate>Thu, 22 Jul 2021 19:26:21 +0900</lastBuildDate>
     <generator>Jekyll v3.9.0</generator>
     
       <item>
@@ -27,8 +27,8 @@
 
 </description>
         <pubDate>Thu, 22 Jul 2021 17:11:59 +0900</pubDate>
-        <link>http://localhost:4000/ap/2021-07-22/welcome-to-jekyll</link>
-        <guid isPermaLink="true">http://localhost:4000/ap/2021-07-22/welcome-to-jekyll</guid>
+        <link>http://localhost:4000/2021-07-22/welcome-to-jekyll</link>
+        <guid isPermaLink="true">http://localhost:4000/2021-07-22/welcome-to-jekyll</guid>
         
         
         <category>jekyll</category>
@@ -54,8 +54,8 @@ And, html, js, css or so?&lt;/p&gt;
 I made it by modifying the &lt;a href=&quot;https://github.com/chesterhow/tale&quot;&gt;“tale”&lt;/a&gt; theme.&lt;/p&gt;
 </description>
         <pubDate>Sun, 25 Mar 2018 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/ap/2018-03-25/create-ap.theme</link>
-        <guid isPermaLink="true">http://localhost:4000/ap/2018-03-25/create-ap.theme</guid>
+        <link>http://localhost:4000/2018-03-25/create-ap.theme</link>
+        <guid isPermaLink="true">http://localhost:4000/2018-03-25/create-ap.theme</guid>
         
         
       </item>
@@ -73,8 +73,8 @@ I actually created a github page, but the contents are fake.&lt;/p&gt;
 &lt;p&gt;Well, about three days&lt;/p&gt;
 </description>
         <pubDate>Tue, 02 Jan 2018 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/ap/2018-01-02/github-page</link>
-        <guid isPermaLink="true">http://localhost:4000/ap/2018-01-02/github-page</guid>
+        <link>http://localhost:4000/2018-01-02/github-page</link>
+        <guid isPermaLink="true">http://localhost:4000/2018-01-02/github-page</guid>
         
         
       </item>
@@ -95,8 +95,8 @@ nd I used my favorite Python.&lt;/p&gt;
 &lt;p&gt;I’ll make it in a day.&lt;/p&gt;
 </description>
         <pubDate>Thu, 14 Dec 2017 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/ap/2017-12-14/reservation-bot</link>
-        <guid isPermaLink="true">http://localhost:4000/ap/2017-12-14/reservation-bot</guid>
+        <link>http://localhost:4000/2017-12-14/reservation-bot</link>
+        <guid isPermaLink="true">http://localhost:4000/2017-12-14/reservation-bot</guid>
         
         
       </item>
@@ -114,8 +114,8 @@ I can not say this is a project, but I did not have a project to write.&lt;/p&gt
 &lt;p&gt;It takes less than an hour to create an account.&lt;/p&gt;
 </description>
         <pubDate>Wed, 11 Oct 2017 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/ap/2017-10-11/create-github</link>
-        <guid isPermaLink="true">http://localhost:4000/ap/2017-10-11/create-github</guid>
+        <link>http://localhost:4000/2017-10-11/create-github</link>
+        <guid isPermaLink="true">http://localhost:4000/2017-10-11/create-github</guid>
         
         
       </item>
@@ -133,8 +133,8 @@ So some of the samples will just copy the existing sample.&lt;/p&gt;
 &lt;p&gt;It seems to take about a week.&lt;/p&gt;
 </description>
         <pubDate>Mon, 21 Aug 2017 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/ap/2017-08-21/toy-project-1</link>
-        <guid isPermaLink="true">http://localhost:4000/ap/2017-08-21/toy-project-1</guid>
+        <link>http://localhost:4000/2017-08-21/toy-project-1</link>
+        <guid isPermaLink="true">http://localhost:4000/2017-08-21/toy-project-1</guid>
         
         
       </item>
@@ -156,8 +156,8 @@ You just need to describe how you made it.&lt;/p&gt;
 You may specify only the duration of your work, assuming that you create a start date in the filename.&lt;/p&gt;
 </description>
         <pubDate>Mon, 01 May 2017 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/ap/2017-05-01/toy-project</link>
-        <guid isPermaLink="true">http://localhost:4000/ap/2017-05-01/toy-project</guid>
+        <link>http://localhost:4000/2017-05-01/toy-project</link>
+        <guid isPermaLink="true">http://localhost:4000/2017-05-01/toy-project</guid>
         
         
       </item>
