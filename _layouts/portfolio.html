@@ -36,5 +36,5 @@ layout: base
     <a href="{{ paginator.next_page_path | prepend: site.baseurl }}" class="right next">Next</a>
   {% endif %}
 
-  <span>{{ paginator.page }}</span>
+  <span>{{ paginator.page }} / {{ paginator.total_pages }} </span>
 </div>

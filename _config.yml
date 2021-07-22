@@ -9,7 +9,7 @@ author:
   name: Donguk Seo
   desc: Master degree candidate
   email: dongukseo@kaist.ac.kr
-  selfie: assets/img/profile.jpg
+  selfie: assets/img/sdu_profile.jpg
 
 # social
 social:
@@ -51,7 +51,7 @@ plugins:
 
 # Permalinks
 permalink: /:year-:month-:day/:title
-paginate_path: "/Posts/page:num/"
+paginate_path: "/portfolio/page:num/"
 paginate: 5
 exclude:
   - "Gemfile"

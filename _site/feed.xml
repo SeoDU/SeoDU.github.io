@@ -1,163 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>SDU</title>
+    <title>Donguk Seo</title>
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 22 Jul 2021 21:35:30 +0900</pubDate>
-    <lastBuildDate>Thu, 22 Jul 2021 21:35:30 +0900</lastBuildDate>
+    <pubDate>Fri, 23 Jul 2021 03:09:32 +0900</pubDate>
+    <lastBuildDate>Fri, 23 Jul 2021 03:09:32 +0900</lastBuildDate>
     <generator>Jekyll v3.9.0</generator>
     
       <item>
-        <title>Welcome to Jekyll!</title>
-        <description>&lt;p&gt;You’ll find this post in your &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+        <title>ORB-SLAM3 Code Review</title>
+        <description>&lt;h2 id=&quot;orb-slam3-mono-version&quot;&gt;ORB-SLAM3 Mono version&lt;/h2&gt;
+&lt;p&gt;The review post is in progress and not prepared.&lt;/p&gt;
 
-&lt;p&gt;To add new posts, simply add a file in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory that follows the convention &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;YYYY-MM-DD-name-of-post.ext&lt;/code&gt; and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
+&lt;p&gt;We only reviewed mono version of &lt;a href=&quot;https://github.com/UZ-SLAMLab/ORB_SLAM3&quot;&gt;ORB-SLAM3 Code&lt;/a&gt; , please see the review with that in mind.&lt;/p&gt;
 
-&lt;p&gt;Jekyll also offers powerful support for code snippets:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Tom'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints 'Hi, Tom' to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Check out the &lt;a href=&quot;http://jekyllrb.com/docs/home&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://talk.jekyllrb.com/&quot;&gt;Jekyll Talk&lt;/a&gt;.&lt;/p&gt;
-
+&lt;p&gt;All explanations are in korean.&lt;/p&gt;
 </description>
-        <pubDate>Thu, 22 Jul 2021 17:11:59 +0900</pubDate>
-        <link>http://localhost:4000/2021-07-22/welcome-to-jekyll</link>
-        <guid isPermaLink="true">http://localhost:4000/2021-07-22/welcome-to-jekyll</guid>
-        
-        
-        <category>jekyll</category>
-        
-        <category>update</category>
-        
-      </item>
-    
-      <item>
-        <title>Create AP theme</title>
-        <description>&lt;h2 id=&quot;create-ap-theme&quot;&gt;Create AP theme&lt;/h2&gt;
-&lt;p&gt;This is about the ap project.&lt;br /&gt;
-I had a management page for my career.&lt;br /&gt;
-But this time, I decided to change to the github page.&lt;br /&gt;
-By the way, I did not have a favorite theme, so I customized it myself.&lt;/p&gt;
-
-&lt;h2 id=&quot;tech&quot;&gt;Tech&lt;/h2&gt;
-&lt;p&gt;Now that I have a github page, I need to know ruby and jekyll.&lt;br /&gt;
-And, html, js, css or so?&lt;/p&gt;
-
-&lt;h2 id=&quot;duration&quot;&gt;Duration&lt;/h2&gt;
-&lt;p&gt;It did not take long to change the existing theme.&lt;br /&gt;
-I made it by modifying the &lt;a href=&quot;https://github.com/chesterhow/tale&quot;&gt;“tale”&lt;/a&gt; theme.&lt;/p&gt;
-</description>
-        <pubDate>Sun, 25 Mar 2018 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/2018-03-25/create-ap.theme</link>
-        <guid isPermaLink="true">http://localhost:4000/2018-03-25/create-ap.theme</guid>
+        <pubDate>Thu, 22 Jul 2021 00:00:00 +0900</pubDate>
+        <link>http://localhost:4000/2021-07-22/orb-slam3-review</link>
+        <guid isPermaLink="true">http://localhost:4000/2021-07-22/orb-slam3-review</guid>
         
         
       </item>
     
       <item>
-        <title>Create github page</title>
-        <description>&lt;h2 id=&quot;create-github-page&quot;&gt;Create github page&lt;/h2&gt;
-&lt;p&gt;This is a project for my github blog.&lt;br /&gt;
-I actually created a github page, but the contents are fake.&lt;/p&gt;
+        <title>VINS-Fusion Code Review</title>
+        <description>&lt;h2 id=&quot;vins-fusion-mono-version&quot;&gt;Vins-Fusion Mono version&lt;/h2&gt;
+&lt;p&gt;The review post is at page in notion: &lt;a href=&quot;https://furtive-sole-b16.notion.site/VINS-Fusion-Code-Review-64c2a2c5a1ab4732a35119b3ee64d35b&quot;&gt;Review Post&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2 id=&quot;tech&quot;&gt;Tech&lt;/h2&gt;
-&lt;p&gt;To create a github page, you need to know ruby and jekyll.&lt;/p&gt;
+&lt;p&gt;We only reviewed mono version of &lt;a href=&quot;https://github.com/HKUST-Aerial-Robotics/VINS-Fusion&quot;&gt;VINS-Fusion Code&lt;/a&gt; , please see the review with that in mind.&lt;/p&gt;
 
-&lt;h2 id=&quot;duration&quot;&gt;Duration&lt;/h2&gt;
-&lt;p&gt;Well, about three days&lt;/p&gt;
+&lt;p&gt;All explanations are in korean.&lt;/p&gt;
 </description>
-        <pubDate>Tue, 02 Jan 2018 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/2018-01-02/github-page</link>
-        <guid isPermaLink="true">http://localhost:4000/2018-01-02/github-page</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>Reservation Bot</title>
-        <description>&lt;h2 id=&quot;reservation-bot&quot;&gt;Reservation Bot&lt;/h2&gt;
-&lt;p&gt;This is just a project that suddenly reminds me.&lt;br /&gt;
-Of course I did not actually work, I wrote something plausible.&lt;br /&gt;
-To be honest, the project here is a virtual project.&lt;br /&gt;
-It’s all fake.&lt;/p&gt;
-
-&lt;h2 id=&quot;tech&quot;&gt;Tech&lt;/h2&gt;
-&lt;p&gt;I usually create a Bot with Slack and build it using the slack API.&lt;br /&gt;
-nd I used my favorite Python.&lt;/p&gt;
-
-&lt;h2 id=&quot;duration&quot;&gt;Duration&lt;/h2&gt;
-&lt;p&gt;I’ll make it in a day.&lt;/p&gt;
-</description>
-        <pubDate>Thu, 14 Dec 2017 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/2017-12-14/reservation-bot</link>
-        <guid isPermaLink="true">http://localhost:4000/2017-12-14/reservation-bot</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>Create github</title>
-        <description>&lt;h2 id=&quot;create&quot;&gt;Create&lt;/h2&gt;
-&lt;p&gt;This time I recorded the creation of the github account.&lt;br /&gt;
-I can not say this is a project, but I did not have a project to write.&lt;/p&gt;
-
-&lt;h2 id=&quot;tech&quot;&gt;Tech&lt;/h2&gt;
-&lt;p&gt;There is no description because I created an account on the homepage.&lt;/p&gt;
-
-&lt;h2 id=&quot;duration&quot;&gt;Duration&lt;/h2&gt;
-&lt;p&gt;It takes less than an hour to create an account.&lt;/p&gt;
-</description>
-        <pubDate>Wed, 11 Oct 2017 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/2017-10-11/create-github</link>
-        <guid isPermaLink="true">http://localhost:4000/2017-10-11/create-github</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>Toy Project 1</title>
-        <description>&lt;h2 id=&quot;toy-project-1&quot;&gt;Toy Project 1.&lt;/h2&gt;
-&lt;p&gt;Creating a virtual project as a sample is difficult.&lt;br /&gt;
-So some of the samples will just copy the existing sample.&lt;/p&gt;
-
-&lt;h2 id=&quot;tech&quot;&gt;Tech&lt;/h2&gt;
-&lt;p&gt;This is a project using Python3.&lt;/p&gt;
-
-&lt;h2 id=&quot;duration&quot;&gt;Duration&lt;/h2&gt;
-&lt;p&gt;It seems to take about a week.&lt;/p&gt;
-</description>
-        <pubDate>Mon, 21 Aug 2017 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/2017-08-21/toy-project-1</link>
-        <guid isPermaLink="true">http://localhost:4000/2017-08-21/toy-project-1</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>Toy Project</title>
-        <description>&lt;h2 id=&quot;toy-project-1&quot;&gt;Toy Project 1.&lt;/h2&gt;
-&lt;p&gt;There is no specific form.&lt;br /&gt;
-You can write what you want to write.&lt;br /&gt;
-Since this markdown file is just displayed on the screen, you can create an image or format that matches the format you want.&lt;br /&gt;
-In the case of the example, I briefly described the project introduction, technique, and period.&lt;/p&gt;
-
-&lt;h2 id=&quot;techique&quot;&gt;Techique&lt;/h2&gt;
-&lt;p&gt;I wrote that I used python to run the project.&lt;br /&gt;
-You just need to describe how you made it.&lt;/p&gt;
-
-&lt;h2 id=&quot;duration&quot;&gt;Duration&lt;/h2&gt;
-&lt;p&gt;You can enter the period in a convenient format. &lt;br /&gt;
-You may specify only the duration of your work, assuming that you create a start date in the filename.&lt;/p&gt;
-</description>
-        <pubDate>Mon, 01 May 2017 00:00:00 +0900</pubDate>
-        <link>http://localhost:4000/2017-05-01/toy-project</link>
-        <guid isPermaLink="true">http://localhost:4000/2017-05-01/toy-project</guid>
+        <pubDate>Mon, 28 Jun 2021 00:00:00 +0900</pubDate>
+        <link>http://localhost:4000/2021-06-28/vins-fusion-review</link>
+        <guid isPermaLink="true">http://localhost:4000/2021-06-28/vins-fusion-review</guid>
         
         
       </item>
