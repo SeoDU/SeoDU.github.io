@@ -15,7 +15,7 @@ layout: about
 * **KAIST**, South Korea (Mar. 2021 ~ )
   * M.S. candidate in Department of Electrical Engineering 
 * **Yonsei University**, South Korea (Mar. 2014 ~ Aug. 2020)
-  * Bachelor's Degree in Department of Electrical & Electronic Engineering \| *GPA: 4.06/4.3 (Top 3%)*
+  * Bachelor's Degree in Department of Electrical & Electronic Engineering
   * <span style="font-size:10pt">Graduation Work: A Deep Learning Based Super-Resolution RF Map Reconstruction Scheme for Fingerprinting Localization</span>
 
 <br/>
