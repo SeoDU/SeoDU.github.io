@@ -30,10 +30,12 @@ layout: about
   * Attention model Based Dentist matching system by symptoms
 
 <br/>
-
 # RECOGNITION
 * Scholar of the National Scholarship for Science and Engineering (2016 ~ 2019)
   * Korea Student Aid Foundation (KOSAF)
+
+* Awards
+  * Higest Honors in 2015-2(4.25/4.3), 2019-2(4.3/4.3)
 
 <br/>
 
