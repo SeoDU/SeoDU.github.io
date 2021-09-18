@@ -35,7 +35,7 @@ layout: about
   * Korea Student Aid Foundation (KOSAF)
 
 * Awards
-  * Higest Honors in 2015-2(4.25/4.3), 2019-2(4.3/4.3)
+  * Highest Honors in 2015-2(4.25/4.3), 2019-2(4.3/4.3)
 
 <br/>
 
