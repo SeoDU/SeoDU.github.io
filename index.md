@@ -16,7 +16,7 @@ layout: about
   * M.S. candidate in Department of Electrical Engineering 
 * **Yonsei University**, South Korea (Mar. 2014 ~ Aug. 2020)
   * Bachelor's Degree in Department of Electrical & Electronic Engineering \| *GPA: 4.06/4.3 (Top 3%)*
-  * <span style="font-size:10pt">Graduation Work: A Deep Learning Based Super-Resolution RF Map Reconstruction Scheme for Fingerprinting Localization</span>
+  * <span style="font-size:10pt">Graduation Thesis: A Deep Learning Based Super-Resolution RF Map Reconstruction Scheme for Fingerprinting Localization</span>
 
 <br/>
 
