@@ -6,7 +6,7 @@ layout: about
 **E-mail**: dongukseo@kaist.ac.kr
 
 # Research Interests
-* <span style="color:red">**Visual SLAM**</span> for AR application.
+* <span style="color:black">**Visual SLAM**</span> for AR application.
 * Multi-Map reconstruction.
 
 <br/>
@@ -45,8 +45,10 @@ layout: about
 <br/>
 
 # PUBLICATION
-
-
+* **QR-SCAN**: Traversable Region Scan for Quadruped Robot Exploration
+using Lightweight Precomputed Trajectory    
+EungChang Mason Lee, <span style="color:black">DongUk Seo</span>, JinWoo Jeon, and Hyun Myung    
+The 21st International Conference on Control, Automation and Systems (ICCAS 2021)
 
 <br/>
 

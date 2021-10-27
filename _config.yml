@@ -1,5 +1,5 @@
 # Site settings
-title: Donguk's page
+title: DUS
 baseurl: ""
 url: "https://seodu.github.io"
 google_analytics: # Tracking ID, e.g. "UA-000000-01"
@@ -35,7 +35,7 @@ social:
   vimeo:
   wordpress:
   youtube:
-  default_txt: "Follow On"
+  default_txt: 
 
 # Build settings
 markdown: kramdown

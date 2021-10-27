@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Donguk's page</title>
+    <title>DUS</title>
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 25 Oct 2021 19:02:55 +0900</pubDate>
-    <lastBuildDate>Mon, 25 Oct 2021 19:02:55 +0900</lastBuildDate>
+    <pubDate>Wed, 27 Oct 2021 15:02:33 +0900</pubDate>
+    <lastBuildDate>Wed, 27 Oct 2021 15:02:33 +0900</lastBuildDate>
     <generator>Jekyll v3.9.0</generator>
     
       <item>
@@ -28,11 +28,11 @@
       <item>
         <title>ORB-SLAM3 Code Review</title>
         <description>&lt;h2 id=&quot;orb-slam3-mono-version&quot;&gt;ORB-SLAM3 Mono version&lt;/h2&gt;
-&lt;p&gt;The review post is in progress and not prepared.&lt;/p&gt;
+&lt;p&gt;The review post is at page in notion: &lt;a href=&quot;https://furtive-sole-b16.notion.site/ORB-SLAM3-Code-Review-82e6c0204b7440c6ad0de80405eea3be&quot;&gt;Review Post&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;We only reviewed mono version of &lt;a href=&quot;https://github.com/UZ-SLAMLab/ORB_SLAM3&quot;&gt;ORB-SLAM3 Code&lt;/a&gt; , please see the review with that in mind.&lt;/p&gt;
 
-&lt;p&gt;All explanations are in korean.&lt;/p&gt;
+&lt;p&gt;All explanations are almost in korean.&lt;/p&gt;
 </description>
         <pubDate>Thu, 22 Jul 2021 00:00:00 +0900</pubDate>
         <link>http://localhost:4000/2021-07-22/orb-slam3-review</link>
