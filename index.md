@@ -40,7 +40,8 @@ layout: about
 <br/>
 
 # TEACHING
-* Electronics Design Lab. (Robocam) 2021, Fall.
+* Electronics Design Lab. (Robocam) 2021, Fall.    
+  * System implementation of video and control functionalites on the beaglebone
 
 <br/>
 
