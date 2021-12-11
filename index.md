@@ -1,9 +1,14 @@
 ---
 layout: about
 ---
+   
 
+ 
 **Office**: KAIST Urban Robotics Lab ([URL](http://urobot.kaist.ac.kr/))  
-**E-mail**: dongukseo@kaist.ac.kr
+**E-mail**: dongukseo@kaist.ac.kr    
+    
+**[Youtube](https://www.youtube.com/channel/UCaON-AWswqdv9hzrOxZDdWA)**[![icon](./assets/youtube_icon.png "Title"){:  height="24" style="float:left; padding-left:0px"}](https://www.youtube.com/channel/UCaON-AWswqdv9hzrOxZDdWA)   
+
 
 # Research Interests
 * <span style="color:black">**Visual SLAM**</span> for AR application.
