@@ -5,12 +5,12 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 11 Dec 2021 21:24:23 +0900</pubDate>
-    <lastBuildDate>Sat, 11 Dec 2021 21:24:23 +0900</lastBuildDate>
+    <pubDate>Mon, 27 Dec 2021 01:55:09 +0900</pubDate>
+    <lastBuildDate>Mon, 27 Dec 2021 01:55:09 +0900</lastBuildDate>
     <generator>Jekyll v3.9.0</generator>
     
       <item>
-        <title>Run ORB_SLAM3 Stereo-Inertial with Realsense RGBD camera</title>
+        <title>Run ORB_SLAM3 Stereo-Inertial with Realsense camera</title>
         <description>&lt;h2 id=&quot;d435i-only-tested&quot;&gt;d435i only tested&lt;/h2&gt;
 &lt;ol&gt;
   &lt;li&gt;ros 기본패키지 (camera_calibration)을 사용하여 ORB SLAM3에서 필요로하는 rectification을 위한 projection matrix를 구한다.&lt;/li&gt;
@@ -28,9 +28,10 @@
       <item>
         <title>ORB-SLAM3 Code Review</title>
         <description>&lt;h2 id=&quot;orb-slam3-mono-version&quot;&gt;ORB-SLAM3 Mono version&lt;/h2&gt;
-&lt;p&gt;The review post is at page in notion: &lt;a href=&quot;https://furtive-sole-b16.notion.site/ORB-SLAM3-Code-Review-82e6c0204b7440c6ad0de80405eea3be&quot;&gt;Review Post&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The review is moved to notion:  &lt;br /&gt;
+&lt;a href=&quot;https://furtive-sole-b16.notion.site/ORB-SLAM3-Code-Review-82e6c0204b7440c6ad0de80405eea3be&quot;&gt;https://furtive-sole-b16.notion.site/ORB-SLAM3-Code-Review-82e6c0204b7440c6ad0de80405eea3be&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;We only reviewed mono version of &lt;a href=&quot;https://github.com/UZ-SLAMLab/ORB_SLAM3&quot;&gt;ORB-SLAM3 Code&lt;/a&gt; , please see the review with that in mind.&lt;/p&gt;
+&lt;p&gt;We only reviewed mono-inertial version of &lt;a href=&quot;https://github.com/UZ-SLAMLab/ORB_SLAM3&quot;&gt;ORB-SLAM3 Code&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;All explanations are almost in korean.&lt;/p&gt;
 </description>
@@ -44,11 +45,11 @@
       <item>
         <title>VINS-Fusion Code Review</title>
         <description>&lt;h2 id=&quot;vins-fusion-mono-version&quot;&gt;Vins-Fusion Mono version&lt;/h2&gt;
-&lt;p&gt;The review post is at page in notion: &lt;a href=&quot;https://furtive-sole-b16.notion.site/VINS-Fusion-Code-Review-64c2a2c5a1ab4732a35119b3ee64d35b&quot;&gt;Review Post&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The review is moved to notion:  &lt;br /&gt;
+&lt;a href=&quot;https://furtive-sole-b16.notion.site/VINS-Fusion-Code-Review-64c2a2c5a1ab4732a35119b3ee64d35b&quot;&gt;https://furtive-sole-b16.notion.site/VINS-Fusion-Code-Review-64c2a2c5a1ab4732a35119b3ee64d35b&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;We only reviewed mono version of &lt;a href=&quot;https://github.com/HKUST-Aerial-Robotics/VINS-Fusion&quot;&gt;VINS-Fusion Code&lt;/a&gt; , please see the review with that in mind.&lt;/p&gt;
-
-&lt;p&gt;All explanations are in korean.&lt;/p&gt;
+&lt;p&gt;We only reviewed mono-inertial version of &lt;a href=&quot;https://github.com/HKUST-Aerial-Robotics/VINS-Fusion&quot;&gt;VINS-Fusion Code&lt;/a&gt;.
+All explanations are in korean.&lt;/p&gt;
 </description>
         <pubDate>Mon, 28 Jun 2021 00:00:00 +0900</pubDate>
         <link>http://localhost:4000/2021-06-28/vins-fusion-review</link>
