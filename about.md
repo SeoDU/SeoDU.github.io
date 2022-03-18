@@ -8,7 +8,7 @@ title: About Me
     
 
 
-My research interests lie in map reconstruction for practical applications such as AR.    
+My research interests lie in map reconstruction for practical applications such as AR and exploration.    
 Also, the process collaborated with multi-agent and localization in the dense map representation is of my interests.
 I’m mainly focusing on the Visual SLAM, but also trying to use LiDAR. 
 
