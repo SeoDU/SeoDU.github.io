@@ -14,7 +14,6 @@ plugins:
   - jekyll-seo-tag
   - jekyll-feed
   - jekyll-sitemap
-  - not-pure-poole
 
 # Optimize Jekyll
 exclude:
