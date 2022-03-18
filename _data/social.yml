@@ -1,0 +1,9 @@
+- title: Email
+  url: mailto://dongukseo@kaist.ac.kr
+  icon: fas fa-envelope
+- title: GitHub
+  url: https://github.com/SeoDU
+  icon: fab fa-github
+- title: Youtube
+  url: https://www.youtube.com/channel/UCaON-AWswqdv9hzrOxZDdWA
+  icon: fab fa-youtube

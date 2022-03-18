@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2022-03-18T14:24:19+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongUkSeo</title><subtitle>M.S candidate, KAIST</subtitle><author><name>DongUk Seo</name><email>dongukseo@kaist.ac.kr</email></author><entry><title type="html">Testing MathJax</title><link href="http://localhost:4000/2020/10/02/testing-mathjax/" rel="alternate" type="text/html" title="Testing MathJax" /><published>2020-10-02T16:32:00+09:00</published><updated>2020-10-02T16:32:00+09:00</updated><id>http://localhost:4000/2020/10/02/testing-mathjax</id><content type="html" xml:base="http://localhost:4000/2020/10/02/testing-mathjax/"><![CDATA[<p>Not Pure Poole supports <a href="https://www.mathjax.org/">MathJax</a>. You can enable it on a page by setting <code class="language-plaintext highlighter-rouge">math: true</code> in the front matter.</p>
+
+<p>An inline math: \(E=mc^2\).</p>
+
+<p>A display math:</p>
+
+\[i\hbar \frac{\partial \Psi}{\partial t} = -\frac{\hbar^2}{2m}
+\frac{\partial^2 \Psi}{\partial x^2} + V \Psi\]]]></content><author><name>DongUk Seo</name><email>dongukseo@kaist.ac.kr</email></author><category term="mathjax" /><summary type="html"><![CDATA[Not Pure Poole supports MathJax. You can enable it on a page by setting math: true in the front matter.]]></summary></entry><entry><title type="html">Releasing Not Pure Poole v0.1.0</title><link href="http://localhost:4000/2020/10/01/releasing-not-pure-poole-v0-1-0/" rel="alternate" type="text/html" title="Releasing Not Pure Poole v0.1.0" /><published>2020-10-01T14:56:00+09:00</published><updated>2020-10-01T14:56:00+09:00</updated><id>http://localhost:4000/2020/10/01/releasing-not-pure-poole-v0-1-0</id><content type="html" xml:base="http://localhost:4000/2020/10/01/releasing-not-pure-poole-v0-1-0/"><![CDATA[<p>The Jekyll theme <strong>Not Pure Poole</strong> v0.1.0 was released!</p>
+
+<p>Not Pure Poole is a simple, beautiful, and powerful Jekyll theme for blogs. It is built on <a href="https://github.com/poole/poole">Poole</a> and <a href="https://purecss.io/">Pure</a>.</p>
+
+<p>For more information about this theme, you can read the <a href="https://github.com/vszhub/not-pure-poole/blob/master/README.md">README</a> file.</p>]]></content><author><name>Songzi Vong</name></author><category term="jekyll theme" /><category term="jekyll" /><summary type="html"><![CDATA[The Jekyll theme Not Pure Poole v0.1.0 was released!]]></summary></entry><entry><title type="html">Welcome to Not Pure Poole</title><link href="http://localhost:4000/2020/09/30/welcome-to-not-pure-poole/" rel="alternate" type="text/html" title="Welcome to Not Pure Poole" /><published>2020-09-30T00:18:00+09:00</published><updated>2020-10-01T02:08:25+09:00</updated><id>http://localhost:4000/2020/09/30/welcome-to-not-pure-poole</id><content type="html" xml:base="http://localhost:4000/2020/09/30/welcome-to-not-pure-poole/"><![CDATA[<p class="message">Welcome to <strong>Not Pure Poole</strong>! This is an example post to show the layout.</p>
+
+<p>First, do you notice the TOC on the right side? Try to scroll down to read this post, you’ll find that the TOC is always sticky in the viewport.</p>
+
+<p>Cum sociis natoque penatibus et magnis <a href="#">dis parturient montes</a>, nascetur ridiculus mus. <em>Aenean eu leo quam.</em> Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.</p>
+
+<blockquote>
+  <p>Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+</blockquote>
+
+<p>Etiam porta <strong>sem malesuada magna</strong> mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
+
+<h2 id="inline-html-elements">Inline HTML elements</h2>
+
+<p>HTML defines a long list of available inline tags, a complete list of which can be found on the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element">Mozilla Developer Network</a>.</p>
+
+<ul>
+  <li><strong>To bold text</strong>, use <code class="language-plaintext highlighter-rouge">&lt;strong&gt;</code>.</li>
+  <li><em>To italicize text</em>, use <code class="language-plaintext highlighter-rouge">&lt;em&gt;</code>.</li>
+  <li><mark>To highlight</mark>, use <code class="language-plaintext highlighter-rouge">&lt;mark&gt;</code>.</li>
+  <li>Abbreviations, like <abbr title="HyperText Markup Langage">HTML</abbr> should use <code class="language-plaintext highlighter-rouge">&lt;abbr&gt;</code>, with an optional <code class="language-plaintext highlighter-rouge">title</code> attribute for the full phrase.</li>
+  <li>Citations, like <cite>— Mark Otto</cite>, should use <code class="language-plaintext highlighter-rouge">&lt;cite&gt;</code>.</li>
+  <li><del>Deleted</del> text should use <code class="language-plaintext highlighter-rouge">&lt;del&gt;</code> and <ins>inserted</ins> text should use <code class="language-plaintext highlighter-rouge">&lt;ins&gt;</code>.</li>
+  <li>Superscript <sup>text</sup> uses <code class="language-plaintext highlighter-rouge">&lt;sup&gt;</code> and subscript <sub>text</sub> uses <code class="language-plaintext highlighter-rouge">&lt;sub&gt;</code>.</li>
+</ul>
+
+<p>Most of these elements are styled by browsers with few modifications on our part.</p>
+
+<h2 id="footnotes">Footnotes</h2>
+
+<p>Footnotes are supported as part of the Markdown syntax. Here’s one in action. Clicking this number<sup id="fnref:fn-sample_footnote" role="doc-noteref"><a href="#fn:fn-sample_footnote" class="footnote" rel="footnote">1</a></sup> will lead you to a footnote. The syntax looks like:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Clicking this number[^fn-sample_footnote]</code></pre></figure>
+
+<p>Each footnote needs the <code class="language-plaintext highlighter-rouge">^fn-</code> prefix and a unique ID to be referenced for the footnoted content. The syntax for that list looks something like this:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">[^fn-sample_footnote]: Handy! Now click the return link to go back.</code></pre></figure>
+
+<p>You can place the footnoted content wherever you like. Markdown parsers should properly place it at the bottom of the post.</p>
+
+<h2 id="heading">Heading</h2>
+
+<p>Vivamus sagittis lacus vel augue rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+
+<h3 id="code">Code</h3>
+
+<p>Inline code is available with the <code class="language-plaintext highlighter-rouge">&lt;code&gt;</code> element. Snippets of multiple lines of code are supported through Rouge. Longer lines will automatically scroll horizontally when needed. You may also use code fencing (triple backticks) for rendering code.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// Example can be run directly in your JavaScript console</span>
+
+<span class="c1">// Create a function that takes two arguments and returns the sum of those arguments</span>
+<span class="kd">var</span> <span class="nx">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="dl">"</span><span class="s2">a</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">b</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">return a + b</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="c1">// Call the function</span>
+<span class="nx">adder</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span>
+<span class="c1">// &gt; 8</span></code></pre></figure>
+
+<p>You may also optionally show code snippets with line numbers. Add <code class="language-plaintext highlighter-rouge">linenos</code> to the Rouge tags.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="code"><pre><span class="c1">// Example can be run directly in your JavaScript console</span>
+
+<span class="c1">// Create a function that takes two arguments and returns the sum of those arguments</span>
+<span class="kd">var</span> <span class="nx">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="dl">"</span><span class="s2">a</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">b</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">return a + b</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="c1">// Call the function</span>
+<span class="nx">adder</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span>
+<span class="c1">// &gt; 8</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.</p>
+
+<h3 id="lists">Lists</h3>
+
+<p>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+
+<ul>
+  <li>Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</li>
+  <li>Donec id elit non mi porta gravida at eget metus.</li>
+  <li>Nulla vitae elit libero, a pharetra augue.</li>
+</ul>
+
+<p>Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue.</p>
+
+<ol>
+  <li>Vestibulum id ligula porta felis euismod semper.</li>
+  <li>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</li>
+  <li>Maecenas sed diam eget risus varius blandit sit amet non magna.</li>
+</ol>
+
+<p>Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis.</p>
+
+<dl>
+  <dt>HyperText Markup Language (HTML)</dt>
+  <dd>The language used to describe and define the content of a Web page</dd>
+
+  <dt>Cascading Style Sheets (CSS)</dt>
+  <dd>Used to describe the appearance of Web content</dd>
+
+  <dt>JavaScript (JS)</dt>
+  <dd>The programming language used to build advanced Web sites and applications</dd>
+</dl>
+
+<p>Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Nullam quis risus eget urna mollis ornare vel eu leo.</p>
+
+<h3 id="images">Images</h3>
+
+<p>Quisque consequat sapien eget quam rhoncus, sit amet laoreet diam tempus. Aliquam aliquam metus erat, a pulvinar turpis suscipit at.</p>
+
+<p><img src="http://placehold.it/800x400" alt="placeholder" title="Large example image" />
+<img src="http://placehold.it/400x200" alt="placeholder" title="Medium example image" />
+<img src="http://placehold.it/200x200" alt="placeholder" title="Small example image" /></p>
+
+<p>Align to the center by adding <code class="language-plaintext highlighter-rouge">class="align-center"</code>:</p>
+
+<p><img src="http://placehold.it/400x200" alt="placeholder" title="Medium example image" class="align-center" /></p>
+
+<h3 id="tables">Tables</h3>
+
+<p>Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Upvotes</th>
+      <th>Downvotes</th>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <td>Totals</td>
+      <td>21</td>
+      <td>23</td>
+    </tr>
+  </tfoot>
+  <tbody>
+    <tr>
+      <td>Alice</td>
+      <td>10</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <td>Bob</td>
+      <td>4</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>Charlie</td>
+      <td>7</td>
+      <td>9</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Nullam id dolor id nibh ultricies vehicula ut id elit. Sed posuere consectetur est at lobortis. Nullam quis risus eget urna mollis ornare vel eu leo.</p>
+
+<hr />
+
+<p>Want to see something else added? <a href="https://github.com/vszhub/not-pure-poole/issues/new">Open an issue.</a></p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:fn-sample_footnote" role="doc-endnote">
+      <p>Handy! Now click the return link to go back. <a href="#fnref:fn-sample_footnote" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>]]></content><author><name>DongUk Seo</name><email>dongukseo@kaist.ac.kr</email></author><category term="jekyll theme" /><category term="jekyll" /><category term="tutorial" /><summary type="html"><![CDATA[Welcome to Not Pure Poole! This is an example post to show the layout.]]></summary></entry></feed>
