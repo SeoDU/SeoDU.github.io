@@ -37,22 +37,22 @@ Powered by Hydejack v8.5.2 <https://hydejack.com/>
 
   
 <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Example | DongUkSeo</title>
+<title>Getting Stereo-Inertial data with Realsense camera | DongUkSeo</title>
 <meta name="generator" content="Jekyll v3.9.1" />
-<meta property="og:title" content="Example" />
+<meta property="og:title" content="Getting Stereo-Inertial data with Realsense camera" />
 <meta name="author" content="<firstname> <lastname>" />
 <meta property="og:locale" content="en" />
-<meta name="description" content="Hydejack is a boutique Jekyll theme for hackers, nerds, and academics, with a focus on personal sites that are meant to impress." />
-<meta property="og:description" content="Hydejack is a boutique Jekyll theme for hackers, nerds, and academics, with a focus on personal sites that are meant to impress." />
-<link rel="canonical" href="http://localhost:4000/example/" />
-<meta property="og:url" content="http://localhost:4000/example/" />
+<meta name="description" content="Tips for acquiring data in d435i camera" />
+<meta property="og:description" content="Tips for acquiring data in d435i camera" />
+<link rel="canonical" href="http://localhost:4000/slam/2021-08-27-orb-slam3-d435i/" />
+<meta property="og:url" content="http://localhost:4000/slam/2021-08-27-orb-slam3-d435i/" />
 <meta property="og:site_name" content="DongUkSeo" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2022-03-19T23:08:24+09:00" />
+<meta property="article:published_time" content="2021-08-27T00:00:00+09:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Example" />
+<meta property="twitter:title" content="Getting Stereo-Inertial data with Realsense camera" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"<firstname> <lastname>"},"dateModified":"2022-03-19T22:07:05+09:00","datePublished":"2022-03-19T23:08:24+09:00","description":"Hydejack is a boutique Jekyll theme for hackers, nerds, and academics, with a focus on personal sites that are meant to impress.","headline":"Example","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/sdu_profile.jpeg"},"name":"<firstname> <lastname>"},"url":"http://localhost:4000/example/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"<firstname> <lastname>"},"dateModified":"2022-03-19T23:02:22+09:00","datePublished":"2021-08-27T00:00:00+09:00","description":"Tips for acquiring data in d435i camera","headline":"Getting Stereo-Inertial data with Realsense camera","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/slam/2021-08-27-orb-slam3-d435i/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/sdu_profile.jpeg"},"name":"<firstname> <lastname>"},"url":"http://localhost:4000/slam/2021-08-27-orb-slam3-d435i/"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -82,7 +82,7 @@ Powered by Hydejack v8.5.2 <https://hydejack.com/>
 
 
 
-<link rel="alternate" href="http://localhost:4000/example/" hreflang="en">
+<link rel="alternate" href="http://localhost:4000/slam/2021-08-27-orb-slam3-d435i/" hreflang="en">
 
 <link rel="shortcut icon" href="/assets/icons/favicon.ico">
 <link rel="apple-touch-icon" href="/assets/icons/icon.png">
@@ -189,7 +189,7 @@ Powered by Hydejack v8.5.2 <https://hydejack.com/>
   
     <main
   id="_main"
-  class="content fade-in layout-list"
+  class="content fade-in layout-post"
   role="main"
   data-color="rgb(79,177,186)"
   data-theme-color="rgb(25,55,71)"
@@ -201,8 +201,52 @@ Powered by Hydejack v8.5.2 <https://hydejack.com/>
   
 
 
+
+
+<article id="post-slam-orb-slam3-d435i" class="page post mb6" role="article">
   <header>
-    <h1 class="page-title">Example</h1>
+    <h1 class="post-title">
+      
+        Getting Stereo-Inertial data with Realsense camera
+      
+    </h1>
+
+    <p class="post-date heading">
+      
+      <time datetime="2021-08-27T00:00:00+09:00">27 Aug 2021</time>
+      
+      
+      
+      
+      
+
+
+
+
+
+
+
+
+
+in <a href="/slam/" class="flip-title">SLAM</a>
+
+      
+
+
+
+
+
+
+
+
+
+
+
+    </p>
+
+    
+    
+
     
 
 
@@ -211,62 +255,76 @@ Powered by Hydejack v8.5.2 <https://hydejack.com/>
 
 
   </header>
-  <hr class="sr-only"/>
+
+  
+    <p>Tips for acquiring data in d435i camera</p>
+
+<ol>
+  <li>ros 기본패키지 (camera_calibration)을 사용하여 ORB SLAM3에서 필요로하는 rectification을 위한 projection matrix를 구한다.  <br />
+<a href="http://wiki.ros.org/camera_calibration">http://wiki.ros.org/camera_calibration</a></li>
+  <li>d435i ros구동시에 rs_camera_launch에서 unite_imu_method option을 linear_interpolation로, enable_sync를 true로 지정한다. (infra laser 옵션도 꺼준다.)</li>
+  <li>kalibr패키지를 통해 정확한 extrinsic parameter를 구해 ORB SLAM3를 위한 yaml file을 완성한다.  <br />
+<a href="https://github.com/ethz-asl/kalibr">https://github.com/ethz-asl/kalibr</a></li>
+</ol>
+
+  
+</article>
 
 
-
-
-
-
+<hr class="dingbat related" />
 
 
 
 
   
+     
+
+
+
+  
+
+  
+  
+
   
     
-    <h2 id="y-2022" class="hr">2022</h2>
-    <ul class="related-posts">
+
+
+
+
+<aside class="related mb4" role="complementary">
+  <h2 class="hr">Related Posts</h2>
+
+  <ul class="related-posts">
     
-  
-  
+      
 
 
 <li>
   <a href="/programming/2022-03-19-rpg-trajectories/" class="h4 flip-title"><span>Using rpg-trajectory-evaluation on multiple trajectories</span></a>
-  <time class="heading faded fine" datetime="2022-03-19T00:00:00+09:00">19 Mar</time>
+  <time class="heading faded fine" datetime="2022-03-19T00:00:00+09:00">19 Mar 2022</time>
 </li>
 
-  
-
-  
-  
-    </ul>
-    <h2 id="y-2021" class="hr">2021</h2>
-    <ul class="related-posts">
     
-  
-  
+      
 
 
 <li>
   <a href="/slam/2021-12-18-calc-tf/" class="h4 flip-title"><span>Frame간의 Transformation matrix 계산하기</span></a>
-  <time class="heading faded fine" datetime="2021-12-18T00:00:00+09:00">18 Dec</time>
+  <time class="heading faded fine" datetime="2021-12-18T00:00:00+09:00">18 Dec 2021</time>
 </li>
 
-  
-
-  
-  
-  
-
-
-<li>
-  <a href="/slam/2021-08-27-orb-slam3-d435i/" class="h4 flip-title"><span>Getting Stereo-Inertial data with Realsense camera</span></a>
-  <time class="heading faded fine" datetime="2021-08-27T00:00:00+09:00">27 Aug</time>
-</li>
-
+    
   </ul>
+</aside>
+
+  
+
+  
+  
+
+  
+  
 
 
   
@@ -340,7 +398,7 @@ Powered by Hydejack v8.5.2 <https://hydejack.com/>
         <a
           id="_navigation"
           href="/slam/"
-          class="sidebar-nav-item"
+          class="sidebar-nav-item active"
           
         >
           SLAM
