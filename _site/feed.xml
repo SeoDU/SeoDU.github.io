@@ -1,5 +1,76 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2022-03-19T21:02:54+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongUkSeo</title><subtitle>Hydejack is a boutique Jekyll theme for hackers, nerds, and academics, with a focus on personal sites that are meant to impress.
-</subtitle><author><name>&lt;firstname&gt; &lt;lastname&gt;</name><email>&lt;mail@domain.tld&gt;</email></author><entry><title type="html">Introducing Hydejack 9</title><link href="http://localhost:4000/example/2020-07-03-introducing-hydejack-9/" rel="alternate" type="text/html" title="Introducing Hydejack 9" /><published>2020-07-03T00:00:00+09:00</published><updated>2022-03-19T19:34:27+09:00</updated><id>http://localhost:4000/example/introducing-hydejack-9</id><content type="html" xml:base="http://localhost:4000/example/2020-07-03-introducing-hydejack-9/">&lt;p class=&quot;lead&quot;&gt;Version 9 is the most complete version of Hydejack yet.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2022-03-19T22:06:26+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">DongUkSeo</title><subtitle>Hydejack is a boutique Jekyll theme for hackers, nerds, and academics, with a focus on personal sites that are meant to impress.
+</subtitle><author><name>&lt;firstname&gt; &lt;lastname&gt;</name><email>&lt;mail@domain.tld&gt;</email></author><entry><title type="html">Frame간의 Transformation matrix 계산하기</title><link href="http://localhost:4000/slam/2022-03-18-calc-tf/" rel="alternate" type="text/html" title="Frame간의 Transformation matrix 계산하기" /><published>2022-03-18T00:00:00+09:00</published><updated>2022-03-19T21:57:09+09:00</updated><id>http://localhost:4000/slam/calc-tf</id><content type="html" xml:base="http://localhost:4000/slam/2022-03-18-calc-tf/">&lt;p&gt;SLAM분야에서는 Calibration등의 과정에서 두 프레임이 주어졌을때 transformation matrix를 구해야하는 상황이 흔히 발생한다.&lt;/p&gt;
+
+&lt;h2 id=&quot;1-concept&quot;&gt;1. Concept&lt;/h2&gt;
+
+&lt;p&gt;Transformation from camera to body-frame이라 하면, axis를 기준으로 말하는 것을 의미한다.&lt;/p&gt;
+
+&lt;p&gt;그러나 수학식으로는 나타낼때는 점변환을 기준으로 나타내며, \(T^c_b\)을 구하는 것을 의미한다.&lt;/p&gt;
+
+&lt;p&gt;Transformation을 구하기 위해 &lt;strong&gt;Axis를 기준으로 생각해 볼 때는&lt;/strong&gt; 아래와 같이 rotation matrix를 계산한다.&lt;/p&gt;
+
+&lt;p&gt;[Body frame] = R * [Camera frame]&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Translation은 어떤 frame을 기준으로 움직이느냐에 따라 추가하면 된다.&lt;/p&gt;
+
+&lt;p&gt;예를들어 body frame기준으로 x=1m가 camera frame까지 차이가 난다면,&lt;/p&gt;
+
+&lt;p&gt;[Camera frame] = T * [Body frame]에서 Body frame의 T matrix의 translation 부분의 x값을 1m 입력해주면 된다.&lt;/p&gt;
+
+&lt;p&gt;이를 종합하여 볼 때, axis를 기준으로 할때 &lt;strong&gt;translation이 어떤 frame기준인지 먼저 잘 살펴보고&lt;/strong&gt;, rotation의 기준도 동일하게 정해주는 것이 좋다.&lt;/p&gt;
+
+&lt;h2 id=&quot;2-rotation-matrix&quot;&gt;2. Rotation Matrix&lt;/h2&gt;
+
+&lt;p&gt;roll : x축 기준 회전&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/slam/calc-tf/Untitled.png&quot; alt=&quot;Untitled&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;pitch : y축 기준 회전&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/slam/calc-tf/Untitled1.png&quot; alt=&quot;Untitled&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;yaw : z축 기준 회전&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/slam/calc-tf/Untitled2.png&quot; alt=&quot;Untitled&quot; /&gt;&lt;/p&gt;
+
+\[R = R_{yaw} * R_{pitch} * R_{roll}\]
+
+&lt;p&gt;roll → pitch → yaw순으로 회전한다.&lt;/p&gt;
+
+&lt;h2 id=&quot;3-example&quot;&gt;3. Example&lt;/h2&gt;
+
+&lt;p&gt;Camera frame TF :&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/slam/calc-tf/Untitled3.png&quot; alt=&quot;Untitled&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;IMU frame TF :&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/slam/calc-tf/Untitled 4.png&quot; alt=&quot;Untitled&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;위 두 frame의 Translation이 body기준으로 1m차이 난다고 주어졌다고 가정하자.&lt;/p&gt;
+
+&lt;p&gt;만약 Transformation Camera to body(IMU)을 구해야 하더라도, body기준으로 값이 주어졌기 때문에 Transformation body to Camera를 먼저 구하고 inverse해주는 것이 더 편리하다.&lt;/p&gt;
+
+&lt;p&gt;Body기준으로 roll 방향 90도, pitch방향 -90도 회전하면 camera frame을 구할 수 있으므로,  &lt;br /&gt;
+(&lt;strong&gt;counterclockwise 기준, 왼손법칙&lt;/strong&gt;)&lt;/p&gt;
+
+&lt;p&gt;Transformation from body to camera-frame는 다음과 같이 구할 수 있다.&lt;/p&gt;
+
+\[T_c^b = \begin{pmatrix} 0 &amp;amp; -1 &amp;amp; 0 &amp;amp; 1 \\ 0 &amp;amp; 0 &amp;amp; -1 &amp;amp; 0  \\ 1 &amp;amp; 0 &amp;amp; 0 &amp;amp; 0  \\ 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \end{pmatrix}\]
+
+&lt;p&gt;따라서 원래 구하려던 Transformation from camera to body-frame를 구하려면 이를 inverse해주면 된다.&lt;/p&gt;
+
+\[T_b^c= \begin{pmatrix} 0 &amp;amp; 0 &amp;amp; 1 &amp;amp; 0 \\ -1 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1  \\ 0 &amp;amp; -1 &amp;amp; 0 &amp;amp; 0  \\ 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; 1 \end{pmatrix}\]
+
+&lt;p&gt;※ 계산해주는 tools site : &lt;a href=&quot;https://www.andre-gaschler.com/rotationconverter/&quot;&gt;https://www.andre-gaschler.com/rotationconverter/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;transformation matrix를 구할 때 위 site를 이용하여 Rotation의 각도 차이를 적어주어 구하면 편리하다.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;위 사이트에서 예시를 적용하기 위해서는 Euler angles of multiple axis rotations (radians)의 ZYX순서로 rotation을 계산하여야 한다.&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>&lt;firstname&gt; &lt;lastname&gt;</name><email>&lt;mail@domain.tld&gt;</email></author><category term="slam" /><category term="SLAM" /><category term="tf," /><category term="SLAM" /><summary type="html">SLAM분야에서는 Calibration등의 과정에서 두 프레임이 주어졌을때 transformation matrix를 구해야하는 상황이 흔히 발생한다.</summary></entry><entry><title type="html">Introducing Hydejack 9</title><link href="http://localhost:4000/example/2020-07-03-introducing-hydejack-9/" rel="alternate" type="text/html" title="Introducing Hydejack 9" /><published>2020-07-03T00:00:00+09:00</published><updated>2022-03-19T19:34:27+09:00</updated><id>http://localhost:4000/example/introducing-hydejack-9</id><content type="html" xml:base="http://localhost:4000/example/2020-07-03-introducing-hydejack-9/">&lt;p class=&quot;lead&quot;&gt;Version 9 is the most complete version of Hydejack yet.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;#linking-in-style&quot;&gt;Modernized&lt;/a&gt; &lt;a href=&quot;#whats-in-the-cards&quot;&gt;design&lt;/a&gt;, &lt;a href=&quot;#ready-for-the-big-screen&quot;&gt;big headlines&lt;/a&gt;, big new features: &lt;a href=&quot;#built-in-search&quot;&gt;Built-In Search&lt;/a&gt;, &lt;a href=&quot;#sticky-table-of-contents&quot;&gt;Sticky Table of Contents&lt;/a&gt;, and &lt;a href=&quot;#auto-hiding-navbar&quot;&gt;Auto-Hiding Navbar&lt;/a&gt;. That &lt;a href=&quot;#and-much-more&quot;&gt;and more&lt;/a&gt; is Hydejack 9.&lt;/p&gt;
 
