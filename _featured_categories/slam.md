@@ -10,6 +10,8 @@ slug: slam
 
 # (Optional) Write a short (~150 characters) description of this featured tag.
 description: >
+    Basics and theories about SLAM, Visual SLAM, LiDAR SLAM
+
 
 # (Optional) You can disable grouping posts by date.
 # no_groups: true

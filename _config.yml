@@ -50,8 +50,8 @@ author:
 menu:
   - title:             SLAM
     url:               /slam/
-  - title:             Computer Vision
-    url:               /cv/
+  - title:             Programming
+    url:               /programming/
   - title:             About
     url:               /about/
 

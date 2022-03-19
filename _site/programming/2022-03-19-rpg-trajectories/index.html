@@ -36,21 +36,23 @@ Powered by Hydejack v8.5.2 <https://hydejack.com/>
 
 
   
-<!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Upgrade | DongUkSeo</title>
-<meta name="generator" content="Jekyll v3.9.0" />
-<meta property="og:title" content="Upgrade" />
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Using rpg-trajectory-evaluation on multiple trajectories | DongUkSeo</title>
+<meta name="generator" content="Jekyll v3.9.1" />
+<meta property="og:title" content="Using rpg-trajectory-evaluation on multiple trajectories" />
 <meta name="author" content="<firstname> <lastname>" />
 <meta property="og:locale" content="en" />
-<meta name="description" content="This chapter shows how to upgrade Hydejack to a newer version. The method depends on how you’ve installed Hydejack." />
-<meta property="og:description" content="This chapter shows how to upgrade Hydejack to a newer version. The method depends on how you’ve installed Hydejack." />
-<link rel="canonical" href="http://localhost:4000/cv/upgrade/" />
-<meta property="og:url" content="http://localhost:4000/cv/upgrade/" />
+<meta name="description" content="Hydejack is a boutique Jekyll theme for hackers, nerds, and academics, with a focus on personal sites that are meant to impress." />
+<meta property="og:description" content="Hydejack is a boutique Jekyll theme for hackers, nerds, and academics, with a focus on personal sites that are meant to impress." />
+<link rel="canonical" href="http://localhost:4000/programming/2022-03-19-rpg-trajectories/" />
+<meta property="og:url" content="http://localhost:4000/programming/2022-03-19-rpg-trajectories/" />
 <meta property="og:site_name" content="DongUkSeo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-03-19T00:00:00+09:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Upgrade" />
+<meta property="twitter:title" content="Using rpg-trajectory-evaluation on multiple trajectories" />
 <script type="application/ld+json">
-{"headline":"Upgrade","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/sdu_profile.jpeg"},"name":"<firstname> <lastname>"},"url":"http://localhost:4000/cv/upgrade/","author":{"@type":"Person","name":"<firstname> <lastname>"},"@type":"WebPage","description":"This chapter shows how to upgrade Hydejack to a newer version. The method depends on how you’ve installed Hydejack.","dateModified":"2022-03-19T19:50:26+09:00","@context":"https://schema.org"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"<firstname> <lastname>"},"dateModified":"2022-03-19T22:40:38+09:00","datePublished":"2022-03-19T00:00:00+09:00","description":"Hydejack is a boutique Jekyll theme for hackers, nerds, and academics, with a focus on personal sites that are meant to impress.","headline":"Using rpg-trajectory-evaluation on multiple trajectories","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/programming/2022-03-19-rpg-trajectories/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/sdu_profile.jpeg"},"name":"<firstname> <lastname>"},"url":"http://localhost:4000/programming/2022-03-19-rpg-trajectories/"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -80,7 +82,7 @@ Powered by Hydejack v8.5.2 <https://hydejack.com/>
 
 
 
-<link rel="alternate" href="http://localhost:4000/cv/upgrade/" hreflang="en">
+<link rel="alternate" href="http://localhost:4000/programming/2022-03-19-rpg-trajectories/" hreflang="en">
 
 <link rel="shortcut icon" href="/assets/icons/favicon.ico">
 <link rel="apple-touch-icon" href="/assets/icons/icon.png">
@@ -187,7 +189,7 @@ Powered by Hydejack v8.5.2 <https://hydejack.com/>
   
     <main
   id="_main"
-  class="content fade-in layout-page"
+  class="content fade-in layout-post"
   role="main"
   data-color="rgb(79,177,186)"
   data-theme-color="rgb(25,55,71)"
@@ -196,62 +198,117 @@ Powered by Hydejack v8.5.2 <https://hydejack.com/>
     data-overlay
   
   >
-  <article class="page" role="article">
+  
+
+
+
+
+<article id="post-programming-rpg-trajectories" class="page post mb6" role="article">
   <header>
-    <h1 class="page-title">Upgrade</h1>
+    <h1 class="post-title">
+      
+        Using rpg-trajectory-evaluation on multiple trajectories
+      
+    </h1>
+
+    <p class="post-date heading">
+      
+      <time datetime="2022-03-19T00:00:00+09:00">19 Mar 2022</time>
+      
+      
+      
+      
+      
+
+
+
+
+
+
+
+
+
+in <a href="/programming/" class="flip-title">Programming</a>
+
+      
+
+
+
+
+
+
+
+
+
+
+
+    </p>
+
+    
+    
+
     
 
 
 
-  
-    <div class="hr pb0"></div>
-  
+  <div class="hr pb0"></div>
 
 
   </header>
 
-  <p>This chapter shows how to upgrade Hydejack to a newer version. The method depends on how you’ve installed Hydejack.</p>
+  
+    
 
-<ol id="markdown-toc">
-  <li><a href="#free-version" id="markdown-toc-free-version">Free version</a></li>
-  <li><a href="#pro-version" id="markdown-toc-pro-version">PRO Version</a></li>
-  <li><a href="#github-pages" id="markdown-toc-github-pages">GitHub Pages</a></li>
-</ol>
-
-<p class="note">Before upgrading to v7+, make sure you’ve read the <a href="/CHANGELOG/" class="heading flip-title">CHANGELOG</a>,
-especially the part about the <a href="/CHANGELOG/#license-change">license change</a>!</p>
-
-<h2 id="free-version">Free version</h2>
-<p>Upgrading the free version of the theme is as easy as running</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle update jekyll-theme-hydejack
-</code></pre></div></div>
-
-<h2 id="pro-version">PRO Version</h2>
-
-<p class="note">In v9, the structure of Hydejack PRO sites has changed. If you’re looking to upgrade from v8 or earlier, 
-check out <a href="/cv/install/#existing-sites">Installation for existing sites</a> instead.</p>
-
-<p>Buyers of the PRO version will find the files necessary for an upgrade in the <code class="language-plaintext highlighter-rouge">#jekyll-theme-hydejack</code> folder of the downloaded zip archive.
-To upgrade, simply overwrite the existing theme folder in the root directory of your site with the new one, then run</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle update jekyll-theme-hydejack
-</code></pre></div></div>
-
-<p class="note">If you’ve modified any of Hydejack’s files in <code class="language-plaintext highlighter-rouge">#jekyll-theme-hydejack</code>, your changes will most likely be overwritten
-and you have to apply them again. Make sure you’ve made a backup before overwriting any files.</p>
-
-<h2 id="github-pages">GitHub Pages</h2>
-<p>When building on GitHub Pages, upgrading Hydejack is as simple as setting the <code class="language-plaintext highlighter-rouge">remote_theme</code> key in <code class="language-plaintext highlighter-rouge">_config.yml</code> to the desired version.</p>
-
-<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">remote_theme</span><span class="pi">:</span> <span class="s">hydecorp/hydejack@v9.1.6</span>
-</code></pre></div></div>
-
-<p>To use the latest version on the <code class="language-plaintext highlighter-rouge">v9</code> branch on each build, you can use  <code class="language-plaintext highlighter-rouge">hydecorp/hydejack@v9</code>.</p>
-
-<p class="read-more">Continue with <a href="/cv/config/" class="heading flip-title">Config</a></p>
-
+  
 </article>
+
+
+<hr class="dingbat related" />
+
+
+
+
+  
+     
+
+
+
+  
+
+  
+  
+
+  
+    
+
+
+
+
+<aside class="related mb4" role="complementary">
+  <h2 class="hr">Related Posts</h2>
+
+  <ul class="related-posts">
+    
+      
+
+
+<li>
+  <a href="/slam/2022-03-18-calc-tf/" class="h4 flip-title"><span>Frame간의 Transformation matrix 계산하기</span></a>
+  <time class="heading faded fine" datetime="2022-03-18T00:00:00+09:00">18 Mar 2022</time>
+</li>
+
+    
+  </ul>
+</aside>
+
+  
+
+  
+  
+
+  
+  
+
 
   
 
@@ -335,11 +392,11 @@ and you have to apply them again. Make sure you’ve made a backup before overwr
       <li>
         <a
           
-          href="/cv/"
+          href="/programming/"
           class="sidebar-nav-item active"
           
         >
-          Computer Vision
+          Programming
         </a>
       </li>
     
