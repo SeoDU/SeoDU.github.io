@@ -42,7 +42,6 @@ Structural Regularities from Visual SLAM
 Jinwoo Jeon, Hyunjun Lim, <span style="color:black">Dong-Uk Seo</span>, Hyun Myung    
 The IEEE Robotics and Automation Letters (RA-L 2022)
 
- the IEEE Robotics and Automation Letters (RA-L)
 * **QR-SCAN**: Traversable Region Scan for Quadruped Robot Exploration
 using Lightweight Precomputed Trajectory    
 EungChang Mason Lee, <span style="color:black">DongUk Seo</span>, JinWoo Jeon, and Hyun Myung    
