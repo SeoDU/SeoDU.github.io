@@ -38,7 +38,7 @@ I’m mainly focusing on the Visual SLAM, but also trying to use LiDAR.
 
 ### PUBLICATION
 * **PaGO-LOAM**: Robust Ground-Optimized LiDAR Odometry    
-Dong-Uk Seo<sup>*</sup>, Hyungtae Lim<sup>*</sup>, Seungjae Lee, Hyun Myung    
+<span style="color:black">Dong-Uk Seo<sup>*</sup></span>, Hyungtae Lim<sup>*</sup>, Seungjae Lee, Hyun Myung    
 Int'l Conf. on Ubiquitous Robots (UR 2022)
 
 * **Struct-MDC**: Mesh-Refined Unsupervised Depth Completion Leveraging
