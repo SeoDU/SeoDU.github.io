@@ -37,7 +37,7 @@ I’m mainly focusing on the Visual SLAM, but also trying to use LiDAR.
 
 
 ### PUBLICATION
-* **PaGO-LOAM**: Robust Ground-Optimized LiDAR Odometry    
+* **PaGO-LOAM**: Robust Ground-Optimized LiDAR Odometry (Best paper finalist)
 <span style="color:black">Dong-Uk Seo<sup>*</sup></span>, Hyungtae Lim<sup>*</sup>, Seungjae Lee, Hyun Myung    
 Int'l Conf. on Ubiquitous Robots (UR 2022)
 
