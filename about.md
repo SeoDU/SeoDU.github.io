@@ -16,15 +16,15 @@ redirect_from:
     
 
 
-My research interests lie in map reconstruction for practical applications such as AR and exploration.
+My research interests lie in LiDAR-Camera fusion based SLAM for robust long-term autonomy.
 Also, the process collaborated with multi-agent and localization in the dense map representation are of my interests.
-I’m mainly focusing on the Visual SLAM, but also trying to use LiDAR. 
+I’m mainly focusing on the Visual SLAM, but also trying to use LiDAR.     
 
 
 <!--* <span style="color:black">**Visual SLAM**</span> for AR application. -->
-* Visual SLAM for AR application.
+* LiDAR-Visual-Inertial SLAM framework.
 * Multi-Map reconstruction.
-* Tightly-coupled dense map SLAM framework.
+* Long-term autonomy.
 
 <br/>
 
