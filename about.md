@@ -39,6 +39,10 @@ I’m mainly focusing on the Visual SLAM, but also trying to use LiDAR.
 
 
 ### PUBLICATION
+* **Enhancing Robustness of Line Tracking Through Semi-Dense Epipolar Search in Line-based SLAM**
+<span style="color:black">Dong-Uk Seo</span>, HYUNGTAE LIM, Eungchang Mason Lee, Hyunjun Lim, Hyun Myung    
+IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2023 accepted)
+
 * **PaGO-LOAM**: Robust Ground-Optimized LiDAR Odometry (Best paper finalist)    
 <span style="color:black">Dong-Uk Seo<sup>*</sup></span>, Hyungtae Lim<sup>*</sup>, Seungjae Lee, Hyun Myung    
 Int'l Conf. on Ubiquitous Robots (UR 2022)
