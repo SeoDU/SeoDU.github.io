@@ -29,7 +29,7 @@ description:           >
   with a focus on personal sites that are meant to impress.
 
 # A shorter description for the sidebar.
-tagline:               Visual SLAM, Robotics, AR
+tagline:               Visual SLAM, LiDAR SLAM, Robotics
 
 # A list of keywords for your blog
 keywords:              Robotics
