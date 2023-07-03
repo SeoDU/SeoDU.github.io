@@ -1,9 +1,0 @@
-<p>Tips for acquiring data in d435i camera</p>
-
-<ol>
-  <li>ros 기본패키지 (camera_calibration)을 사용하여 ORB SLAM3에서 필요로하는 rectification을 위한 projection matrix를 구한다.  <br />
-<a href="http://wiki.ros.org/camera_calibration">http://wiki.ros.org/camera_calibration</a></li>
-  <li>d435i ros구동시에 rs_camera_launch에서 unite_imu_method option을 linear_interpolation로, enable_sync를 true로 지정한다. (infra laser 옵션도 꺼준다.)</li>
-  <li>kalibr패키지를 통해 정확한 extrinsic parameter를 구해 ORB SLAM3를 위한 yaml file을 완성한다.  <br />
-<a href="https://github.com/ethz-asl/kalibr">https://github.com/ethz-asl/kalibr</a></li>
-</ol>

@@ -1,422 +1,296 @@
-# Config
-# ========================================================================================
+###########################################################
+### Welcome to Beautiful Jekyll!
+### This config file is meant for settings that affect your entire website. When you first
+### set up your website you should go through all these settings and edit them, but after
+### the initial set up you won't need to come back to this file often.
+###########################################################
 
-# Uncomment and set the URL of your site (with protocol, e.g. `https://`)
-# NOTE: You don't need to provide this property when hosting on GitHub Pages or Netlify.
-url:                   https://seodu.github.io
+############################
+# --- Required options --- #
+############################
 
-# Uncomment and set the "base URL" of your site.
-# When your site is in a subdirectory, set to `/<name of directory>`,
-# with a leading `/` but no trailing `/`. Use the empty string '' otherwise.
-# NOTE: You don't need to provide this property when hosting on GitHub Pages or Netlify.
-# baseurl:               '/hydejack-starter-kit'
+# Name of website
+title: My Website
 
+# Your name to show in the footer
+author: Some Person
 
-# General settings
-# ---------------------------------------------------------------------------------------
+###############################################
+# --- List of links in the navigation bar --- #
+###############################################
 
-# Language of your content in 2-letter code, e.g.: en, de.
-# You may also provide a location, e.g.: en-us, de_AT.
-lang:                  en
+navbar-links:
+  About Me: "aboutme"
+  Resources:
+    - Beautiful Jekyll: "https://beautifuljekyll.com"
+    - Learn markdown: "https://www.markdowntutorial.com/"
+  Author's home: "https://deanattali.com"
 
-# The title of your blog. Used in the sidebar and the browser tab.
-title:                 DongUkSeo
+################
+# --- Logo --- #
+################
 
-# A short description (~150 chars) of the page used for the meta description tag.
-# Can use markdown, but no more than one paragraph (enforced by `>`)
-description:           >
-  Hydejack is a boutique Jekyll theme for hackers, nerds, and academics,
-  with a focus on personal sites that are meant to impress.
+# Image to show in the navigation bar - works best with a square image
+# Remove this parameter if you don't want an image in the navbar
+avatar: "/assets/img/avatar-icon.png"
 
-# A shorter description for the sidebar.
-tagline:               Visual SLAM, LiDAR SLAM, Robotics
+# By default, the image is cut into a circle. You can disable this behaviour by setting 'round-avatar: false'
+round-avatar: true
 
-# A list of keywords for your blog
-keywords:              Robotics
-
-# A (square) logo for your site.
-# If provided, it will be shown at the top of the sidebar.
-# It also used by the `jekyll-seo-tag` plugin.
-logo:                  /assets/img/sdu_profile.jpeg
-
-# This should be the same author as first entry in `_data/authors.yml`.
-author:
-  # Used by `jekyll-feed`:
-  name:                <firstname> <lastname>
-  email:               <mail@domain.tld>
-  # # Used by `jekyll-seo-tag`:
-
-# Add links to the sidebar.
-menu:
-  - title:             SLAM
-    url:               /slam/
-  - title:             Programming
-    url:               /programming/
-  - title:             About
-    url:               /about/
-
-# Add links to the footer.
-# Typically you'll want to link to your cookie- or privacy policy (if appliable), etc..
-legal:
-  - title:             LICENSE
-    url:               /LICENSE/
-  - title:             NOTICE
-    url:               /NOTICE/
-  - title:             CHANGELOG
-    url:               /CHANGELOG/
-
-# This text will appear in a `<small>` tag in the footer of every page.
-copyright:             © 2021. All rights reserved.
-
-# Format of the permalinks
-permalink:             /:categories/:year-:month-:day-:title/
-
-# Pagination configuration (used by the `blog` layout)
-paginate:              10
-paginate_path:         /:num/
+# If you want to have an image logo in the top-left corner instead of having the title of the website,
+# then specify the following parameter
+#title-img: /path/to/image
 
 
-# Theme
-# ---------------------------------------------------------------------------------------
+#####################################
+# --- Footer social media links --- #
+#####################################
 
-#theme: jekyll-theme-hydejack
-remote_theme: hydecorp/hydejack@v9
+# Select the social network links that you want to show in the footer.
+# You can change the order that they show up on the page by changing the order here.
+# Uncomment the links you want to show and add your information to each one.
+social-network-links:
+  email: "someone@example.com"
+  rss: true  # remove this line if you don't want to show an RSS link at the bottom
+  facebook: deanattali
+  github: daattali
+  twitter: daattali
+  patreon: DeanAttali
+  youtube: c/daattali
+#  medium: yourname
+#  reddit: yourname
+#  linkedin: daattali
+#  xing: yourname
+#  stackoverflow: "3943160/daattali"
+#  snapchat: deanat78
+#  instagram: deanat78
+#  spotify: yourname
+#  telephone: +14159998888
+#  steam: deanat78
+#  twitch: yourname
+#  yelp: yourname
+#  telegram: yourname
+#  calendly: yourname
+#  mastodon: instance.url/@username
+#  ORCID: your ORCID ID
+#  google-scholar: your google scholar
+#  discord: "invite_code" or "users/userid" or "invite/invite_code" 
+#  kaggle: yourname
+#  hackerrank: yourname
+#  gitlab: yourname
 
+# If you want your website to generate an RSS feed, provide a description
+# The URL for the feed will be https://<your_website>/feed.xml
+rss-description: This website is a virtual proof that I'm awesome
 
-# Customizaton
-# ----------------------------------------------------------------------------------------
- 
-# Sidebar image and theme color of the site.
-accent_image:          /assets/img/bg.jpeg
-accent_color:          rgb(79,177,186)
+###########################
+# --- General options --- #
+###########################
 
-# This is used for the `theme-color` meta tag,
-# which changes the background color of the browser UI in certain browsers.
-# Defaults to `accent_color`.
-theme_color:           rgb(25,55,71)
+# Select which social network share links to show in posts
+share-links-active:
+  twitter: true
+  facebook: true
+  linkedin: true
+  vk: false
 
-# The string encoding which fonts to fetch from Google Fonts.
-# See: <https://hydejack.com/docs/configuration/>
-google_fonts:          Roboto+Slab:700|Noto+Sans:400,400i,700,700i
+# How to display the link to your website in the footer
+# Remove this if you don't want a link in the footer
+url-pretty: "MyWebsite.com"
 
-# The text font. Expects a string that is a valid CSS font-family value.
-# To change font-weight, see _sass/variables.scss
-font:                  Noto Sans, Helvetica, Arial, sans-serif
+# Excerpt word length - Truncate the excerpt of each post on the feed page to the specified number of words
+excerpt_length: 50
 
-# The font used for headings. Expects a string that is a valid CSS font-family value.
-# To change font-weight, see _sass/variables.scss
-font_heading:          Roboto Slab, Helvetica, Arial, sans-serif
+# Whether or not to show an excerpt for every blog post in the feed page
+feed_show_excerpt: true
 
-# The font used for code blocks. Expects a string that is a valid CSS font-family value.
-font_code:             Fira Code, Menlo, Monaco, Consolas, monospace;
+# Whether or not to show a list of tags below each post preview in the feed page
+feed_show_tags: true
 
-defaults:
-  # You can use this to provide a default accent color and background for
-  # all pages under a given path:
-  - scope:
-      path:            hyde/
-    values:
-      accent_color:    rgb(38,139,210)
-      theme_color:     rgb(32,32,32)
-      accent_image:
-        background:    rgb(32,32,32)
-        overlay:       false
+# Add a search button to the navbar
+post_search: true
 
-  # Don't include documents in assets in the sitemap
-  - scope:
-      path:            assets/
-    values:
-      sitemap:         false
+# Add a button in the footer to edit the current page. Only works if your website is hosted on GitHub
+edit_page_button: true
 
-  - scope:
-      path:            licenses/
-    values:
-      layout:          plain
-      sitemap:         false
+# Allow sub-menu items (second-level navigation menu items) to be longer than the top-level menu
+# If this setting is off, then long sub-menu words might get cut off
+# See https://github.com/daattali/beautiful-jekyll/issues/765 to understand the issue this setting can solve
+navbar-var-length: false
 
-  # # You can use the following to enable comments on all posts.
-  # - scope:
-  #     type:            posts
-  #   values:
-  #     comments:        true
+# The keywords to associate with your website, for SEO purposes
+#keywords: "my,list,of,keywords"
 
-  # `jekyll-seo-tag` will mark collection outputs as `BlogPosting`,
-  # but we want them to be `WebPage`s:
-  - scope:
-      type:            projects
-    values:
-      seo:
-        type:          WebPage
-  - scope:
-      type:            featured_categories
-    values:
-      seo:
-        type:          WebPage
-  - scope:
-      type:            featured_tags
-    values:
-      seo:
-        type:          WebPage
+######################################
+# --- Colours / background image --- #
+######################################
+
+# Personalize the colours in your website. Colour values can be any valid CSS colour
+
+navbar-col: "#EAEAEA"
+navbar-text-col: "#404040"
+navbar-border-col: "#DDDDDD"
+page-col: "#FFFFFF"
+text-col: "#404040"
+link-col: "#008AFF"
+hover-col: "#0085A1"
+footer-col: "#EAEAEA"
+footer-text-col: "#777777"
+footer-link-col: "#404040"
+footer-hover-col: "#0085A1"
+
+# Alternatively, the navbar, footer, and page background can be set to an image
+# instead of colour
+
+#navbar-img: "/assets/img/bgimage.png"
+#footer-img: "/assets/img/bgimage.png"
+#page-img: "/assets/img/bgimage.png"
+
+# Suggest a colour for mobile browsers to use as the browser's theme. This is only supported by a few mobile browsers.
+#mobile-theme-col: "#0085A1"
+
+# For any extra visual customization, you can include additional CSS files in every page on your site. List any custom CSS files here
+#site-css:
+#  - "/assets/css/custom-styles.css"
+
+# If you have common JavaScript files that should be included in every page, list them here
+#site-js:
+#  - "/assets/js/custom-script.js"
+
+#################################
+# --- Web Analytics Section --- #
+#################################
+
+# Fill in your Google Analytics tag ID (or "Measurement ID") to track your website usage
+#gtag: "G-XXXXXXXXXX"
+
+# Fill in your Cloudflare Analytics beacon token to track your website using Cloudflare Analytics
+#cloudflare_analytics: ""
+
+# Google Tag Manager ID
+#gtm: ""
+
+# Matomo (aka Piwik) Web statistics
+# Uncomment the following section to enable Matomo. The opt-out parameter controls
+# whether or not you want to allow users to opt out of tracking.
+#matomo:
+#  site_id: "9"
+#  uri: "demo.wiki.pro"
+#  opt-out: true
+
+# Google Universal Analytics ID -- deprecated
+# As of July 2023 this is no longer supported by Google! If you are still using `google_analytics`,
+# you should switch to using the `gtag` field above instead.
+#google_analytics: "UA-XXXXXXXX-X"
+
+####################
+# --- Comments --- #
+####################
+
+# To use Disqus comments, sign up to https://disqus.com and fill in your Disqus shortname (NOT the userid)
+#disqus: ""
+
+# To use Facebook Comments, create a Facebook app and fill in the Facebook App ID
+#fb_comment_id: ""
+
+# To use CommentBox, sign up for a Project ID on https://commentbox.io
+#commentbox: "" # Project ID, e.g. "5694267682979840-proj"
+
+# To use Utterances comments: (0) uncomment the following section, (1) fill in
+# "repository" (make sure the repository is public), (2) Enable Issues in your repository,
+# (3) Install the Utterances app in your repository https://github.com/apps/utterances
+# See more details about the parameters below at https://utteranc.es/
+#utterances:
+#  repository: # GitHub username/repository eg. "daattali/beautiful-jekyll"
+#  issue-term: title   # Mapping between blog posts and GitHub issues
+#  theme: github-light # Utterances theme
+#  label: blog-comments # Label that will be assigned to GitHub Issues created by Utterances
+
+# To use Staticman comments, uncomment the following section. You may leave the reCaptcha
+# section commented if you aren't using reCaptcha for spam protection. 
+# Using Staticman requires advanced knowledge, please consult 
+# https://github.com/eduardoboucas/staticman/ and https://staticman.net/ for further 
+# instructions. For any support with staticman please direct questions to staticman and 
+# not to BeautifulJekyll.
+#staticman:
+#  repository : # GitHub username/repository eg. "daattali/beautiful-jekyll"
+#  branch     : master # If you're not using `master` branch, then you also need to update the `branch` parameter in `staticman.yml`
+#  endpoint   : # URL of your deployment, with a trailing slash eg. "https://<your-api>/v3/entry/github/"
+#  reCaptcha:   # (optional, set these parameters in `staticman.yml` as well) 
+#    siteKey  : # You need to apply for a site key on Google
+#    secret   : # Encrypt your password by going to https://<your-own-api>/v3/encrypt/<your-site-secret>
+
+# To use giscus comments:
+# (0) Uncomment the following giscus section, (1) Enable Discussions in your GitHub repository, 
+# (2) Install the giscus app in your repository (details at https://giscus.app),
+# (3) Fill in *all* the parameters below 
+# See more details about giscus and each of the following parameters at https://giscus.app
+#giscus:
+#  hostname: giscus.app # Replace with your giscus instance's hostname if self-hosting
+#  repository: # GitHub username/repository eg. "daattali/beautiful-jekyll"
+#  repository-id: # ID of your repository, retrieve this info from https://giscus.app
+#  category: Announcements # Category name of your GitHub Discussion posts
+#  category-id: # ID of your category, retrieve this info from https://giscus.app
+#  mapping: pathname
+#  reactions-enabled: 1
+#  emit-metadata: 0
+#  theme: light
+
+################
+# --- Misc --- #
+################
+
+# Ruby Date Format to show dates of posts
+date_format: "%B %-d, %Y"
+
+# Facebook App ID
+#fb_app_id: ""
+
+#################################################################################
+# --- You don't need to touch anything below here (but you can if you want) --- #
+#################################################################################
+
+# Output options (more information on Jekyll's site)
+timezone: "America/Toronto"
+markdown: kramdown
+highlighter: rouge
+permalink: /:year-:month-:day-:title/
+paginate: 5
 
 kramdown:
-  math_engine:         mathjax
-  math_engine_opts:    {}
-  footnote_backlink:   '&#x21a9;&#xfe0e;'
+  input: GFM
 
+# Default YAML values (more information on Jekyll's site)
+defaults:
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      comments: true  # add comments to all blog posts
+      social-share: true # add social media sharing buttons to all blog posts
+  -
+    scope:
+      path: "" # any file that's not a post will be a "page" layout by default
+    values:
+      layout: "page"
 
-# 3rd Party Integrations
-# ----------------------------------------------------------------------------------------
-
-# Set your Google Analytics id to receive `pageview` events.
-# To remove Google Anaylics from your page, remove the line below.
-# google_analytics:      UA-XXXXXXXX-X
-
-# Setting a disqus shortname will enable the comment section on
-# pages with `comments: true` in the front matter.
-# disqus:                <username>
-
-# Setting a tinyletter username will enable the newsletter subscription box.
-# PRO version only!
-# tinyletter:            <username>
-
-
-# Hydejack Settings
-# ----------------------------------------------------------------------------------------
-# These settings are specific to Hydejack.
-
-hydejack:
-  # Configure the order of complementary content on blog posts
-  post_addons:         [about, newsletter, related, random, comments]
-
-  # Configure the order of complementary content on project pages
-  project_addons:      [about, newsletter, other, comments]
-
-  # Set to `true` if you don't want to show an icon indicating external links
-  no_mark_external:    false
-
-  # Set to `true` if third party plugins fail to work with dynamically loaded pages
-  no_push_state:       false
-
-  # Set to `true` if you want to disable the drawer
-  no_drawer:           false
-
-  # Set to `true` if you don't to use the auto-hiding (JavaScript based) navbar.
-  # Note that this will not hide the navbar completely, only replace it with a static one.
-  # Use custom css to hide completely, e.g. `#_navbar { display: none }`.
-  no_navbar:           false
-
-  # Set to true to disable the built-in search functionality.
-  # Note that search is disabled during local use to save on build time.
-  # Run Jekyll with the `JEKYLL_ENV` environment variable set to `production` to enable.
-  no_search:           false
-
-  # Set to `true` if you do not want parts of the css inlined in <head/>
-  # This will increase site build speed dramatically!
-  no_inline_css:       false
-
-  # Set to `true` if you don't intend on changing the accent color on a per-page basis. 
-  # This will increase site build speed!
-  no_page_style:       false
-
-  # Code blocks and tables "break" the layout by spanning the full available width.
-  # Set this to true if you want them to be the same width as other content.
-  no_break_layout:     true
-
-  # Set to `true` to disable the dynamic Table of Contents on large screens.
-  no_toc:              false
-
-  # When set to `true`, will not extend the content in the "third column" on large screens.
-  # Instead, all content will remains within the center column.
-  # Note that this will not affect the Table of Contents, use `no_toc` instead.
-  no_third_column:     false
-
-  # Set to `true` if you don't like oversized headlines on large screens.
-  no_large_headings:   true
-
-  # Set to `true` if you do not want to expose your resume and projects
-  # in machine-readable formats.
-  no_structured_data:  false
-
-  # You can set this to `true` if you don't want to set the `theme-color` meta tag,
-  # This only affects the meta tag, not the color specified in the app manifest.
-  no_theme_color:      false
-
-  # Disable the breadcrumbs above the title
-  no_breadcrumbs:      false
-
-  # Set to `true` when building with the `--lsi` option
-  use_lsi:             true
-
-  # When using Google Analytics, set to `true` to display a cookie notice banner.
-  # When enabled, no user-related data will be stored until the user gives consent.
-  cookies_banner:      false
-
-  # Set to `true` if you would like to add a "Powered by Hydejack" link in the footer.
-  # Note that this setting has no effect when using the free version.
-  advertise:           false
-
-  # Buyers of the PRO version can opt to hide all dates from the theme.
-  # Frequent consumers of online content will know that nothing devalues a post like
-  # seeing an old date. 
-  hide_dates:          false
-
-  # TODO
-  hide_last_modified:  false
-
-  # Note that dark mode only works in the PRO version of Hydejack.
-  dark_mode:
-    # Set to `true` to always use the dark theme.
-    always:            false
-
-    # Set to `true` to use the dark theme based on visitors' preference (OS setting).
-    dynamic:           true
-
-    # Set to `true` to allow visitors to switch between light and dark mode.
-    icon:              true
-
-  # ⚡️ DANGER ZONE ⚡️
-  # ----------------
-  # This is an _experimental_ feature.
-  # Only use if you know what Service Workers are and how they can impact your site!
-  offline:
-    enabled:           false
-    cache_version:     13
-    precache_assets:
-      - /assets/img/swipe.svg
-
-
-# Collections
-# ----------------------------------------------------------------------------------------
-
-collections:
-  featured_categories:
-    permalink:         /:name/
-    output:            true
-
-  featured_tags:
-    permalink:         /tag-:name/
-    output:            true
-
-  projects:
-    permalink:         /projects/:path/
-    output:            true
-
-
-# File inclusion/exclusion
-# ----------------------------------------------------------------------------------------
-
+# Exclude these files from production site
 exclude:
-  - .jekyll-cache
-  - .sass-cache
-  - '*.toml'
-  - vendor
+  - CHANGELOG.md
+  - CNAME
   - Gemfile
   - Gemfile.lock
-include:
-  - .well-known
-  - LICENSE.md
-
-
-# Plugins
-# ----------------------------------------------------------------------------------------
+  - LICENSE
+  - README.md
+  - screenshot.png
+  - docs/
 
 plugins:
-  - jekyll-default-layout
-  - jekyll-feed
-  - jekyll-optional-front-matter
   - jekyll-paginate
-  - jekyll-readme-index
-  - jekyll-redirect-from
-  - jekyll-relative-links
-  - jekyll-seo-tag
   - jekyll-sitemap
-  - jekyll-titles-from-headings
-  - jekyll-include-cache
-  - jekyll-last-modified-at
 
+# Beautiful Jekyll / Dean Attali
+# 2fc73a3a967e97599c9763d05e564189
 
-# SEO Tag
-# ---------------------------------------------------------------------------------------
-
-# Where you proof that you own this site (used by jekyll-seo-tag)
-# google_site_verification: <verification-id>
-# -- or --
-# webmaster_verifications:
-#   google:              <verification-id>
-#   bing:                <verification-id>
-#   alexa:               <verification-id>
-#   yandex:              <verification-id>
-
-# Used for twitter cards
-# twitter:
-#   username:            <username>
-
-# Used for facebook open graph
-# facebook:
-#   app_id:              <id>
-#   publisher:           <id>
-#   admins:              <id>
-
-# Used on index and about sites
-# social:
-#   name:                <firstname> <lastname>
-#   links:
-#     - https://twitter.com/<username>
-#     - https://github.com/<username>
-
-
-# Plugin Configs
-# ---------------------------------------------------------------------------------------
-optional_front_matter:
-  remove_originals:    true
-
-readme_index:
-  remove_originals:    true
-  with_frontmatter:    true
-
-relative_links:
-  collections:         true
-
-titles_from_headings:
-  strip_title:         true
-  collections:         true
-
-compress_html:
-  comments:            ["<!--", "-->"]
-  clippings:           all
-  endings:             all
-  ignore:
-    envs:              [development]
-
-sass:
-  style:               compressed
-
-# Jekyll Compose Defaults
-# ---------------------------------------------------------------------------------------
-
-jekyll_compose:
-  default_front_matter:
-    drafts:
-      layout: post
-      description: > 
-        A short ~160 character description of your post for search engines,
-        social media previews, etc.
-      image:
-        path: /assets/img/sidebar-bg.jpg
-    posts:
-      layout: post
-      description: > 
-        A short ~160 character description of your post for search engines,
-        social media previews, etc.
-      image:
-        path: /assets/img/sidebar-bg.jpg
-    projects:
-      layout: project
-      description: > 
-        A short ~160 character description of your post for search engines,
-        social media previews, etc.
-      image:
-        path: /assets/img/sidebar-bg.jpg
-      links:
-        - title: Project Link
-          url: https://example.com
