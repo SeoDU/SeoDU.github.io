@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    
+    
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    
+    
+      <item>
+        <title>RPG trajectory evaluation on multiple trajectories</title>
+        <description>
+          Estimation과 GT 비교 알고리즘 - 
+          How to make up configuration in the rpg-trajectory-evaluation open-source 여러개의 dataset상 혹은 relative pose Error를 구할 때, single trajectory estimate보다는 다음과 같은 multiplke trajectory estimates가 주로 활용된다. rosrun rpg_trajectory_evaluation analyze_trajectories.py \ kitti_lego.yaml --output_dir=./results/kitti_lidar --results_dir=./results/kitti_lidar --platform laptop --odometry_error_per_dataset --plot_trajectories --rmse_table --rmse_boxplot --mul_trials=1 이때, 위 코드를 기준으로 kitti_lego.yaml을 기준으로 파일들을 읽어오게 되므로,...
+        </description>
+        <pubDate>Sat, 19 Mar 2022 00:00:00 -0400</pubDate>
+        <link>http://localhost:4000/2022-03-19-rpg-trajectories/</link>
+        <guid isPermaLink="true">http://localhost:4000/2022-03-19-rpg-trajectories/</guid>
+      </item>
+    
+      <item>
+        <title>Frame간의 Transformation matrix</title>
+        <description>
+          SLAM configuration file - 
+          SLAM분야에서는 Calibration등의 과정에서 두 프레임이 주어졌을때 transformation matrix를 구해야하는 상황이 흔히 발생한다. 하지만 transformation의 기준, 예를들어 Transformation from camera to body-frame이 어떤것을 나타내는지는 오픈소스의 저자마다 axis기준인지 point기준인지 다를수 있어 주의가 필요하다. 1. Concept VINS-Mono의 config를 보면 #Rotation from camera frame to imu frame, imu^R_cam extrinsicRotation: !!opencv-matrix rows: 3 cols: 3...
+        </description>
+        <pubDate>Sat, 18 Dec 2021 00:00:00 -0500</pubDate>
+        <link>http://localhost:4000/2021-12-18-calc-tf/</link>
+        <guid isPermaLink="true">http://localhost:4000/2021-12-18-calc-tf/</guid>
+      </item>
+    
+      <item>
+        <title>Getting Stereo-Inertial data with Realsense camera</title>
+        <description>
+          
+          Tips for acquiring data in d435i camera
+
+
+  ros 기본패키지 (camera_calibration)을 사용하여 ORB SLAM3에서 필요로하는 rectification을 위한 projection matrix를 구한다.  
+http://wiki.ros.org/camera_calibration
+  d435i ros구동시에 rs_camera_launch에서 unite_imu_method option을 linear_interpolation로, enable_sync를 true로 지정한다. (infra laser 옵션도 꺼준다.)
+  kalibr패키지를 통해 정확한 extrinsic parameter를 구해 ORB SLAM3를 위한 yaml file을 완성한다.  
+https://github.com/ethz-asl/kalibr
+
+
+
+        </description>
+        <pubDate>Fri, 27 Aug 2021 00:00:00 -0400</pubDate>
+        <link>http://localhost:4000/2021-08-27-orb-slam3-d435i/</link>
+        <guid isPermaLink="true">http://localhost:4000/2021-08-27-orb-slam3-d435i/</guid>
+      </item>
+    
+  </channel>
+</rss>
