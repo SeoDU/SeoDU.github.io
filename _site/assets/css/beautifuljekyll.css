@@ -242,9 +242,7 @@ img {
   border: 0;
   padding: 0;
   
-  min-width: 0;
-  width: 100%;
-  word-break: break-word;
+  min-width: 100%;
   
 }
 
@@ -254,8 +252,6 @@ img {
   text-decoration: none !important;
   font-weight: normal;
   color: #404040;
-  
-  white-space: normal;
   
 }
 
