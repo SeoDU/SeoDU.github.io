@@ -10,7 +10,7 @@ comments: true
 
 How to make up configuration in the rpg-trajectory-evaluation open-source
 
-여러개의 dataset상 혹은 relative pose Error를 구할 때, single trajectory estimate보다는 다음과 같은 multiplke trajectory estimates가 주로 활용된다.    
+여러개의 dataset상 혹은 relative pose Error를 구할 때, single trajectory estimate보다는 다음과 같은 multiple trajectory estimates가 주로 활용된다.    
 ```
 rosrun rpg_trajectory_evaluation analyze_trajectories.py \
   kitti_lego.yaml --output_dir=./results/kitti_lidar --results_dir=./results/kitti_lidar --platform laptop --odometry_error_per_dataset --plot_trajectories --rmse_table --rmse_boxplot --mul_trials=1

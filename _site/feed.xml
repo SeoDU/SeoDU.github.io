@@ -2,16 +2,29 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     
+    <title>Dong-Uk Seo</title>
+    
     
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
     
     
       <item>
+        <title>Azure Kinect DK install</title>
+        <description>
+          SDK &amp; ROS driver - 
+          ToF방식의 RGB-D 카메라인 Azure Kinect DK ROS설치 과정 정리 경로 추가 curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - sudo apt-add-repository https://packages.microsoft.com/ubuntu/18.04/prod sudo apt-get update 설치하기 sudo apt-get install k4a-tools sudo apt search k4a sudo apt-get install libk4a1.4-dev Linux device setup cd /etc/udev/rules.d gedit 99-k4a.rules 99-k4a.rules파일에 다음 경로의 텍스트를 복사하여...
+        </description>
+        <pubDate>Fri, 07 Jul 2023 00:00:00 -0400</pubDate>
+        <link>http://localhost:4000/2023-07-07-Azure-Kinect-Dk-install/</link>
+        <guid isPermaLink="true">http://localhost:4000/2023-07-07-Azure-Kinect-Dk-install/</guid>
+      </item>
+    
+      <item>
         <title>RPG trajectory evaluation on multiple trajectories</title>
         <description>
           Estimation과 GT 비교 알고리즘 - 
-          How to make up configuration in the rpg-trajectory-evaluation open-source 여러개의 dataset상 혹은 relative pose Error를 구할 때, single trajectory estimate보다는 다음과 같은 multiplke trajectory estimates가 주로 활용된다. rosrun rpg_trajectory_evaluation analyze_trajectories.py \ kitti_lego.yaml --output_dir=./results/kitti_lidar --results_dir=./results/kitti_lidar --platform laptop --odometry_error_per_dataset --plot_trajectories --rmse_table --rmse_boxplot --mul_trials=1 이때, 위 코드를 기준으로 kitti_lego.yaml을 기준으로 파일들을 읽어오게 되므로,...
+          How to make up configuration in the rpg-trajectory-evaluation open-source 여러개의 dataset상 혹은 relative pose Error를 구할 때, single trajectory estimate보다는 다음과 같은 multiple trajectory estimates가 주로 활용된다. rosrun rpg_trajectory_evaluation analyze_trajectories.py \ kitti_lego.yaml --output_dir=./results/kitti_lidar --results_dir=./results/kitti_lidar --platform laptop --odometry_error_per_dataset --plot_trajectories --rmse_table --rmse_boxplot --mul_trials=1 이때, 위 코드를 기준으로 kitti_lego.yaml을 기준으로 파일들을 읽어오게 되므로,...
         </description>
         <pubDate>Sat, 19 Mar 2022 00:00:00 -0400</pubDate>
         <link>http://localhost:4000/2022-03-19-rpg-trajectories/</link>

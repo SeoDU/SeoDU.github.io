@@ -9,20 +9,13 @@
 
   
 
-  <title>Getting Stereo-Inertial data with Realsense camera</title>
+  <title>Azure Kinect DK install</title>
 
   
   <meta name="author" content="Dong-Uk Seo">
   
 
-  <meta name="description" content="Tips for acquiring data in d435i camera
-
-
-  ros 기본패키지 (camera_calibration)을 사용하여 ORB SLAM3에서 필요로하는 rectification을 위한 projection matrix를 구한다.  
-http://wiki.ros.org/camera_calibration
-  d435i ros구동시에 rs_camera_launch에서 unite_imu_method option을 linear_interpolation로, enable_sync를 true로 지정한다. (infra laser 옵션도 꺼준다.)
-  kalibr패키지를 통해 정확한 extrinsic parameter를 구해 ORB SLAM3를 위한 yaml file을 완성한다.  
-https://github.com/ethz-asl/kalibr">
+  <meta name="description" content="SDK &amp; ROS driver">
 
   
 
@@ -81,24 +74,17 @@ https://github.com/ethz-asl/kalibr">
 
   
   <meta property="og:site_name" content="Dong-Uk Seo">
-  <meta property="og:title" content="Getting Stereo-Inertial data with Realsense camera">
-  <meta property="og:description" content="Tips for acquiring data in d435i camera
-
-
-  ros 기본패키지 (camera_calibration)을 사용하여 ORB SLAM3에서 필요로하는 rectification을 위한 projection matrix를 구한다.  
-http://wiki.ros.org/camera_calibration
-  d435i ros구동시에 rs_camera_launch에서 unite_imu_method option을 linear_interpolation로, enable_sync를 true로 지정한다. (infra laser 옵션도 꺼준다.)
-  kalibr패키지를 통해 정확한 extrinsic parameter를 구해 ORB SLAM3를 위한 yaml file을 완성한다.  
-https://github.com/ethz-asl/kalibr">
+  <meta property="og:title" content="Azure Kinect DK install">
+  <meta property="og:description" content="SDK &amp; ROS driver">
 
   
 
   
   <meta property="og:type" content="article">
   <meta property="og:article:author" content="Dong-Uk Seo">
-  <meta property="og:article:published_time" content="2021-08-27T00:00:00-04:00">
-  <meta property="og:url" content="http://localhost:4000/2021-08-27-orb-slam3-d435i/">
-  <link rel="canonical" href="http://localhost:4000/2021-08-27-orb-slam3-d435i/">
+  <meta property="og:article:published_time" content="2023-07-07T00:00:00-04:00">
+  <meta property="og:url" content="http://localhost:4000/2023-07-07-Azure-Kinect-Dk-install/">
+  <link rel="canonical" href="http://localhost:4000/2023-07-07-Azure-Kinect-Dk-install/">
   
 
   
@@ -107,15 +93,8 @@ https://github.com/ethz-asl/kalibr">
   <meta name="twitter:site" content="@">
   <meta name="twitter:creator" content="@">
 
-  <meta property="twitter:title" content="Getting Stereo-Inertial data with Realsense camera">
-  <meta property="twitter:description" content="Tips for acquiring data in d435i camera
-
-
-  ros 기본패키지 (camera_calibration)을 사용하여 ORB SLAM3에서 필요로하는 rectification을 위한 projection matrix를 구한다.  
-http://wiki.ros.org/camera_calibration
-  d435i ros구동시에 rs_camera_launch에서 unite_imu_method option을 linear_interpolation로, enable_sync를 true로 지정한다. (infra laser 옵션도 꺼준다.)
-  kalibr패키지를 통해 정확한 extrinsic parameter를 구해 ORB SLAM3를 위한 yaml file을 완성한다.  
-https://github.com/ethz-asl/kalibr">
+  <meta property="twitter:title" content="Azure Kinect DK install">
+  <meta property="twitter:description" content="SDK &amp; ROS driver">
 
   
 
@@ -283,11 +262,15 @@ https://github.com/ethz-asl/kalibr">
     <div class="row">
       <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
         <div class="post-heading">
-          <h1>Getting Stereo-Inertial data with Realsense camera</h1>
+          <h1>Azure Kinect DK install</h1>
+          
+            
+              <h2 class="post-subheading">SDK & ROS driver</h2>
+            
           
 
           
-            <span class="post-meta">Posted on August 27, 2021</span>
+            <span class="post-meta">Posted on July 7, 2023</span>
             
             
           
@@ -307,28 +290,56 @@ https://github.com/ethz-asl/kalibr">
     <div class=" col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 ">
 
       
-        
-        
-        
-
-        <div id="header-gh-btns">
-          
-        </div>
-      
 
       
 
       <article role="main" class="blog-post">
-        <p>Tips for acquiring data in d435i camera</p>
+        <p>ToF방식의 RGB-D 카메라인 Azure Kinect DK ROS설치 과정 정리</p>
 
-<ol>
-  <li>ros 기본패키지 (camera_calibration)을 사용하여 ORB SLAM3에서 필요로하는 rectification을 위한 projection matrix를 구한다.  <br />
-<a href="http://wiki.ros.org/camera_calibration">http://wiki.ros.org/camera_calibration</a></li>
-  <li>d435i ros구동시에 rs_camera_launch에서 unite_imu_method option을 linear_interpolation로, enable_sync를 true로 지정한다. (infra laser 옵션도 꺼준다.)</li>
-  <li>kalibr패키지를 통해 정확한 extrinsic parameter를 구해 ORB SLAM3를 위한 yaml file을 완성한다.  <br />
-<a href="https://github.com/ethz-asl/kalibr">https://github.com/ethz-asl/kalibr</a></li>
-</ol>
+<ul>
+  <li>경로 추가
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-sSL</span> https://packages.microsoft.com/keys/microsoft.asc | <span class="nb">sudo </span>apt-key add -
+<span class="nb">sudo </span>apt-add-repository https://packages.microsoft.com/ubuntu/18.04/prod
+<span class="nb">sudo </span>apt-get update
+</code></pre></div>    </div>
+  </li>
+  <li>설치하기
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get <span class="nb">install </span>k4a-tools
+<span class="nb">sudo </span>apt search k4a
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>libk4a1.4-dev
+</code></pre></div>    </div>
+  </li>
+  <li>Linux device setup
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /etc/udev/rules.d
+gedit 99-k4a.rules
+</code></pre></div>    </div>
+  </li>
+</ul>
 
+<p>99-k4a.rules파일에 다음 경로의 텍스트를 복사하여 붙여넣기
+<a href="https://github.com/microsoft/Azure-Kinect-Sensor-SDK/blob/develop/scripts/99-k4a.rules">https://github.com/microsoft/Azure-Kinect-Sensor-SDK/blob/develop/scripts/99-k4a.rules</a></p>
+
+<p>이때 k4aviewer하면 카메라가 보여야 함</p>
+
+<ul>
+  <li>ROS driver 설치 및 실행</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> ~/catkin_ws/src
+<span class="nb">cd</span> ~/catkin_ws/src
+git clone https://github.com/microsoft/Azure_Kinect_ROS_Driver/tree/melodic
+catkin build
+<span class="nb">source </span>devel/setup.zsh
+
+roslaunch azure_kinect_ros_driver driver.launch
+또는
+roslaunch azure_kinect_ros_driver kinect_rgbd.launch
+</code></pre></div></div>
+
+<ul>
+  <li>참조 문서:
+<a href="https://github.com/microsoft/Azure_Kinect_ROS_Driver/blob/melodic/docs/building.md">https://github.com/microsoft/Azure_Kinect_ROS_Driver/blob/melodic/docs/building.md</a></li>
+</ul>
 
       </article>
       <script type="text/javascript" async
@@ -338,8 +349,6 @@ https://github.com/ethz-asl/kalibr">
       
         <div class="blog-tags">
           <span>Tags:</span>
-          
-            <a href="/tags#SLAM">SLAM</a>
           
             <a href="/tags#Camera">Camera</a>
           
@@ -359,10 +368,10 @@ https://github.com/ethz-asl/kalibr">
 
       <ul class="pagination blog-pager">
         
-        
-        <li class="page-item next">
-          <a class="page-link" href="/2021-12-18-calc-tf/" data-toggle="tooltip" data-placement="top" title="Frame간의 Transformation matrix">Next Post &rarr;</a>
+        <li class="page-item previous">
+          <a class="page-link" href="/2022-03-19-rpg-trajectories/" data-toggle="tooltip" data-placement="top" title="RPG trajectory evaluation on multiple trajectories">&larr; Previous Post</a>
         </li>
+        
         
       </ul>
       

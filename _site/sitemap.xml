@@ -13,6 +13,10 @@
 <lastmod>2022-03-19T00:00:00-04:00</lastmod>
 </url>
 <url>
+<loc>http://localhost:4000/2023-07-07-Azure-Kinect-Dk-install/</loc>
+<lastmod>2023-07-07T00:00:00-04:00</lastmod>
+</url>
+<url>
 <loc>http://localhost:4000/sample_posts/2020-02-26-flake-it-till-you-make-it/</loc>
 </url>
 <url>
@@ -22,9 +26,16 @@
 <loc>http://localhost:4000/aboutme/</loc>
 </url>
 <url>
+<loc>http://localhost:4000/aboutme_org/</loc>
+</url>
+<url>
 <loc>http://localhost:4000/</loc>
 </url>
 <url>
 <loc>http://localhost:4000/tags/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/assets/CV.pdf</loc>
+<lastmod>2023-07-08T11:02:30-04:00</lastmod>
 </url>
 </urlset>

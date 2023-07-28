@@ -73,12 +73,12 @@
 
   
 
+  
+  <meta property="og:site_name" content="Dong-Uk Seo">
   <meta property="og:title" content="404 - Page not found">
   <meta property="og:description" content="Whoops, this page doesn't exist.
   Move along. (404 error)">
 
-  
-  <meta property="og:image" content="http://localhost:4000/assets/img/avatar-icon.png">
   
 
   
@@ -98,8 +98,6 @@
   Move along. (404 error)">
 
   
-  <meta name="twitter:image" content="http://localhost:4000/assets/img/avatar-icon.png">
-  
 
   
 
@@ -116,7 +114,7 @@
   
 
 
-  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><a class="navbar-brand" href="http://localhost:4000/">Dong-Uk Seo</a><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
@@ -139,14 +137,6 @@
   
 
   
-    <div class="avatar-container">
-      <div class="avatar-img-border">
-        <a href="http://localhost:4000/">
-          <img alt="Navigation bar avatar" class="avatar-img" src="/assets/img/avatar-icon.png" />
-        </a>
-      </div>
-    </div>
-  
 
 </nav>
 
@@ -161,6 +151,14 @@
   <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
   <script>
     var searchjson = '[ \
+       \
+        { \
+          "title"    : "Azure Kinect DK install", \
+          "desc"     : "Azure Kinect DK install", \
+          "category" : "Camera", \
+          "url"      : "/2023-07-07-Azure-Kinect-Dk-install/", \
+          "date"     : "July  7, 2023" \
+        }, \
        \
         { \
           "title"    : "RPG trajectory evaluation on multiple trajectories", \
@@ -181,7 +179,7 @@
         { \
           "title"    : "Getting Stereo-Inertial data with Realsense camera", \
           "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
-          "category" : "SLAM", \
+          "category" : "SLAMCamera", \
           "url"      : "/2021-08-27-orb-slam3-d435i/", \
           "date"     : "August 27, 2021" \
         }, \
@@ -204,10 +202,18 @@
         }, \
        \
         { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/aboutme/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
           "title"    : "About me", \
           "desc"     : "About me", \
           "category" : "page", \
-          "url"      : "/aboutme/", \
+          "url"      : "/aboutme_org/", \
           "date"     : "January 1, 1970" \
         }, \
        \
@@ -303,7 +309,6 @@
 
       
 
-      
 
       </p>
       <p class="theme-by text-muted">

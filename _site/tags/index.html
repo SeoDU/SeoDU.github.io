@@ -72,11 +72,11 @@
 
   
 
+  
+  <meta property="og:site_name" content="Dong-Uk Seo">
   <meta property="og:title" content="">
   <meta property="og:description" content="{% assign date_format = site.date_format | default: &quot;%B %-d, %Y&quot; %} {%- capture site_tags -%} {%- for tag in site.tags -%} {{- tag | first -}}{%- unless forloop.last -%},{%- endunless -%} {%- endfor -%} {%- endcapture -%} {%- assign tags_list = site_tags | split:',' | sort -%} {%- for tag...">
 
-  
-  <meta property="og:image" content="http://localhost:4000/assets/img/avatar-icon.png">
   
 
   
@@ -95,8 +95,6 @@
   <meta property="twitter:description" content="{% assign date_format = site.date_format | default: &quot;%B %-d, %Y&quot; %} {%- capture site_tags -%} {%- for tag in site.tags -%} {{- tag | first -}}{%- unless forloop.last -%},{%- endunless -%} {%- endfor -%} {%- endcapture -%} {%- assign tags_list = site_tags | split:',' | sort -%} {%- for tag...">
 
   
-  <meta name="twitter:image" content="http://localhost:4000/assets/img/avatar-icon.png">
-  
 
   
 
@@ -113,7 +111,7 @@
   
 
 
-  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><a class="navbar-brand" href="http://localhost:4000/">Dong-Uk Seo</a><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
@@ -136,14 +134,6 @@
   
 
   
-    <div class="avatar-container">
-      <div class="avatar-img-border">
-        <a href="http://localhost:4000/">
-          <img alt="Navigation bar avatar" class="avatar-img" src="/assets/img/avatar-icon.png" />
-        </a>
-      </div>
-    </div>
-  
 
 </nav>
 
@@ -158,6 +148,14 @@
   <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
   <script>
     var searchjson = '[ \
+       \
+        { \
+          "title"    : "Azure Kinect DK install", \
+          "desc"     : "Azure Kinect DK install", \
+          "category" : "Camera", \
+          "url"      : "/2023-07-07-Azure-Kinect-Dk-install/", \
+          "date"     : "July  7, 2023" \
+        }, \
        \
         { \
           "title"    : "RPG trajectory evaluation on multiple trajectories", \
@@ -178,7 +176,7 @@
         { \
           "title"    : "Getting Stereo-Inertial data with Realsense camera", \
           "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
-          "category" : "SLAM", \
+          "category" : "SLAMCamera", \
           "url"      : "/2021-08-27-orb-slam3-d435i/", \
           "date"     : "August 27, 2021" \
         }, \
@@ -201,10 +199,18 @@
         }, \
        \
         { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/aboutme/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
           "title"    : "About me", \
           "desc"     : "About me", \
           "category" : "page", \
-          "url"      : "/aboutme/", \
+          "url"      : "/aboutme_org/", \
           "date"     : "January 1, 1970" \
         }, \
        \
@@ -274,7 +280,21 @@
     <div class=" col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 ">
       
 
-      <a href="#SLAM" class="btn btn-primary tag-btn"><i class="fas fa-tag" aria-hidden="true"></i>&nbsp;SLAM&nbsp;(3)</a><div id="full-tags-list"><h2 id="SLAM" class="linked-section">
+      <a href="#Camera" class="btn btn-primary tag-btn"><i class="fas fa-tag" aria-hidden="true"></i>&nbsp;Camera&nbsp;(2)</a><a href="#SLAM" class="btn btn-primary tag-btn"><i class="fas fa-tag" aria-hidden="true"></i>&nbsp;SLAM&nbsp;(3)</a><div id="full-tags-list"><h2 id="Camera" class="linked-section">
+        <i class="fas fa-tag" aria-hidden="true"></i>
+        &nbsp;Camera&nbsp;(2)
+    </h2>
+    <div class="post-list"><div class="tag-entry">
+                <a href="/2023-07-07-Azure-Kinect-Dk-install/">Azure Kinect DK install</a>
+                <div class="entry-date">
+                    <time datetime="2023-07-07T00:00:00-04:00">July 7, 2023</time>
+                </div>
+            </div><div class="tag-entry">
+                <a href="/2021-08-27-orb-slam3-d435i/">Getting Stereo-Inertial data with Realsense camera</a>
+                <div class="entry-date">
+                    <time datetime="2021-08-27T00:00:00-04:00">August 27, 2021</time>
+                </div>
+            </div></div><h2 id="SLAM" class="linked-section">
         <i class="fas fa-tag" aria-hidden="true"></i>
         &nbsp;SLAM&nbsp;(3)
     </h2>
@@ -348,7 +368,6 @@
 
       
 
-      
 
       </p>
       <p class="theme-by text-muted">

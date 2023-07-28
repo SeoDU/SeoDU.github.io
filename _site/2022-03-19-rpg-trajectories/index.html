@@ -72,11 +72,11 @@
 
   
 
+  
+  <meta property="og:site_name" content="Dong-Uk Seo">
   <meta property="og:title" content="RPG trajectory evaluation on multiple trajectories">
   <meta property="og:description" content="Estimation과 GT 비교 알고리즘">
 
-  
-  <meta property="og:image" content="http://localhost:4000/assets/img/avatar-icon.png">
   
 
   
@@ -97,8 +97,6 @@
   <meta property="twitter:description" content="Estimation과 GT 비교 알고리즘">
 
   
-  <meta name="twitter:image" content="http://localhost:4000/assets/img/avatar-icon.png">
-  
 
   
 
@@ -115,7 +113,7 @@
   
 
 
-  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><a class="navbar-brand" href="http://localhost:4000/">Dong-Uk Seo</a><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
@@ -138,14 +136,6 @@
   
 
   
-    <div class="avatar-container">
-      <div class="avatar-img-border">
-        <a href="http://localhost:4000/">
-          <img alt="Navigation bar avatar" class="avatar-img" src="/assets/img/avatar-icon.png" />
-        </a>
-      </div>
-    </div>
-  
 
 </nav>
 
@@ -160,6 +150,14 @@
   <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
   <script>
     var searchjson = '[ \
+       \
+        { \
+          "title"    : "Azure Kinect DK install", \
+          "desc"     : "Azure Kinect DK install", \
+          "category" : "Camera", \
+          "url"      : "/2023-07-07-Azure-Kinect-Dk-install/", \
+          "date"     : "July  7, 2023" \
+        }, \
        \
         { \
           "title"    : "RPG trajectory evaluation on multiple trajectories", \
@@ -180,7 +178,7 @@
         { \
           "title"    : "Getting Stereo-Inertial data with Realsense camera", \
           "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
-          "category" : "SLAM", \
+          "category" : "SLAMCamera", \
           "url"      : "/2021-08-27-orb-slam3-d435i/", \
           "date"     : "August 27, 2021" \
         }, \
@@ -203,10 +201,18 @@
         }, \
        \
         { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/aboutme/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
           "title"    : "About me", \
           "desc"     : "About me", \
           "category" : "page", \
-          "url"      : "/aboutme/", \
+          "url"      : "/aboutme_org/", \
           "date"     : "January 1, 1970" \
         }, \
        \
@@ -308,7 +314,7 @@
       <article role="main" class="blog-post">
         <p>How to make up configuration in the rpg-trajectory-evaluation open-source</p>
 
-<p>여러개의 dataset상 혹은 relative pose Error를 구할 때, single trajectory estimate보다는 다음과 같은 multiplke trajectory estimates가 주로 활용된다.</p>
+<p>여러개의 dataset상 혹은 relative pose Error를 구할 때, single trajectory estimate보다는 다음과 같은 multiple trajectory estimates가 주로 활용된다.</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rosrun rpg_trajectory_evaluation analyze_trajectories.py \
   kitti_lego.yaml --output_dir=./results/kitti_lidar --results_dir=./results/kitti_lidar --platform laptop --odometry_error_per_dataset --plot_trajectories --rmse_table --rmse_boxplot --mul_trials=1
 </code></pre></div></div>
@@ -394,6 +400,10 @@ RelDistancePercentages: []
         </li>
         
         
+        <li class="page-item next">
+          <a class="page-link" href="/2023-07-07-Azure-Kinect-Dk-install/" data-toggle="tooltip" data-placement="top" title="Azure Kinect DK install">Next Post &rarr;</a>
+        </li>
+        
       </ul>
       
   
@@ -457,7 +467,6 @@ RelDistancePercentages: []
 
       
 
-      
 
       </p>
       <p class="theme-by text-muted">

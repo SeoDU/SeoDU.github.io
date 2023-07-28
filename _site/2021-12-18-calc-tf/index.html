@@ -72,11 +72,11 @@
 
   
 
+  
+  <meta property="og:site_name" content="Dong-Uk Seo">
   <meta property="og:title" content="Frame간의 Transformation matrix">
   <meta property="og:description" content="SLAM configuration file">
 
-  
-  <meta property="og:image" content="http://localhost:4000/assets/img/avatar-icon.png">
   
 
   
@@ -97,8 +97,6 @@
   <meta property="twitter:description" content="SLAM configuration file">
 
   
-  <meta name="twitter:image" content="http://localhost:4000/assets/img/avatar-icon.png">
-  
 
   
 
@@ -115,7 +113,7 @@
   
 
 
-  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><a class="navbar-brand" href="http://localhost:4000/">Dong-Uk Seo</a><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
@@ -138,14 +136,6 @@
   
 
   
-    <div class="avatar-container">
-      <div class="avatar-img-border">
-        <a href="http://localhost:4000/">
-          <img alt="Navigation bar avatar" class="avatar-img" src="/assets/img/avatar-icon.png" />
-        </a>
-      </div>
-    </div>
-  
 
 </nav>
 
@@ -160,6 +150,14 @@
   <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
   <script>
     var searchjson = '[ \
+       \
+        { \
+          "title"    : "Azure Kinect DK install", \
+          "desc"     : "Azure Kinect DK install", \
+          "category" : "Camera", \
+          "url"      : "/2023-07-07-Azure-Kinect-Dk-install/", \
+          "date"     : "July  7, 2023" \
+        }, \
        \
         { \
           "title"    : "RPG trajectory evaluation on multiple trajectories", \
@@ -180,7 +178,7 @@
         { \
           "title"    : "Getting Stereo-Inertial data with Realsense camera", \
           "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
-          "category" : "SLAM", \
+          "category" : "SLAMCamera", \
           "url"      : "/2021-08-27-orb-slam3-d435i/", \
           "date"     : "August 27, 2021" \
         }, \
@@ -203,10 +201,18 @@
         }, \
        \
         { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/aboutme/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
           "title"    : "About me", \
           "desc"     : "About me", \
           "category" : "page", \
-          "url"      : "/aboutme/", \
+          "url"      : "/aboutme_org/", \
           "date"     : "January 1, 1970" \
         }, \
        \
@@ -328,11 +334,11 @@ IMU.T_b_c1: !!opencv-matrix #
 
 <p>이 역시 \(T^i_c\)를 나타내는데, 설명하고 있는 문구가 다른 것을 볼 수 있다.</p>
 
-<p>하지만 T_b_c1과 같이 앞에 오는 것이 보통 기준이 되는 프레임, 즉 위의 프레임이므로 문구보다는 변수명으로 보는것이 좋다.</p>
+<p>T_b_c1과 같이 앞에 오는 것이 보통 기준이 되는 프레임, 즉 위의 프레임이므로 문구보다는 변수명으로 보는것이 좋다.</p>
 
 <p>추가적으로, rostopic에서 주는 tf 메세지는 frame_id, child_frame_id가 있는데 frame_id가 기준이 되는 즉 변수에서 위에 오는 부분이 된다.</p>
 
-<p>한편, T_b^c를 구하기 위해 <strong>Axis를 기준으로 생각해 볼 때는</strong> 아래와 같이 rotation matrix를 계산한다.</p>
+<p>한편, \(T_b^c\)를 구하기 위해 <strong>Axis를 기준으로 생각해 볼 때는</strong> 아래와 같이 rotation matrix를 계산한다.</p>
 
 <p>[Body frame] = R * [Camera frame]</p>
 
@@ -496,7 +502,6 @@ IMU.T_b_c1: !!opencv-matrix #
 
       
 
-      
 
       </p>
       <p class="theme-by text-muted">

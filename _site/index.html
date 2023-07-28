@@ -9,7 +9,7 @@
 
   
 
-  <title></title>
+  <title>Dong-Uk Seo</title>
 
   
   <meta name="author" content="Dong-Uk Seo">
@@ -72,11 +72,11 @@
 
   
 
-  <meta property="og:title" content="">
+  
+  <meta property="og:site_name" content="Dong-Uk Seo">
+  <meta property="og:title" content="Dong-Uk Seo">
   <meta property="og:description" content="">
 
-  
-  <meta property="og:image" content="http://localhost:4000/assets/img/avatar-icon.png">
   
 
   
@@ -91,11 +91,9 @@
   <meta name="twitter:site" content="@">
   <meta name="twitter:creator" content="@">
 
-  <meta property="twitter:title" content="">
+  <meta property="twitter:title" content="Dong-Uk Seo">
   <meta property="twitter:description" content="">
 
-  
-  <meta name="twitter:image" content="http://localhost:4000/assets/img/avatar-icon.png">
   
 
   
@@ -113,7 +111,7 @@
   
 
 
-  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><a class="navbar-brand" href="http://localhost:4000/">Dong-Uk Seo</a><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
@@ -136,14 +134,6 @@
   
 
   
-    <div class="avatar-container">
-      <div class="avatar-img-border">
-        <a href="http://localhost:4000/">
-          <img alt="Navigation bar avatar" class="avatar-img" src="/assets/img/avatar-icon.png" />
-        </a>
-      </div>
-    </div>
-  
 
 </nav>
 
@@ -158,6 +148,14 @@
   <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
   <script>
     var searchjson = '[ \
+       \
+        { \
+          "title"    : "Azure Kinect DK install", \
+          "desc"     : "Azure Kinect DK install", \
+          "category" : "Camera", \
+          "url"      : "/2023-07-07-Azure-Kinect-Dk-install/", \
+          "date"     : "July  7, 2023" \
+        }, \
        \
         { \
           "title"    : "RPG trajectory evaluation on multiple trajectories", \
@@ -178,7 +176,7 @@
         { \
           "title"    : "Getting Stereo-Inertial data with Realsense camera", \
           "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
-          "category" : "SLAM", \
+          "category" : "SLAMCamera", \
           "url"      : "/2021-08-27-orb-slam3-d435i/", \
           "date"     : "August 27, 2021" \
         }, \
@@ -201,10 +199,18 @@
         }, \
        \
         { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/aboutme/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
           "title"    : "About me", \
           "desc"     : "About me", \
           "category" : "page", \
-          "url"      : "/aboutme/", \
+          "url"      : "/aboutme_org/", \
           "date"     : "January 1, 1970" \
         }, \
        \
@@ -259,6 +265,61 @@
 
 <!-- role="list" needed so that `list-style: none` in Safari doesn't remove the list semantics -->
 <ul class="posts-list list-unstyled" role="list">
+  
+  <li class="post-preview">
+    <article>
+      
+
+      
+
+      <a href="http://localhost:4000/2023-07-07-Azure-Kinect-Dk-install/">
+        <h2 class="post-title">Azure Kinect DK install</h2>
+
+        
+          <h3 class="post-subtitle">
+          SDK & ROS driver
+          </h3>
+        
+      </a>
+
+      <p class="post-meta">
+        
+        Posted on July 7, 2023
+      </p>
+
+      
+
+      
+      
+
+      <div class="post-entry">
+        
+        ToF방식의 RGB-D 카메라인 Azure Kinect DK ROS설치 과정 정리
+
+
+        
+        
+          <a href="http://localhost:4000/2023-07-07-Azure-Kinect-Dk-install/" class="post-read-more">[Read&nbsp;More]</a>
+        
+      </div>
+      
+
+      
+      <div class="blog-tags">
+        <span>Tags:</span>
+        <!-- role="list" needed so that `list-style: none` in Safari doesn't remove the list semantics -->
+        <ul class="d-inline list-inline" role="list">
+          
+          <li class="list-inline-item">
+            <a href="http://localhost:4000/tags#Camera">Camera</a>
+          </li>
+          
+        </ul>
+      </div>
+      
+
+    </article>
+  </li>
   
   <li class="post-preview">
     <article>
@@ -415,6 +476,10 @@
             <a href="http://localhost:4000/tags#SLAM">SLAM</a>
           </li>
           
+          <li class="list-inline-item">
+            <a href="http://localhost:4000/tags#Camera">Camera</a>
+          </li>
+          
         </ul>
       </div>
       
@@ -479,7 +544,6 @@
 
       
 
-      
 
       </p>
       <p class="theme-by text-muted">
