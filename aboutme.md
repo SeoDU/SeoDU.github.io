@@ -3,9 +3,9 @@ layout: page
 title: About Me
 ---
 
-![photo](/assets/img/me/sdu_profile.jpeg){: width="40%" height="40%"}   
+### Hello, I'm Dong-Uk Seo, Ph.D. candidate in KAIST.   
 
-Ph.D. candidate in KAIST.   
+![photo](/assets/img/me/sdu_profile.jpeg){: width="40%" height="40%"}   
 
 **Office**: KAIST Urban Robotics Lab ([URL](http://urobot.kaist.ac.kr/))  
 **E-mail**: dongukseo@kaist.ac.kr    
@@ -22,6 +22,13 @@ Also, the process collaborated with multi-agent and localization in the dense ma
 
 <br/>
 
+### EDUCATION
+* **KAIST**, South Korea (Mar. 2023 ~ )
+  * Ph.D. candidate in Department of Electrical Engineering 
+* **KAIST**, South Korea (Mar. 2021 ~ Feb. 2023)
+  * M.S. candidate in Department of Electrical Engineering 
+* **Yonsei University**, South Korea (Mar. 2014 ~ Aug. 2020)
+  * Bachelor's Degree in Department of Electrical & Electronic Engineering
 
 ### PUBLICATION
 * **Enhancing Robustness of Line Tracking Through Semi-Dense Epipolar Search in Line-based SLAM**    
