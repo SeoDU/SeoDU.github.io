@@ -28,7 +28,9 @@ Also, the process collaborated with multi-agent and localization in the dense ma
 * **KAIST**, South Korea (Mar. 2021 ~ Feb. 2023)
   * M.S. candidate in Department of Electrical Engineering 
 * **Yonsei University**, South Korea (Mar. 2014 ~ Aug. 2020)
-  * Bachelor's Degree in Department of Electrical & Electronic Engineering
+  * Bachelor's Degree in Department of Electrical & Electronic Engineering    
+
+<br/>
 
 ### PUBLICATION
 * **Enhancing Robustness of Line Tracking Through Semi-Dense Epipolar Search in Line-based SLAM**    
