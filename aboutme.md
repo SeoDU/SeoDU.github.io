@@ -2,10 +2,9 @@
 layout: page
 ---
 
-Ph.D. candidate in KAIST.     
+### Hello I'm Dong-Uk Seo, Ph.D. candidate in KAIST.   
 
-![photo](/assets/img/me/sdu_profile.jpeg){: width="40%" height="40%"}
-
+![photo](/assets/img/me/sdu_profile.jpeg){: width="40%" height="40%"}   
 
 **Office**: KAIST Urban Robotics Lab ([URL](http://urobot.kaist.ac.kr/))  
 **E-mail**: dongukseo@kaist.ac.kr    
