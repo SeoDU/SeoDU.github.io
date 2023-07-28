@@ -2,8 +2,6 @@
 layout: page
 ---
 
-# About Me
-
 ![photo](/assets/img/me/sdu_profile.jpeg){: width="40%" height="40%"}
 
 Ph.D. candidate in KAIST. 
