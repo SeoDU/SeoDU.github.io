@@ -1,5 +1,6 @@
 ---
 layout: page
+title: About Me
 ---
 
 ### Hello I'm Dong-Uk Seo, Ph.D. candidate in KAIST.   
