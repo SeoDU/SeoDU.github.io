@@ -2,11 +2,10 @@
 layout: page
 ---
 
-## About me
+Ph.D. candidate in KAIST.     
 
 ![photo](/assets/img/me/sdu_profile.jpeg){: width="40%" height="40%"}
 
-Ph.D. candidate in KAIST. 
 
 **Office**: KAIST Urban Robotics Lab ([URL](http://urobot.kaist.ac.kr/))  
 **E-mail**: dongukseo@kaist.ac.kr    
