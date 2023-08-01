@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Beautiful Jekyll 6.0.1 | Copyright Dean Attali 2023 -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+
+  
+
+  <title>VINS-Fusion Code Review - (3) Initialization</title>
+
+  
+  <meta name="author" content="Dong-Uk Seo">
+  
+
+  <meta name="description" content="(3) Initialization 파트 중요 코드 정리 다음은 Initialization에 대한 VINS-Mono논문 설명이다. Since the scale is not directly observable from a monocular camera, it is hard to directly fuse these two measurements without good initial values. One may assume a stationary initial condition to start the monocular VINS estimator. However, this...">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+      
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+    
+      
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+
+
+    
+  
+
+  
+    
+      <link rel="stylesheet" href="/assets/css/bootstrap-social.css">
+    
+      <link rel="stylesheet" href="/assets/css/beautifuljekyll.css">
+    
+  
+
+  
+
+  
+  
+  
+
+  
+
+  
+  <meta property="og:site_name" content="Dong-Uk Seo">
+  <meta property="og:title" content="VINS-Fusion Code Review - (3) Initialization">
+  <meta property="og:description" content="(3) Initialization 파트 중요 코드 정리 다음은 Initialization에 대한 VINS-Mono논문 설명이다. Since the scale is not directly observable from a monocular camera, it is hard to directly fuse these two measurements without good initial values. One may assume a stationary initial condition to start the monocular VINS estimator. However, this...">
+
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:article:author" content="Dong-Uk Seo">
+  <meta property="og:article:published_time" content="2022-01-05T00:00:00-05:00">
+  <meta property="og:url" content="http://localhost:4000/2022-01-05-VINS-Fusion-3/">
+  <link rel="canonical" href="http://localhost:4000/2022-01-05-VINS-Fusion-3/">
+  
+
+  
+  <meta name="twitter:card" content="summary">
+  
+  <meta name="twitter:site" content="@">
+  <meta name="twitter:creator" content="@">
+
+  <meta property="twitter:title" content="VINS-Fusion Code Review - (3) Initialization">
+  <meta property="twitter:description" content="(3) Initialization 파트 중요 코드 정리 다음은 Initialization에 대한 VINS-Mono논문 설명이다. Since the scale is not directly observable from a monocular camera, it is hard to directly fuse these two measurements without good initial values. One may assume a stationary initial condition to start the monocular VINS estimator. However, this...">
+
+  
+
+  
+
+
+  
+
+  
+
+</head>
+
+
+<body>
+
+  
+
+
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><a class="navbar-brand" href="http://localhost:4000/">Dong-Uk Seo</a><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="main-navbar">
+    <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/aboutme">About Me</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/tags">Contents</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" id="nav-search-link" href="#" title="Search">
+            <span id="nav-search-icon" class="fa fa-search"></span>
+            <span id="nav-search-text">Search</span>
+          </a>
+        </li></ul>
+  </div>
+
+  
+
+  
+
+</nav>
+
+
+
+<div id="beautifuljekyll-search-overlay">
+
+  <div id="nav-search-exit" title="Exit search">✕</div>
+  <input type="text" id="nav-search-input" placeholder="Search">
+  <ul id="search-results-container"></ul>
+  
+  <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+  <script>
+    var searchjson = '[ \
+       \
+        { \
+          "title"    : "Azure Kinect DK install", \
+          "desc"     : "Azure Kinect DK install", \
+          "category" : "Camera", \
+          "url"      : "/2023-07-07-Azure-Kinect-Dk-install/", \
+          "date"     : "July  7, 2023" \
+        }, \
+       \
+        { \
+          "title"    : "RPG trajectory evaluation on multiple trajectories", \
+          "desc"     : "RPG trajectory evaluation on multiple trajectories", \
+          "category" : "SLAM", \
+          "url"      : "/2022-03-19-rpg-trajectories/", \
+          "date"     : "March 19, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-6/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
+          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-5/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-4/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
+          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-3/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-2/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
+          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-1/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "Frame간의 Transformation matrix", \
+          "desc"     : "Frame간의 Transformation matrix", \
+          "category" : "SLAM", \
+          "url"      : "/2021-12-18-calc-tf/", \
+          "date"     : "December 18, 2021" \
+        }, \
+       \
+        { \
+          "title"    : "Getting Stereo-Inertial data with Realsense camera", \
+          "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
+          "category" : "Camera", \
+          "url"      : "/2021-08-27-orb-slam3-d435i/", \
+          "date"     : "August 27, 2021" \
+        }, \
+       \
+       \
+        { \
+          "title"    : "Flake it till you make it", \
+          "desc"     : "Flake it till you make it", \
+          "category" : "bookstest", \
+          "url"      : "/sample_posts/2020-02-26-flake-it-till-you-make-it/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "Sample blog post", \
+          "desc"     : "Sample blog post", \
+          "category" : "test", \
+          "url"      : "/sample_posts/2020-02-28-test-markdown/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "About Me", \
+          "desc"     : "About Me", \
+          "category" : "page", \
+          "url"      : "/aboutme/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "About me", \
+          "desc"     : "About me", \
+          "category" : "page", \
+          "url"      : "/aboutme_org/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/tags/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/page2/", \
+          "date"     : "January 1, 1970" \
+        } \
+       \
+    ]';
+    searchjson = JSON.parse(searchjson);
+
+    var sjs = SimpleJekyllSearch({
+      searchInput: document.getElementById('nav-search-input'),
+      resultsContainer: document.getElementById('search-results-container'),
+      json: searchjson
+    });
+  </script>
+</div>
+
+
+
+
+
+  <!-- TODO this file has become a mess, refactor it -->
+
+
+
+
+
+
+
+<header class="header-section ">
+
+<div class="intro-header no-img">
+  <div class="container-md">
+    <div class="row">
+      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+        <div class="post-heading">
+          <h1>VINS-Fusion Code Review - (3) Initialization</h1>
+          
+
+          
+            <span class="post-meta">Posted on January 5, 2022</span>
+            
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+
+
+
+<div class=" container-md ">
+  <div class="row">
+    <div class=" col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 ">
+
+      
+        
+        
+        
+
+        <div id="header-gh-btns">
+          
+        </div>
+      
+
+      
+
+      <article role="main" class="blog-post">
+        <h1 id="3-initialization-파트-중요-코드-정리">(3) Initialization 파트 중요 코드 정리</h1>
+
+<p>다음은 Initialization에 대한 VINS-Mono논문 설명이다.</p>
+
+<p>Since the scale is not directly observable from a monocular camera, it is hard to directly fuse these two measurements without good initial values<a href="http://values.One">.</a> One may assume a stationary initial condition to start the monocular VINS estimator. However, this assumption is inappropriate as initialization under motion is frequently encountered in real-world applications.</p>
+
+<ul>
+  <li><strong>accelerometer bias는 intialization과정동안 무시된다.</strong> (zero bias), Accelerometer bias는 gravity vector와 coupled이기 때문에, 그리고 gravity vector의 크기가 비교적 매우 크기 때문에, initialization phase가 매우짧은 것이 그 이유이다.</li>
+</ul>
+
+<h2 id="1-initialize-the-structure">1. Initialize the Structure</h2>
+
+<ol>
+  <li>void Estimator::processImage(const map&lt;int, vector&lt;pair&lt;int, Eigen::Matrix&lt;double, 7, 1»» &amp;image, const double header)
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="p">...</span>
+ <span class="n">ImageFrame</span> <span class="nf">imageframe</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">header</span><span class="p">);</span>
+ <span class="n">imageframe</span><span class="p">.</span><span class="n">pre_integration</span> <span class="o">=</span> <span class="n">tmp_pre_integration</span><span class="p">;</span>
+ <span class="n">all_image_frame</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">make_pair</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">imageframe</span><span class="p">));</span>
+ <span class="n">tmp_pre_integration</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntegrationBase</span><span class="p">{</span><span class="n">acc_0</span><span class="p">,</span> <span class="n">gyr_0</span><span class="p">,</span> <span class="n">Bas</span><span class="p">[</span><span class="n">frame_count</span><span class="p">],</span> <span class="n">Bgs</span><span class="p">[</span><span class="n">frame_count</span><span class="p">]};</span>
+ <span class="p">...</span>
+ <span class="k">if</span> <span class="p">(</span><span class="n">solver_flag</span> <span class="o">==</span> <span class="n">INITIAL</span><span class="p">)</span>
+ <span class="p">{</span>
+       <span class="k">if</span> <span class="p">(</span><span class="n">frame_count</span> <span class="o">==</span> <span class="n">WINDOW_SIZE</span><span class="p">)</span>
+       <span class="p">{</span>
+ 					<span class="kt">bool</span> <span class="n">result</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+           <span class="k">if</span><span class="p">(</span><span class="n">ESTIMATE_EXTRINSIC</span> <span class="o">!=</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">header</span> <span class="o">-</span> <span class="n">initial_timestamp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">)</span>
+           <span class="p">{</span>
+               <span class="n">result</span> <span class="o">=</span> <span class="n">initialStructure</span><span class="p">();</span>
+               <span class="n">initial_timestamp</span> <span class="o">=</span> <span class="n">header</span><span class="p">;</span>   
+           <span class="p">}</span>
+           <span class="k">if</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+           <span class="p">{</span>
+               <span class="n">optimization</span><span class="p">();</span>
+               <span class="n">updateLatestStates</span><span class="p">();</span>
+               <span class="n">solver_flag</span> <span class="o">=</span> <span class="n">NON_LINEAR</span><span class="p">;</span>
+               <span class="n">slideWindow</span><span class="p">();</span>
+               <span class="n">ROS_INFO</span><span class="p">(</span><span class="s">"Initialization finish!"</span><span class="p">);</span>
+           <span class="p">}</span>
+           <span class="k">else</span>
+               <span class="n">slideWindow</span><span class="p">();</span>
+       <span class="p">}</span>
+ <span class="p">}</span>
+</code></pre></div>    </div>
+    <ul>
+      <li>keyframe인지 판단한 후, 이전에 계산해둔 pre_integration 값과 함께 all_image_frame에 저장한다.</li>
+      <li>frame count가 WINDOW_SIZE가 되기 전까지는 아무것도 하지 않고, WINDOW_SIZE가 되면 initialStructure()함수를 통해 IMU와 visual structure가 align되었는지 판단한다. (안되면 sliding한다.)  <br />
+ <br /></li>
+    </ul>
+  </li>
+  <li>bool Estimator::initialStructure()
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">vector</span><span class="o">&lt;</span><span class="n">SFMFeature</span><span class="o">&gt;</span> <span class="n">sfm_f</span><span class="p">;</span>
+ <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_id</span> <span class="o">:</span> <span class="n">f_manager</span><span class="p">.</span><span class="n">feature</span><span class="p">)</span> 
+ <span class="p">{</span>
+ 	<span class="kt">int</span> <span class="n">imu_j</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">start_frame</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+   <span class="n">SFMFeature</span> <span class="n">tmp_feature</span><span class="p">;</span>
+   <span class="n">tmp_feature</span><span class="p">.</span><span class="n">state</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+   <span class="n">tmp_feature</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_id</span><span class="p">;</span>
+   <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_frame</span> <span class="o">:</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">)</span>
+   <span class="p">{</span>
+       <span class="n">imu_j</span><span class="o">++</span><span class="p">;</span>
+       <span class="n">Vector3d</span> <span class="n">pts_j</span> <span class="o">=</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">point</span><span class="p">;</span>
+       <span class="n">tmp_feature</span><span class="p">.</span><span class="n">observation</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">make_pair</span><span class="p">(</span><span class="n">imu_j</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector2d</span><span class="p">{</span><span class="n">pts_j</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">pts_j</span><span class="p">.</span><span class="n">y</span><span class="p">()}));</span>
+   <span class="p">}</span>
+   <span class="n">sfm_f</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">tmp_feature</span><span class="p">);</span>
+ <span class="p">}</span>
+ <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">relativePose</span><span class="p">(</span><span class="n">relative_R</span><span class="p">,</span> <span class="n">relative_T</span><span class="p">,</span> <span class="n">l</span><span class="p">))</span>
+ <span class="p">{</span>
+     <span class="n">ROS_INFO</span><span class="p">(</span><span class="s">"Not enough features or parallax; Move device around"</span><span class="p">);</span>
+     <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="n">GlobalSFM</span> <span class="n">sfm</span><span class="p">;</span>
+ <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">sfm</span><span class="p">.</span><span class="n">construct</span><span class="p">(</span><span class="n">frame_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span>
+           <span class="n">relative_R</span><span class="p">,</span> <span class="n">relative_T</span><span class="p">,</span>
+           <span class="n">sfm_f</span><span class="p">,</span> <span class="n">sfm_tracked_points</span><span class="p">))</span> <span class="c1">// latest frame,</span>
+ <span class="p">{</span>
+     <span class="n">ROS_DEBUG</span><span class="p">(</span><span class="s">"global SFM failed!"</span><span class="p">);</span>
+     <span class="n">marginalization_flag</span> <span class="o">=</span> <span class="n">MARGIN_OLD</span><span class="p">;</span>
+     <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+ <span class="p">}</span>
+    
+</code></pre></div>    </div>
+    <ul>
+      <li>f_manager의 feature는 FeaturePerID의 리스트이다. 여기 들어있는 모든 feature에 대해 그 frame 번호와 point의 undistorted된 x,y를 pair로 만들어 <strong>sfm_f</strong> (SFMFeature의 vector)에 넣는다.</li>
+      <li>sfm.construct를 통해 BA를 하는것에 실패하면 keyframe으로 지정하고 return false.  <br />
+ <br /></li>
+    </ul>
+  </li>
+  <li>bool Estimator::relativePose(Matrix3d &amp;relative_R, Vector3d &amp;relative_T, int &amp;l)
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">WINDOW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="n">vector</span><span class="o">&lt;</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">Vector3d</span><span class="p">,</span> <span class="n">Vector3d</span><span class="o">&gt;&gt;</span> <span class="n">corres</span><span class="p">;</span>
+     <span class="n">corres</span> <span class="o">=</span> <span class="n">f_manager</span><span class="p">.</span><span class="n">getCorresponding</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">WINDOW_SIZE</span><span class="p">);</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">corres</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="kt">double</span> <span class="n">sum_parallax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+         <span class="kt">double</span> <span class="n">average_parallax</span><span class="p">;</span>
+         <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="kt">int</span><span class="p">(</span><span class="n">corres</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+         <span class="p">{</span>
+             <span class="n">Vector2d</span> <span class="n">pts_0</span><span class="p">(</span><span class="n">corres</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">first</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">corres</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">first</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+             <span class="n">Vector2d</span> <span class="n">pts_1</span><span class="p">(</span><span class="n">corres</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">second</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">corres</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">second</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+             <span class="kt">double</span> <span class="n">parallax</span> <span class="o">=</span> <span class="p">(</span><span class="n">pts_0</span> <span class="o">-</span> <span class="n">pts_1</span><span class="p">).</span><span class="n">norm</span><span class="p">();</span> <span class="c1">// 양 끝 frame의 차이를 계산하고 norm을 구함.</span>
+             <span class="n">sum_parallax</span> <span class="o">=</span> <span class="n">sum_parallax</span> <span class="o">+</span> <span class="n">parallax</span><span class="p">;</span>
+    
+         <span class="p">}</span>
+         <span class="n">average_parallax</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">sum_parallax</span> <span class="o">/</span> <span class="kt">int</span><span class="p">(</span><span class="n">corres</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">average_parallax</span> <span class="o">*</span> <span class="mi">460</span> <span class="o">&gt;</span> <span class="mi">30</span> <span class="o">&amp;&amp;</span> <span class="n">m_estimator</span><span class="p">.</span><span class="n">solveRelativeRT</span><span class="p">(</span><span class="n">corres</span><span class="p">,</span> <span class="n">relative_R</span><span class="p">,</span> <span class="n">relative_T</span><span class="p">))</span>
+         <span class="p">{</span>
+             <span class="n">l</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+             <span class="n">ROS_DEBUG</span><span class="p">(</span><span class="s">"average_parallax %f choose l %d and newest frame to triangulate the whole structure"</span><span class="p">,</span> <span class="n">average_parallax</span> <span class="o">*</span> <span class="mi">460</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
+             <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+         <span class="p">}</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>getCorresponding 함수에서 start_frame ≤ i, WINDOW_SIZE ≤ end_frame을 만족하는 양끝의 point들을 가져온다. 따라서 i번째 corres에는 i와 WINDOW_SIZE 를 각 끝 frame으로 갖는 point가 들어 있다.  만약 20개 넘게 있다면, 이 양끝 point간의 parallax의 norm을 구한다. 이것들의 평균 * 460 &gt; 30 이고 relative R,T를 구했다면, true를 반환한다.</li>
+      <li>또한 이 조건을 만족하는 i을 찾으면 l로 지정하고 return한다.  <br />
+<br /></li>
+    </ul>
+  </li>
+  <li>bool MotionEstimator::solveRelativeRT(const vector&lt;pair&lt;Vector3d, Vector3d» &amp;corres, Matrix3d &amp;Rotation, Vector3d &amp;Translation)
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">vector</span><span class="o">&lt;</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="o">&gt;</span> <span class="n">ll</span><span class="p">,</span> <span class="n">rr</span><span class="p">;</span>
+ <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="kt">int</span><span class="p">(</span><span class="n">corres</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="n">ll</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="p">(</span><span class="n">corres</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">first</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">corres</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">first</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
+     <span class="n">rr</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="p">(</span><span class="n">corres</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">second</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">corres</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">second</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
+ <span class="p">}</span>
+ <span class="n">cv</span><span class="o">::</span><span class="n">Mat</span> <span class="n">mask</span><span class="p">;</span>
+ <span class="c1">// RANSAC을 이용해 fundamental matrix get (8-points algorithm도 가능)</span>
+ <span class="n">cv</span><span class="o">::</span><span class="n">Mat</span> <span class="n">E</span> <span class="o">=</span> <span class="n">cv</span><span class="o">::</span><span class="n">findFundamentalMat</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span> <span class="n">rr</span><span class="p">,</span> <span class="n">cv</span><span class="o">::</span><span class="n">FM_RANSAC</span><span class="p">,</span> <span class="mf">0.3</span> <span class="o">/</span> <span class="mi">460</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">mask</span><span class="p">);</span>
+ <span class="n">cv</span><span class="o">::</span><span class="n">Mat</span> <span class="n">cameraMatrix</span> <span class="o">=</span> <span class="p">(</span><span class="n">cv</span><span class="o">::</span><span class="n">Mat_</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+ <span class="n">cv</span><span class="o">::</span><span class="n">Mat</span> <span class="n">rot</span><span class="p">,</span> <span class="n">trans</span><span class="p">;</span>
+ <span class="kt">int</span> <span class="n">inlier_cnt</span> <span class="o">=</span> <span class="n">cv</span><span class="o">::</span><span class="n">recoverPose</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">ll</span><span class="p">,</span> <span class="n">rr</span><span class="p">,</span> <span class="n">cameraMatrix</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">mask</span><span class="p">);</span>
+ <span class="c1">//cout &lt;&lt; "inlier_cnt " &lt;&lt; inlier_cnt &lt;&lt; endl;</span>
+    
+ <span class="c1">// ll coordinate system to rr coordinate system</span>
+ <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">R</span><span class="p">;</span>
+ <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">T</span><span class="p">;</span>
+ <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+ <span class="p">{</span>   
+     <span class="n">T</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">trans</span><span class="p">.</span><span class="n">at</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+     <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+         <span class="n">R</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">rot</span><span class="p">.</span><span class="n">at</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+ <span class="p">}</span>
+    
+ <span class="n">Rotation</span> <span class="o">=</span> <span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+ <span class="n">Translation</span> <span class="o">=</span> <span class="o">-</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">T</span><span class="p">;</span>
+ <span class="k">if</span><span class="p">(</span><span class="n">inlier_cnt</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">)</span>
+     <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+ <span class="k">else</span>
+     <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>ll, rr에 corres에서 저장한 양끝 point들을 각각 저장한다. 이후 cv::findFundamentalMat에서 RANSAC을 이용해 ll과 rr간의 fundamental matrix를 찾는다. (ll , rr은 각각 한 frame안에서만 찾은 point들을 갖고 있으므로 가능하다.) 이때 five-point algorithm이 사용된다.</li>
+      <li>이미 normalize/undistorted 된 점들이므로 camera matrix는 I로 설정하고, fundamental matrix로 cv::recoverPose함수를 통해 ll → rr 로의 점변환 rot, trans matrix를 얻는다.</li>
+      <li>이를 Rotation(relative_R), Translation(relative_T)에 rr → ll 점변환 transformation matrix로 저장한다.  <br />
+ <br /></li>
+    </ul>
+  </li>
+  <li>bool GlobalSFM::construct(int frame_num, Quaterniond* q, Vector3d* T, int l,const Matrix3d relative_R, const Vector3d relative_T, vector<SFMFeature> &amp;sfm_f, map&lt;int, Vector3d&gt; &amp;sfm_tracked_points)
+</SFMFeature>    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="p">...</span>
+ <span class="n">Pose</span><span class="p">[</span><span class="n">l</span><span class="p">].</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">c_Rotation</span><span class="p">[</span><span class="n">l</span><span class="p">];</span>
+ <span class="n">Pose</span><span class="p">[</span><span class="n">l</span><span class="p">].</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="n">c_Translation</span><span class="p">[</span><span class="n">l</span><span class="p">];</span>
+ <span class="p">...</span>
+ <span class="n">Pose</span><span class="p">[</span><span class="n">frame_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">c_Rotation</span><span class="p">[</span><span class="n">frame_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+ <span class="n">Pose</span><span class="p">[</span><span class="n">frame_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="n">c_Translation</span><span class="p">[</span><span class="n">frame_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+ <span class="p">...</span>
+ <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">l</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">frame_num</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+ <span class="p">{</span>
+ 	<span class="c1">// solve pnp</span>
+ 	<span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="n">l</span><span class="p">)</span>
+ 	<span class="p">{</span>
+ 		<span class="n">Matrix3d</span> <span class="n">R_initial</span> <span class="o">=</span> <span class="n">c_Rotation</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+ 		<span class="n">Vector3d</span> <span class="n">P_initial</span> <span class="o">=</span> <span class="n">c_Translation</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+    
+     <span class="c1">// R_initial, P_initial은 model -&gt; camera system 점변환</span>
+ 		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">solveFrameByPnP</span><span class="p">(</span><span class="n">R_initial</span><span class="p">,</span> <span class="n">P_initial</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">sfm_f</span><span class="p">))</span>
+ 			<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+ 		<span class="n">c_Rotation</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">R_initial</span><span class="p">;</span>
+ 		<span class="n">c_Translation</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">P_initial</span><span class="p">;</span>
+ 		<span class="n">c_Quat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_Rotation</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+ 		<span class="n">Pose</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">c_Rotation</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+ 		<span class="n">Pose</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="n">c_Translation</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+ 	<span class="p">}</span>
+    
+ 	<span class="c1">// triangulate point based on the solve pnp result</span>
+ 	<span class="n">triangulateTwoFrames</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">Pose</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">frame_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Pose</span><span class="p">[</span><span class="n">frame_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sfm_f</span><span class="p">);</span>
+ <span class="p">}</span>
+ <span class="c1">//3: triangulate l-----l+1 l+2 ... frame_num -2</span>
+ <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">frame_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+ 	<span class="n">triangulateTwoFrames</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">Pose</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">i</span><span class="p">,</span> <span class="n">Pose</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sfm_f</span><span class="p">);</span>
+ <span class="c1">//4: solve pnp l-1; triangulate l-1 ----- l</span>
+ <span class="c1">//             l-2              l-2 ----- l</span>
+ <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">l</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span>
+ <span class="p">{</span>
+ 	<span class="c1">//solve pnp</span>
+ 	<span class="n">Matrix3d</span> <span class="n">R_initial</span> <span class="o">=</span> <span class="n">c_Rotation</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+ 	<span class="n">Vector3d</span> <span class="n">P_initial</span> <span class="o">=</span> <span class="n">c_Translation</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+ 	<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">solveFrameByPnP</span><span class="p">(</span><span class="n">R_initial</span><span class="p">,</span> <span class="n">P_initial</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">sfm_f</span><span class="p">))</span>
+ 		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+ 	<span class="n">c_Rotation</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">R_initial</span><span class="p">;</span>
+ 	<span class="n">c_Translation</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">P_initial</span><span class="p">;</span>
+ 	<span class="n">c_Quat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_Rotation</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+ 	<span class="n">Pose</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">c_Rotation</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+ 	<span class="n">Pose</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="n">c_Translation</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+ 	<span class="c1">//triangulate</span>
+ 	<span class="n">triangulateTwoFrames</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">Pose</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">l</span><span class="p">,</span> <span class="n">Pose</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">sfm_f</span><span class="p">);</span>
+ <span class="p">}</span>
+ <span class="c1">//5: triangulate all other points</span>
+ <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">feature_num</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+ <span class="p">{</span>
+ 	<span class="k">if</span> <span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">state</span> <span class="o">==</span> <span class="nb">true</span><span class="p">)</span>
+ 		<span class="k">continue</span><span class="p">;</span>
+ 	<span class="k">if</span> <span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span>
+ 	<span class="p">{</span>
+ 		<span class="n">Vector2d</span> <span class="n">point0</span><span class="p">,</span> <span class="n">point1</span><span class="p">;</span>
+ 		<span class="kt">int</span> <span class="n">frame_0</span> <span class="o">=</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">first</span><span class="p">;</span>
+ 		<span class="n">point0</span> <span class="o">=</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">second</span><span class="p">;</span>
+ 		<span class="kt">int</span> <span class="n">frame_1</span> <span class="o">=</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">.</span><span class="n">back</span><span class="p">().</span><span class="n">first</span><span class="p">;</span>
+ 		<span class="n">point1</span> <span class="o">=</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">.</span><span class="n">back</span><span class="p">().</span><span class="n">second</span><span class="p">;</span>
+ 		<span class="n">Vector3d</span> <span class="n">point_3d</span><span class="p">;</span>
+ 		<span class="n">triangulatePoint</span><span class="p">(</span><span class="n">Pose</span><span class="p">[</span><span class="n">frame_0</span><span class="p">],</span> <span class="n">Pose</span><span class="p">[</span><span class="n">frame_1</span><span class="p">],</span> <span class="n">point0</span><span class="p">,</span> <span class="n">point1</span><span class="p">,</span> <span class="n">point_3d</span><span class="p">);</span>
+ 		<span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">state</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+ 		<span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_3d</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+ 		<span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_3d</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+ 		<span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_3d</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+ 	<span class="p">}</span>		
+ <span class="p">}</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>
+        <p>Pose[l] 에는 identity matrix와 zero가 들어감으로써 reference로 지정된다.  <br />
+Pose[r]은 relative_R, relative_T 값을 갖는 matrix의 inverse를 갖게 되고, 이는 l → r의 점변환에 해당된다.</p>
+      </li>
+      <li>먼저 i=l 에서 triangulateTwoFrames 함수를 통해, sfm_f에 들어있는 feature의 frame들에 대해, triangulate를 진행한다.</li>
+      <li>이후 i&gt;l의 경우, solveFrameByPnP에서 i-1 relative_R, relative_T를 initial로 하여 Projection matrix(R_initial, P_initial)을 구하고, 이를통해 triangulateTwoFrames로 i번째 frame에서의 feature들의 3d Point를 구한다.</li>
+      <li>
+        <p>SUMMARY :</p>
+
+        <p>(1) l번째 frame, r번째 frame간의 Pose변환을 통해서 triangulate로 이 두 frame이 가지고 있는 feature의 3D point를 구한다.   <br />
+  (2) 이제 반대로 이 3D points를 이용해서 i=l+1부터의 image points에 대해 Projection matrix를 구하고, 이 Projection matrix와 Pose[r]을 통해 다시 triangulate하여 <strong>이전에 구하지 못했던 feature들의 3D point를</strong> 구한다.   <br />
+  (3) 이제 Pose[l]과 Pose[i]를 (projection matrix) 사용하여 다시 구해지지 않은 3D points들을 구한다. 이전에는 i와 r frame이 points를 갖고 있어야 하므로 지금은 l과 i frame을 갖는 points들을 구하는 것이다.  <br />
+  (4) 이제  l-1 ~ 0 frame과 l frame의 Projection matrix를 위와 동일한 방식으로 구해서 triangulate해서 3D points들을 구한다.  <br />
+  (5) 이제 모든 남은 feature의 first와 last frame의 projection matrix를 가지고 triangulate해준다.</p>
+      </li>
+    </ul>
+  </li>
+  <li>void GlobalSFM::triangulateTwoFrames(int frame0, Eigen::Matrix&lt;double, 3, 4&gt; &amp;Pose0,int frame1, Eigen::Matrix&lt;double, 3, 4&gt; &amp;Pose1,vector<SFMFeature> &amp;sfm_f)
+</SFMFeature>    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">feature_num</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+ <span class="p">{</span>
+ 	<span class="k">if</span> <span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">state</span> <span class="o">==</span> <span class="nb">true</span><span class="p">)</span>
+ 		<span class="k">continue</span><span class="p">;</span>
+ 	<span class="kt">bool</span> <span class="n">has_0</span> <span class="o">=</span> <span class="nb">false</span><span class="p">,</span> <span class="n">has_1</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+ 	<span class="n">Vector2d</span> <span class="n">point0</span><span class="p">;</span>
+ 	<span class="n">Vector2d</span> <span class="n">point1</span><span class="p">;</span>
+ 	<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span>
+ 	<span class="p">{</span>
+ 		<span class="k">if</span> <span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">first</span> <span class="o">==</span> <span class="n">frame0</span><span class="p">)</span>
+ 		<span class="p">{</span>
+ 			<span class="n">point0</span> <span class="o">=</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">second</span><span class="p">;</span>
+ 			<span class="n">has_0</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+ 		<span class="p">}</span>
+ 		<span class="k">if</span> <span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">first</span> <span class="o">==</span> <span class="n">frame1</span><span class="p">)</span>
+ 		<span class="p">{</span>
+ 			<span class="n">point1</span> <span class="o">=</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">second</span><span class="p">;</span>
+ 			<span class="n">has_1</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+ 		<span class="p">}</span>
+ 	<span class="p">}</span>
+ 	<span class="k">if</span> <span class="p">(</span><span class="n">has_0</span> <span class="o">&amp;&amp;</span> <span class="n">has_1</span><span class="p">)</span>
+ 	<span class="p">{</span>
+ 		<span class="n">Vector3d</span> <span class="n">point_3d</span><span class="p">;</span>
+ 		<span class="n">triangulatePoint</span><span class="p">(</span><span class="n">Pose0</span><span class="p">,</span> <span class="n">Pose1</span><span class="p">,</span> <span class="n">point0</span><span class="p">,</span> <span class="n">point1</span><span class="p">,</span> <span class="n">point_3d</span><span class="p">);</span>
+ 		<span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">state</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+ 		<span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_3d</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+ 		<span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_3d</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+ 		<span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_3d</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+ 	<span class="p">}</span>							  
+ <span class="p">}</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>sfm_f은 feature ID 순서대로 들어가있고, 그 feature의 observation에는 frame번호와 feature point가 pair로 저장되어 있다.</li>
+      <li>따라서 위 함수에서 하는 일은, j번째 feature에 대해 frame0(l)이 있는지 체크하고, frame1(r) 이 있는지 체크하여, triangularPoint 함수로 point3d를 구하는 것이다. 이때 Pose0, Pose1은 P[l]과 P[r]에 해당된다. 이 point3d를 sfm_f[j] 즉 j번째 feature의 position으로 저장하게 된다. i=l에서 이것이 가능한 이유는, \(P_1\)X = x에서 <strong>\(P_1\)</strong>이 scale factor를 제외했을때 Identity이므로 X가 x의 homogenenous coordinate가 되서 \(P_2\)가 r번째 image x’으로의 projection matrix가 되기 때문이다.</li>
+      <li>Triangulation의 formula 코드의 유도과정은 다음과 같다.</li>
+    </ul>
+
+    <p><img src="/assets/VINS_FUSION/3/Untitled.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled.png" /></p>
+
+    <p><img src="/assets/VINS_FUSION/3/Untitled%201.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%201.png" /></p>
+
+    <p><img src="/assets/VINS_FUSION/3/Untitled%202.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%202.png" /></p>
+
+    <p><img src="/assets/VINS_FUSION/3/Untitled%203.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%203.png" /></p>
+
+    <p>위와 같이 두 점으로부터 X와 관련된 식을 세울 수 있다. 이때 SVD를 이용하여,</p>
+
+    <p><img src="/assets/VINS_FUSION/3/Untitled%204.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%204.png" /></p>
+
+    <p>X를 구할 수 있고,  point_3d는 code에서도 normalize된다.</p>
+
+    <p>[referenece] : <a href="http://www.cs.cmu.edu/~16385/s17/Slides/11.4_Triangulation.pdf">http://www.cs.cmu.edu/~16385/s17/Slides/11.4_Triangulation.pdf</a></p>
+  </li>
+  <li>bool GlobalSFM::solveFrameByPnP(Matrix3d &amp;R_initial, Vector3d &amp;P_initial, int i,vector<SFMFeature> &amp;sfm_f)</SFMFeature></li>
+</ol>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">feature_num</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="c1">// 모든 feature 갯수만큼 (모든 frame에 다 고려)</span>
+<span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">state</span> <span class="o">!=</span> <span class="nb">true</span><span class="p">)</span>
+		<span class="k">continue</span><span class="p">;</span>
+	<span class="n">Vector2d</span> <span class="n">point2d</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="c1">// 그 feature의 frame마다</span>
+	<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">first</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="n">Vector2d</span> <span class="n">img_pts</span> <span class="o">=</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">second</span><span class="p">;</span>
+			<span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span> <span class="n">pts_2</span><span class="p">(</span><span class="n">img_pts</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">img_pts</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+			<span class="n">pts_2_vector</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">pts_2</span><span class="p">);</span>
+			<span class="n">cv</span><span class="o">::</span><span class="n">Point3f</span> <span class="n">pts_3</span><span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+			<span class="n">pts_3_vector</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">pts_3</span><span class="p">);</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="p">...</span>
+<span class="n">pnp_succ</span> <span class="o">=</span> <span class="n">cv</span><span class="o">::</span><span class="n">solvePnP</span><span class="p">(</span><span class="n">pts_3_vector</span><span class="p">,</span> <span class="n">pts_2_vector</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rvec</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="n">cv</span><span class="o">::</span><span class="n">Rodrigues</span><span class="p">(</span><span class="n">rvec</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="n">MatrixXd</span> <span class="n">R_pnp</span><span class="p">;</span>
+<span class="n">cv</span><span class="o">::</span><span class="n">cv2eigen</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">R_pnp</span><span class="p">);</span>
+<span class="n">MatrixXd</span> <span class="n">T_pnp</span><span class="p">;</span>
+<span class="n">cv</span><span class="o">::</span><span class="n">cv2eigen</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">T_pnp</span><span class="p">);</span>
+<span class="n">R_initial</span> <span class="o">=</span> <span class="n">R_pnp</span><span class="p">;</span>
+<span class="n">P_initial</span> <span class="o">=</span> <span class="n">T_pnp</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>이제 cv::solvePnP 함수를 통해, 3D point에서 2D point로의 rvec, t 를 구한다. 이는 이때 iterative 방식(Levenberg-Marquardt optimization)을 사용하여 image point와 reprojected point간의 reprojection을 줄이는 optimization matrix를 얻는다. i-1 frame에서 얻은 것을 iteration의 initial로 사용한다.</li>
+  <li>j번째 feature sfm_f에 i번째 frame이 있으면, pts_2_vector (normalized image point), pts_3_vector(point in 3D)에 각각 구한다. (이미 i=l에서 triangulation으로 sfm_f[j]의 position을 구한 것에 대해서만 진행한다.)</li>
+  <li>이제 projection matrix를 R_initial, P_initial로 반환한다.</li>
+</ul>
+
+<h2 id="2-bundle-adjustment">2. Bundle Adjustment</h2>
+<p>1) bool GlobalSFM::construct(int frame_num, Quaterniond* q, Vector3d* T, int l,const Matrix3d relative_R, const Vector3d relative_T,vector<SFMFeature> &amp;sfm_f, map&lt;int, Vector3d&gt; &amp;sfm_tracked_points)</SFMFeature></p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ceres</span><span class="o">::</span><span class="n">Problem</span> <span class="n">problem</span><span class="p">;</span>
+<span class="n">ceres</span><span class="o">::</span><span class="n">LocalParameterization</span><span class="o">*</span> <span class="n">local_parameterization</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ceres</span><span class="o">::</span><span class="n">QuaternionParameterization</span><span class="p">();</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">frame_num</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">...</span>
+	<span class="n">problem</span><span class="p">.</span><span class="n">AddParameterBlock</span><span class="p">(</span><span class="n">c_rotation</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">4</span><span class="p">,</span> <span class="n">local_parameterization</span><span class="p">);</span>
+	<span class="n">problem</span><span class="p">.</span><span class="n">AddParameterBlock</span><span class="p">(</span><span class="n">c_translation</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">3</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">l</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">problem</span><span class="p">.</span><span class="n">SetParameterBlockConstant</span><span class="p">(</span><span class="n">c_rotation</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">l</span> <span class="o">||</span> <span class="n">i</span> <span class="o">==</span> <span class="n">frame_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">problem</span><span class="p">.</span><span class="n">SetParameterBlockConstant</span><span class="p">(</span><span class="n">c_translation</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">feature_num</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">state</span> <span class="o">!=</span> <span class="nb">true</span><span class="p">)</span>
+		<span class="k">continue</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="kt">int</span><span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">observation</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">first</span><span class="p">;</span>
+		<span class="n">ceres</span><span class="o">::</span><span class="n">CostFunction</span><span class="o">*</span> <span class="n">cost_function</span> <span class="o">=</span> <span class="n">ReprojectionError3D</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span>
+											<span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">second</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span>
+											<span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">observation</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">second</span><span class="p">.</span><span class="n">y</span><span class="p">());</span>
+
+  		<span class="n">problem</span><span class="p">.</span><span class="n">AddResidualBlock</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">c_rotation</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">c_translation</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> 
+  								<span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">position</span><span class="p">);</span>	 
+	<span class="p">}</span>
+
+<span class="p">}</span>
+<span class="n">ceres</span><span class="o">::</span><span class="n">Solver</span><span class="o">::</span><span class="n">Options</span> <span class="n">options</span><span class="p">;</span>
+<span class="n">options</span><span class="p">.</span><span class="n">linear_solver_type</span> <span class="o">=</span> <span class="n">ceres</span><span class="o">::</span><span class="n">DENSE_SCHUR</span><span class="p">;</span>
+<span class="n">options</span><span class="p">.</span><span class="n">max_solver_time_in_seconds</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">;</span>
+<span class="n">ceres</span><span class="o">::</span><span class="n">Solver</span><span class="o">::</span><span class="n">Summary</span> <span class="n">summary</span><span class="p">;</span>
+<span class="n">ceres</span><span class="o">::</span><span class="n">Solve</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">problem</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">summary</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">summary</span><span class="p">.</span><span class="n">termination_type</span> <span class="o">==</span> <span class="n">ceres</span><span class="o">::</span><span class="n">CONVERGENCE</span> <span class="o">||</span> <span class="n">summary</span><span class="p">.</span><span class="n">final_cost</span> <span class="o">&lt;</span> <span class="mf">5e-03</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="c1">//cout &lt;&lt; "vision only BA converge" &lt;&lt; endl;</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+	<span class="c1">//cout &lt;&lt; "vision only BA not converge " &lt;&lt; endl;</span>
+	<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">frame_num</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">w</span><span class="p">()</span> <span class="o">=</span> <span class="n">c_rotation</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span> 
+	<span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">()</span> <span class="o">=</span> <span class="n">c_rotation</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span> 
+	<span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">()</span> <span class="o">=</span> <span class="n">c_rotation</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span> 
+	<span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span><span class="p">()</span> <span class="o">=</span> <span class="n">c_rotation</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">];</span> 
+	<span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">inverse</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">frame_num</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+
+	<span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">Vector3d</span><span class="p">(</span><span class="n">c_translation</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">c_translation</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">c_translation</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]));</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">sfm_f</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">state</span><span class="p">)</span> <span class="c1">// feature id를 key로하는 feature의 3D position을 value로 저장.</span>
+		<span class="n">sfm_tracked_points</span><span class="p">[</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vector3d</span><span class="p">(</span><span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sfm_f</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">position</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+<span class="p">}</span>
+<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>AddParameterBlock 함수를 통해 모든 frame의 Projection matrix들을 parameter로 추가함. local_parameterization는 manifold 연산을 위해 rotation에 대해 추가함.</li>
+  <li>단, l번째 frame의 rotation과 translation, 그리고 last frame(WINDOW_SIZE)의 translation은 기준으로 잡아야 하므로 SetParameterBlockConstant를통해 이 둘은 고정시킨다.</li>
+  <li>모든 feature의 각 frame에 대해 ReprojectionError3D structure를 통해 cost function을 정의하고, AddresidualBlock을 통해 parameter로 start frame의 projection matrix 값들 (c_rotation[], c_translation[])과 i번째 frame의 3D points를 지정한다.</li>
+  <li>이후 BA를 수행하여 parameter 값들을 얻는다. 이 값들을 T[i], q[i]에 각 frame에서의 transformation들의 inverse, 즉, i frame → ref(원래 l) frame으로의 점변환을 저장한다.</li>
+  <li>sfm_tracked_points에는 각 feature id에 sfm_f에서 구해둔 3D points를 저장한다.</li>
+</ul>
+
+<p>2) struct ReprojectionError3D의 operator()</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="k">operator</span><span class="p">()(</span><span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="k">const</span> <span class="n">camera_R</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="k">const</span> <span class="n">camera_T</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="n">point</span><span class="p">,</span> <span class="n">T</span><span class="o">*</span> <span class="n">residuals</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+	<span class="n">T</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+	<span class="n">ceres</span><span class="o">::</span><span class="n">QuaternionRotatePoint</span><span class="p">(</span><span class="n">camera_R</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">p</span><span class="p">);</span>
+	<span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">camera_T</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">camera_T</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">camera_T</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+	<span class="n">T</span> <span class="n">xp</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+  	<span class="n">T</span> <span class="n">yp</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+  	<span class="n">residuals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">xp</span> <span class="o">-</span> <span class="n">T</span><span class="p">(</span><span class="n">observed_u</span><span class="p">);</span>
+  	<span class="n">residuals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">yp</span> <span class="o">-</span> <span class="n">T</span><span class="p">(</span><span class="n">observed_v</span><span class="p">);</span>
+  	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>ceres가 residual을 계산하는 식을 적는 방식으로, ceres::QuaternionRotatePoint가 camera_R을 통해 3D point를 rotate시켜 p에 저장한다. 이후 translation하고 normalized 한 후 reprojection error를 비교한다.</li>
+</ul>
+
+<h2 id="3-solve-pnp-for-all-frames">3. Solve pnp for all frames</h2>
+<p>1) bool Estimator::initialStructure()</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">frame_it</span> <span class="o">!=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">end</span><span class="p">(</span> <span class="p">);</span> <span class="n">frame_it</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// provide initial guess</span>
+    <span class="n">cv</span><span class="o">::</span><span class="n">Mat</span> <span class="n">r</span><span class="p">,</span> <span class="n">rvec</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">tmp_r</span><span class="p">;</span>
+    <span class="c1">// 이미지 Frame의 time이 Header와 같은경우. Headers에는 각 frame에 대한 time이 들어있다.</span>
+    <span class="c1">// 즉, WINDOW내에 있는 frame인 경우 넘어감.</span>
+    <span class="k">if</span><span class="p">((</span><span class="n">frame_it</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">)</span> <span class="o">==</span> <span class="n">Headers</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">frame_it</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">is_key_frame</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+
+        <span class="c1">// icam to lcam * body to cam =&gt; body to lcam (점변환 기준)</span>
+        <span class="c1">// lcam이 initial이 되는 것.</span>
+        <span class="n">frame_it</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">Q</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">toRotationMatrix</span><span class="p">()</span> <span class="o">*</span> <span class="n">RIC</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">transpose</span><span class="p">();</span>
+        <span class="n">frame_it</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+        <span class="k">continue</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span><span class="p">((</span><span class="n">frame_it</span><span class="o">-&gt;</span><span class="n">first</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">Headers</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 나머지 경우 : frame의 시간이 header보다 작은 경우</span>
+    <span class="c1">// Window 내에 있지 않다는 의미이므로 pnp가 되지 않았을 것이라는 것.</span>
+    <span class="c1">// 그렇다면 이미 아는 feature들을 이용해서 pnp를 풀어줌.</span>
+    <span class="n">Matrix3d</span> <span class="n">R_inital</span> <span class="o">=</span> <span class="p">(</span><span class="n">Q</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">inverse</span><span class="p">()).</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+    <span class="n">Vector3d</span> <span class="n">P_inital</span> <span class="o">=</span> <span class="o">-</span> <span class="n">R_inital</span> <span class="o">*</span> <span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">cv</span><span class="o">::</span><span class="n">eigen2cv</span><span class="p">(</span><span class="n">R_inital</span><span class="p">,</span> <span class="n">tmp_r</span><span class="p">);</span>
+    <span class="n">cv</span><span class="o">::</span><span class="n">Rodrigues</span><span class="p">(</span><span class="n">tmp_r</span><span class="p">,</span> <span class="n">rvec</span><span class="p">);</span>
+    <span class="n">cv</span><span class="o">::</span><span class="n">eigen2cv</span><span class="p">(</span><span class="n">P_inital</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
+
+    <span class="n">frame_it</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">is_key_frame</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="n">cv</span><span class="o">::</span><span class="n">Point3f</span><span class="o">&gt;</span> <span class="n">pts_3_vector</span><span class="p">;</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="o">&gt;</span> <span class="n">pts_2_vector</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">id_pts</span> <span class="o">:</span> <span class="n">frame_it</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">points</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">feature_id</span> <span class="o">=</span> <span class="n">id_pts</span><span class="p">.</span><span class="n">first</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">i_p</span> <span class="o">:</span> <span class="n">id_pts</span><span class="p">.</span><span class="n">second</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">it</span> <span class="o">=</span> <span class="n">sfm_tracked_points</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">feature_id</span><span class="p">);</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">it</span> <span class="o">!=</span> <span class="n">sfm_tracked_points</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+            <span class="p">{</span>
+                <span class="n">Vector3d</span> <span class="n">world_pts</span> <span class="o">=</span> <span class="n">it</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+                <span class="n">cv</span><span class="o">::</span><span class="n">Point3f</span> <span class="n">pts_3</span><span class="p">(</span><span class="n">world_pts</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">world_pts</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">world_pts</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+                <span class="n">pts_3_vector</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">pts_3</span><span class="p">);</span>
+                <span class="n">Vector2d</span> <span class="n">img_pts</span> <span class="o">=</span> <span class="n">i_p</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">head</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">();</span>
+                <span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span> <span class="n">pts_2</span><span class="p">(</span><span class="n">img_pts</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">img_pts</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+                <span class="n">pts_2_vector</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">pts_2</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">cv</span><span class="o">::</span><span class="n">Mat</span> <span class="n">K</span> <span class="o">=</span> <span class="p">(</span><span class="n">cv</span><span class="o">::</span><span class="n">Mat_</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>     
+    <span class="k">if</span><span class="p">(</span><span class="n">pts_3_vector</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"pts_3_vector size "</span> <span class="o">&lt;&lt;</span> <span class="n">pts_3_vector</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+        <span class="n">ROS_DEBUG</span><span class="p">(</span><span class="s">"Not enough points for solve pnp !"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">cv</span><span class="o">::</span><span class="n">solvePnP</span><span class="p">(</span><span class="n">pts_3_vector</span><span class="p">,</span> <span class="n">pts_2_vector</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rvec</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">ROS_DEBUG</span><span class="p">(</span><span class="s">"solve pnp fail!"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">cv</span><span class="o">::</span><span class="n">Rodrigues</span><span class="p">(</span><span class="n">rvec</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+    <span class="n">MatrixXd</span> <span class="n">R_pnp</span><span class="p">,</span><span class="n">tmp_R_pnp</span><span class="p">;</span>
+    <span class="n">cv</span><span class="o">::</span><span class="n">cv2eigen</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">tmp_R_pnp</span><span class="p">);</span>
+    <span class="n">R_pnp</span> <span class="o">=</span> <span class="n">tmp_R_pnp</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+    <span class="n">MatrixXd</span> <span class="n">T_pnp</span><span class="p">;</span>
+    <span class="n">cv</span><span class="o">::</span><span class="n">cv2eigen</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">T_pnp</span><span class="p">);</span>
+    <span class="n">T_pnp</span> <span class="o">=</span> <span class="n">R_pnp</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">T_pnp</span><span class="p">);</span>
+    <span class="n">frame_it</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">R_pnp</span> <span class="o">*</span> <span class="n">RIC</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">transpose</span><span class="p">();</span>
+    <span class="n">frame_it</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">T_pnp</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Headers[i]에는 i번째 frame의 time이 들어있다. all_image_frame에는 처음부터 순서대로 frame의 feature들이 들어있다.</li>
+  <li>frame_it-&gt;first == Headers[i] 인 경우는 sliding window안에 있는 frame에 대한 작업이다.  all_frame_image의 해당 frame을 key frame으로 등록하고, (i camera frame → l camera frame) * (IMU to i camera frame) = (i frame에서의 IMU to reference frame) 의 rotation matrix와 i camera to reference frame의 translation을 점변환으로 저장한다.</li>
+  <li>
+    <p>Headers[i]와 frame_it -&gt; first가 동일하지 않다면, initialStructure를 성공하기 전에 있던 Window내에 없는 frame(relativePose나 sfm.construct 실패로 인해 Window 이전의 frame이 되거나(i=0))이나 non-keyframe이 image로 들어올때 sliding으로 인해 Headers의 마지막 부분만 바뀌어 time들이 불연속적으로 되는 현상 때문이다.</p>
+
+    <p>(frame_it -&gt; first가 Headers[i]보다 큰 경우는 아직 보지 못함)</p>
+
+    <p>이 경우 initial 값을 가장 가까운 i를 사용하여 sfm_tracked_points에서 해당 frame의 feature를 찾으면, solve PnP 한다. (key frame에서는 제외한다.) 또한 마찬가지로 all_image_frame에 들어 있는 frame_it의 R,T 값을 지정해준다.</p>
+  </li>
+</ul>
+
+<h2 id="4-visual-initial-alignment">4. Visual Initial Alignment</h2>
+<p>1) bool Estimator::visualInitialAlign()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">...</span>
+<span class="kt">bool</span> <span class="n">result</span> <span class="o">=</span> <span class="n">VisualIMUAlignment</span><span class="p">(</span><span class="n">all_image_frame</span><span class="p">,</span> <span class="n">Bgs</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="c1">// change state</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">frame_count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Matrix3d</span> <span class="n">Ri</span> <span class="o">=</span> <span class="n">all_image_frame</span><span class="p">[</span><span class="n">Headers</span><span class="p">[</span><span class="n">i</span><span class="p">]].</span><span class="n">R</span><span class="p">;</span>
+    <span class="n">Vector3d</span> <span class="n">Pi</span> <span class="o">=</span> <span class="n">all_image_frame</span><span class="p">[</span><span class="n">Headers</span><span class="p">[</span><span class="n">i</span><span class="p">]].</span><span class="n">T</span><span class="p">;</span>
+    <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pi</span><span class="p">;</span>
+    <span class="n">Rs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ri</span><span class="p">;</span>
+    <span class="n">all_image_frame</span><span class="p">[</span><span class="n">Headers</span><span class="p">[</span><span class="n">i</span><span class="p">]].</span><span class="n">is_key_frame</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">double</span> <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">tail</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">())(</span><span class="mi">0</span><span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">WINDOW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">pre_integrations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">repropagate</span><span class="p">(</span><span class="n">Vector3d</span><span class="o">::</span><span class="n">Zero</span><span class="p">(),</span> <span class="n">Bgs</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">frame_count</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span>
+    <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">Rs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">TIC</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span> <span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">Rs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">TIC</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="kt">int</span> <span class="n">kv</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="n">map</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="n">ImageFrame</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">frame_i</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">frame_i</span> <span class="o">=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">frame_i</span> <span class="o">!=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">frame_i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">is_key_frame</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">kv</span><span class="o">++</span><span class="p">;</span>
+        <span class="n">Vs</span><span class="p">[</span><span class="n">kv</span><span class="p">]</span> <span class="o">=</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span> <span class="o">*</span> <span class="n">x</span><span class="p">.</span><span class="n">segment</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">kv</span> <span class="o">*</span> <span class="mi">3</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">Matrix3d</span> <span class="n">R0</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">g2R</span><span class="p">(</span><span class="n">g</span><span class="p">);</span>
+<span class="kt">double</span> <span class="n">yaw</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">R0</span> <span class="o">*</span> <span class="n">Rs</span><span class="p">[</span><span class="mi">0</span><span class="p">]).</span><span class="n">x</span><span class="p">();</span>
+<span class="n">R0</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">ypr2R</span><span class="p">(</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">{</span><span class="o">-</span><span class="n">yaw</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span> <span class="o">*</span> <span class="n">R0</span><span class="p">;</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">R0</span> <span class="o">*</span> <span class="n">g</span><span class="p">;</span>
+<span class="c1">//Matrix3d rot_diff = R0 * Rs[0].transpose();</span>
+<span class="n">Matrix3d</span> <span class="n">rot_diff</span> <span class="o">=</span> <span class="n">R0</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">frame_count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rot_diff</span> <span class="o">*</span> <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">Rs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rot_diff</span> <span class="o">*</span> <span class="n">Rs</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">Vs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rot_diff</span> <span class="o">*</span> <span class="n">Vs</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="n">ROS_DEBUG_STREAM</span><span class="p">(</span><span class="s">"g0     "</span> <span class="o">&lt;&lt;</span> <span class="n">g</span><span class="p">.</span><span class="n">transpose</span><span class="p">());</span>
+<span class="n">ROS_DEBUG_STREAM</span><span class="p">(</span><span class="s">"my R0  "</span> <span class="o">&lt;&lt;</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">Rs</span><span class="p">[</span><span class="mi">0</span><span class="p">]).</span><span class="n">transpose</span><span class="p">());</span> 
+
+<span class="n">f_manager</span><span class="p">.</span><span class="n">clearDepth</span><span class="p">();</span>
+<span class="n">f_manager</span><span class="p">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">frame_count</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">Rs</span><span class="p">,</span> <span class="n">tic</span><span class="p">,</span> <span class="n">ric</span><span class="p">);</span>
+
+</code></pre></div></div>
+
+<ul>
+  <li>VisualIMUAlignment 함수에서 solveGyroscopeBias, LinearAlignment함수를 호출한다.</li>
+  <li>Rs, Ps에 각각  (i frame에서의 IMU to reference frame) 의 rotation, i camera to reference frame의 translation을 의미하는 값을 가져온다. <strong>즉 \(q^{c_0}_{b_k}\), \(p_{c_k}^{c_0}\) 이다</strong>. 이것들을 사용해 마찬가지로 pre_integrations도 repropagate해주고, 다음식을 사용해 IMU frame에서의 Ps(\(**p_{b_k}^{c_0}**\)) 를 구한다.</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%205.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%205.png" /></p>
+
+<p>또한 Vs(\(**v_{b_k}^{c_0}**\)) 도 \(q_{b_k}^{c_0}\)를 이용해 구해준다.</p>
+
+<ul>
+  <li>
+    <p>g2R에서 (0,0,1) 즉 world frame의 gravity와의 차이에 해당하는 R0를 구한 것이므로 R0 = \(q_{c_0}^w\)가 된다.  그런데 이제 R0 와 \(q_{b_0}^{c_0}\)를 곱하여 얻어진 \(q_{b_0}^w\)에서도 yaw값이 정해지지 않았으므로, 이 yaw값을 빼주어야 진정한 world frame으로의 변환을 갖게된다.(c0의 영향을 최소화 및 삭제한다고 생각하면 된다.</p>
+
+    <p>이제, 이 body frame에서 yaw값이 지워진 R0 = \(q_{c_0}^w\)을 사용하여 world frame으로 Ps, Rs, Vs를 바꿔준다. 또한 gravity vector역시 world frame으로 변환한다. (\(g^{c_0}\) → \(g^{w}\))</p>
+  </li>
+  <li>
+    <p>마지막으로 f_manger.triangulate 함수를 통해 metric unit으로 depth를 재설정한다.</p>
+  </li>
+</ul>
+
+<p>2) void solveGyroscopeBias(map&lt;double, ImageFrame&gt; &amp;all_image_frame, Vector3d* Bgs)</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">...</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">frame_i</span> <span class="o">=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">next</span><span class="p">(</span><span class="n">frame_i</span><span class="p">)</span> <span class="o">!=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">frame_i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">frame_j</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">frame_i</span><span class="p">);</span>
+    <span class="n">MatrixXd</span> <span class="n">tmp_A</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+    <span class="n">VectorXd</span> <span class="n">tmp_b</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Quaterniond</span> <span class="n">q_ij</span><span class="p">(</span><span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">);</span>
+    <span class="n">tmp_A</span> <span class="o">=</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">jacobian</span><span class="p">.</span><span class="k">template</span> <span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">&gt;(</span><span class="n">O_R</span><span class="p">,</span> <span class="n">O_BG</span><span class="p">);</span>
+    <span class="n">tmp_b</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">delta_q</span><span class="p">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">q_ij</span><span class="p">).</span><span class="n">vec</span><span class="p">();</span>
+    <span class="n">A</span> <span class="o">+=</span> <span class="n">tmp_A</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">tmp_A</span><span class="p">;</span>
+    <span class="n">b</span> <span class="o">+=</span> <span class="n">tmp_A</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">tmp_b</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">delta_bg</span> <span class="o">=</span> <span class="n">A</span><span class="p">.</span><span class="n">ldlt</span><span class="p">().</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">WINDOW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">Bgs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">delta_bg</span><span class="p">;</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">frame_i</span> <span class="o">=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">next</span><span class="p">(</span><span class="n">frame_i</span><span class="p">)</span> <span class="o">!=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">end</span><span class="p">(</span> <span class="p">);</span> <span class="n">frame_i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">frame_j</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">frame_i</span><span class="p">);</span>
+    <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">repropagate</span><span class="p">(</span><span class="n">Vector3d</span><span class="o">::</span><span class="n">Zero</span><span class="p">(),</span> <span class="n">Bgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>frame_i의 R과 T는 각각 (i frame에서의 IMU to reference frame) 의 rotation, i camera to reference frame의 translation를 나타낸다.</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%206.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%206.png" /></p>
+
+<ul>
+  <li>코드의 q_ij는 \(q_{b_{k+1}}^{c_{0}}{}^{-1}\)<em>\(q_{b_k}^{c_0}\)을 나타낸다. 아래의 식을 생각해보면, delta_q.inverse()는 \(\hat\gamma_{b_{k+1}}^{b_k}{}^{-1}\)가 된다. 또한 아래식을 최소화하는 min을 구하므로, \(q_{b_{k+1}}^{c_{0}}{}^{-1}\)</em> \(q_{b_k}^{c_0}\) -  \(\gamma_{b_{k+1}}^{b_k}{}^{-1}\) = 0을 만족하는 \(\delta b_g\)를 구하는 것이 된다. (코드는 VINS-Mobile의 식과 결합하여 red box 부분을 사용하였다.)</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%207.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%207.png" /></p>
+
+<p>(위 두 사진은 KAIST Urban Robotics Lab의 임현준 박사과정님이 발표하신 자료에서 발췌하였습니다.)</p>
+
+<ul>
+  <li>
+    <p>따라서 위의 식을 \(\delta b_g\)에 대해 정리하면,</p>
+
+    <p>\(\frac{\delta \gamma}{\delta b_g} * \delta b_g\) = 2 * \(\gamma_{b_{k+1}}^{b_k}{}^{-1}\) * \(q^{b_k}_{b_{k+1}}\)</p>
+
+    <p>이 되고, 코드는 위 식을 Cholesky decomposition을 통해 해를 구하는 것이 된다.</p>
+  </li>
+  <li>그런데 각 frame에 대해 \(\delta b_g\)를 구할 수 있으나, 전부다 더하여 한번에 구하는 것으로 보인다. (Cholesky decomposition이 load가 커서..?)</li>
+  <li>이후 모든 frame에 대해 Bgs[i]에 전부 넣어주어서 initialize해주고, repropagate해서 jacobian등을 다시구하게 된다.</li>
+</ul>
+
+<p>3) bool LinearAlignment(map&lt;double, ImageFrame&gt; &amp;all_image_frame, Vector3d &amp;g, VectorXd &amp;x)</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">n_state</span> <span class="o">=</span> <span class="n">all_frame_count</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// count * (x, y, z) + gravity * (x, y, z) + scale</span>
+
+<span class="n">MatrixXd</span> <span class="n">A</span><span class="p">{</span><span class="n">n_state</span><span class="p">,</span> <span class="n">n_state</span><span class="p">};</span>
+<span class="n">VectorXd</span> <span class="n">b</span><span class="p">{</span><span class="n">n_state</span><span class="p">};</span>
+
+<span class="n">map</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="n">ImageFrame</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">frame_i</span><span class="p">;</span>
+<span class="n">map</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="n">ImageFrame</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">frame_j</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">frame_i</span> <span class="o">=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">next</span><span class="p">(</span><span class="n">frame_i</span><span class="p">)</span> <span class="o">!=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">frame_i</span><span class="o">++</span><span class="p">,</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">frame_j</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">frame_i</span><span class="p">);</span>
+    <span class="n">MatrixXd</span> <span class="n">tmp_A</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+    <span class="n">VectorXd</span> <span class="n">tmp_b</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+
+    <span class="kt">double</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">sum_dt</span><span class="p">;</span>
+
+    <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">dt</span> <span class="o">*</span> <span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+    <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+    <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">;</span>     
+    <span class="n">tmp_b</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">delta_p</span> <span class="o">+</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span> <span class="o">*</span> <span class="n">TIC</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">TIC</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="c1">//cout &lt;&lt; "delta_p   " &lt;&lt; frame_j-&gt;second.pre_integration-&gt;delta_p.transpose() &lt;&lt; endl;</span>
+    <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+    <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">;</span>
+    <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+    <span class="n">tmp_b</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">delta_v</span><span class="p">;</span>
+    <span class="c1">//cout &lt;&lt; "delta_v   " &lt;&lt; frame_j-&gt;second.pre_integration-&gt;delta_v.transpose() &lt;&lt; endl;</span>
+
+    <span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span> <span class="n">cov_inv</span> <span class="o">=</span> <span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;::</span><span class="n">Zero</span><span class="p">();</span>
+    <span class="c1">//cov.block&lt;6, 6&gt;(0, 0) = IMU_cov[i + 1];</span>
+    <span class="c1">//MatrixXd cov_inv = cov.inverse();</span>
+    <span class="n">cov_inv</span><span class="p">.</span><span class="n">setIdentity</span><span class="p">();</span>
+
+    <span class="n">MatrixXd</span> <span class="n">r_A</span> <span class="o">=</span> <span class="n">tmp_A</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">cov_inv</span> <span class="o">*</span> <span class="n">tmp_A</span><span class="p">;</span>
+    <span class="n">VectorXd</span> <span class="n">r_b</span> <span class="o">=</span> <span class="n">tmp_A</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">cov_inv</span> <span class="o">*</span> <span class="n">tmp_b</span><span class="p">;</span>
+
+    <span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+=</span> <span class="n">r_A</span><span class="p">.</span><span class="n">topLeftCorner</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="n">b</span><span class="p">.</span><span class="n">segment</span><span class="o">&lt;</span><span class="mi">6</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+=</span> <span class="n">r_b</span><span class="p">.</span><span class="n">head</span><span class="o">&lt;</span><span class="mi">6</span><span class="o">&gt;</span><span class="p">();</span>
+
+    <span class="n">A</span><span class="p">.</span><span class="n">bottomRightCorner</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">+=</span> <span class="n">r_A</span><span class="p">.</span><span class="n">bottomRightCorner</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="n">b</span><span class="p">.</span><span class="n">tail</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">+=</span> <span class="n">r_b</span><span class="p">.</span><span class="n">tail</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">&gt;</span><span class="p">();</span>
+
+    <span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">n_state</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span> <span class="o">+=</span> <span class="n">r_A</span><span class="p">.</span><span class="n">topRightCorner</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n_state</span> <span class="o">-</span> <span class="mi">4</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+=</span> <span class="n">r_A</span><span class="p">.</span><span class="n">bottomLeftCorner</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">;</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">;</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">A</span><span class="p">.</span><span class="n">ldlt</span><span class="p">().</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+<span class="kt">double</span> <span class="n">s</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="n">n_state</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">;</span>
+<span class="n">ROS_DEBUG</span><span class="p">(</span><span class="s">"estimated scale: %f"</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">segment</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n_state</span> <span class="o">-</span> <span class="mi">4</span><span class="p">);</span>
+<span class="n">ROS_DEBUG_STREAM</span><span class="p">(</span><span class="s">" result g     "</span> <span class="o">&lt;&lt;</span> <span class="n">g</span><span class="p">.</span><span class="n">norm</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">" "</span> <span class="o">&lt;&lt;</span> <span class="n">g</span><span class="p">.</span><span class="n">transpose</span><span class="p">());</span>
+<span class="k">if</span><span class="p">(</span><span class="n">fabs</span><span class="p">(</span><span class="n">g</span><span class="p">.</span><span class="n">norm</span><span class="p">()</span> <span class="o">-</span> <span class="n">G</span><span class="p">.</span><span class="n">norm</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="o">||</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">RefineGravity</span><span class="p">(</span><span class="n">all_image_frame</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
+<span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">tail</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">())(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">;</span>
+<span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">tail</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">())(</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="p">;</span>
+<span class="k">if</span><span class="p">(</span><span class="n">s</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>   
+<span class="k">else</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>camera center에서 IMU로 바꾸는 extrinsic parameter \(p_c^b, q_c^b\) 를 사용하여, 다음과 같이 pose를 IMU center로 변환할 수 있다.</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%208.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%208.png" /></p>
+
+<ul>
+  <li>또한 world frame을 \(c_0\) frame으로 정하면, 5번식의 pre-integration을 위식을 이용하여</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%209.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%209.png" /></p>
+
+<p>다음과 같이 정리할 수 있다.</p>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%2010.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%2010.png" /></p>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%2011.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%2011.png" /></p>
+
+<p>코드는 아래 식을 tmp_b = tmp_A * x로 표현한 것이고</p>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%2012.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%2012.png" /></p>
+
+<p>이는 논문에서 아래식에서 유도된 것이다.</p>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%2013.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%2013.png" /></p>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%2014.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%2014.png" /></p>
+
+<p>결국 x는 다음식과 같은 모든 frame에 대한 state를 구하게 된다.</p>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%2015.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%2015.png" /></p>
+
+<p>이는 모든 frame에서 body frame에 대한 velocity와 reference frame에 대한 gravity, scale parameter를 의미한다.</p>
+
+<ul>
+  <li>코드상에서 large A로 합쳐서 Cholesky decomposition을 사용하는데, 이때 &lt;3, 3&gt; block씩 겹치는 이유는 tmp_A와 tmp_b로 구하는 x가 k frame과 k+1 frame에 대해서 구하는 것이고, tmp_A.transpose * tmp_A 행렬에서 정사각행렬을 만들어 g, s부분을 제외한 k, k+1 frame에 관한 parameter를 쭉 이어서 더해주므로, k - k+1 / k+1 - k+2 /… 처럼 &lt;3, 3&gt; 씩 겹치게 되어서 더해주게 되는 것이다.</li>
+  <li>이후 RefineGravity함수로 Gravity Refinement가 수행된다.</li>
+</ul>
+
+<p>4) void RefineGravity(map&lt;double, ImageFrame&gt; &amp;all_image_frame, Vector3d &amp;g, VectorXd &amp;x)</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Vector3d</span> <span class="n">g0</span> <span class="o">=</span> <span class="n">g</span><span class="p">.</span><span class="n">normalized</span><span class="p">()</span> <span class="o">*</span> <span class="n">G</span><span class="p">.</span><span class="n">norm</span><span class="p">();</span>
+<span class="n">Vector3d</span> <span class="n">lx</span><span class="p">,</span> <span class="n">ly</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">all_frame_count</span> <span class="o">=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<span class="kt">int</span> <span class="n">n_state</span> <span class="o">=</span> <span class="n">all_frame_count</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// (x,y,z) * count + w1, w2, g scale</span>
+
+<span class="n">MatrixXd</span> <span class="n">A</span><span class="p">{</span><span class="n">n_state</span><span class="p">,</span> <span class="n">n_state</span><span class="p">};</span>
+<span class="n">VectorXd</span> <span class="n">b</span><span class="p">{</span><span class="n">n_state</span><span class="p">};</span>
+
+<span class="p">...</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">MatrixXd</span> <span class="n">lxly</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="n">lxly</span> <span class="o">=</span> <span class="n">TangentBasis</span><span class="p">(</span><span class="n">g0</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">frame_i</span> <span class="o">=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">next</span><span class="p">(</span><span class="n">frame_i</span><span class="p">)</span> <span class="o">!=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">frame_i</span><span class="o">++</span><span class="p">,</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">frame_j</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">frame_i</span><span class="p">);</span>
+        <span class="n">MatrixXd</span> <span class="n">tmp_A</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+        <span class="n">VectorXd</span> <span class="n">tmp_b</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+
+        <span class="kt">double</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">sum_dt</span><span class="p">;</span>
+
+        <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">dt</span> <span class="o">*</span> <span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+        <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">()</span> <span class="o">*</span> <span class="n">lxly</span><span class="p">;</span>
+        <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">;</span>     
+        <span class="n">tmp_b</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">delta_p</span> <span class="o">+</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span> <span class="o">*</span> <span class="n">TIC</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">TIC</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">g0</span><span class="p">;</span>
+
+        <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+        <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">;</span>
+        <span class="n">tmp_A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">()</span> <span class="o">*</span> <span class="n">lxly</span><span class="p">;</span>
+        <span class="n">tmp_b</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">frame_j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">delta_v</span> <span class="o">-</span> <span class="n">frame_i</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">()</span> <span class="o">*</span> <span class="n">g0</span><span class="p">;</span>
+
+        <span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span> <span class="n">cov_inv</span> <span class="o">=</span> <span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;::</span><span class="n">Zero</span><span class="p">();</span>
+        <span class="c1">//cov.block&lt;6, 6&gt;(0, 0) = IMU_cov[i + 1];</span>
+        <span class="c1">//MatrixXd cov_inv = cov.inverse();</span>
+        <span class="n">cov_inv</span><span class="p">.</span><span class="n">setIdentity</span><span class="p">();</span>
+
+        <span class="n">MatrixXd</span> <span class="n">r_A</span> <span class="o">=</span> <span class="n">tmp_A</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">cov_inv</span> <span class="o">*</span> <span class="n">tmp_A</span><span class="p">;</span>
+        <span class="n">VectorXd</span> <span class="n">r_b</span> <span class="o">=</span> <span class="n">tmp_A</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">cov_inv</span> <span class="o">*</span> <span class="n">tmp_b</span><span class="p">;</span>
+
+        <span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+=</span> <span class="n">r_A</span><span class="p">.</span><span class="n">topLeftCorner</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span><span class="p">();</span>
+        <span class="n">b</span><span class="p">.</span><span class="n">segment</span><span class="o">&lt;</span><span class="mi">6</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+=</span> <span class="n">r_b</span><span class="p">.</span><span class="n">head</span><span class="o">&lt;</span><span class="mi">6</span><span class="o">&gt;</span><span class="p">();</span>
+
+        <span class="n">A</span><span class="p">.</span><span class="n">bottomRightCorner</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">+=</span> <span class="n">r_A</span><span class="p">.</span><span class="n">bottomRightCorner</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">();</span>
+        <span class="n">b</span><span class="p">.</span><span class="n">tail</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">+=</span> <span class="n">r_b</span><span class="p">.</span><span class="n">tail</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">();</span>
+
+        <span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">n_state</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+=</span> <span class="n">r_A</span><span class="p">.</span><span class="n">topRightCorner</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">();</span>
+        <span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n_state</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+=</span> <span class="n">r_A</span><span class="p">.</span><span class="n">bottomLeftCorner</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span><span class="p">();</span>
+    <span class="p">}</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">A</span><span class="p">.</span><span class="n">ldlt</span><span class="p">().</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+        <span class="n">VectorXd</span> <span class="n">dg</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">segment</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n_state</span> <span class="o">-</span> <span class="mi">3</span><span class="p">);</span>
+        <span class="n">g0</span> <span class="o">=</span> <span class="p">(</span><span class="n">g0</span> <span class="o">+</span> <span class="n">lxly</span> <span class="o">*</span> <span class="n">dg</span><span class="p">).</span><span class="n">normalized</span><span class="p">()</span> <span class="o">*</span> <span class="n">G</span><span class="p">.</span><span class="n">norm</span><span class="p">();</span>
+        <span class="c1">//double s = x(n_state - 1);</span>
+<span class="p">}</span>   
+<span class="n">g</span> <span class="o">=</span> <span class="n">g0</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>g0는 이전 gravity vector의 nomalized 방향 * G (0,0,9.8) 이다.</li>
+  <li>TargnetBasis함수에서, g0에 수직인 두 vector를 얻게 된다.  코드에서는 다음 식</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/3/Untitled%2016.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%2016.png" /></p>
+
+<p>을 사용하여, a에 orthogonal한 basis b를 얻는다.</p>
+
+<ul>
+  <li>이제 이전의 LinearAlignment 식에서 gravity부분을 다음식으로 대체하여 다시 state를 구하여 대체한다. (4번으로 converge한다고 추정하는 듯 하다.)
+  <img src="/assets/VINS_FUSION/3/Untitled%2017.png" alt="3%20Initialization%20d3a3f647f6b64db39d0063446bdb4e64/Untitled%2017.png" /></li>
+</ul>
+
+<p>5) void FeatureManager::triangulate(int frameCnt, Vector3d Ps[], Matrix3d Rs[], Vector3d tic[], Matrix3d ric[])</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_id</span> <span class="o">:</span> <span class="n">feature</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="p">{</span>
+      <span class="kt">int</span> <span class="n">imu_i</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">start_frame</span><span class="p">;</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="o">&gt;</span> <span class="n">leftPose</span><span class="p">;</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">t0</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">imu_i</span><span class="p">]</span> <span class="o">+</span> <span class="n">Rs</span><span class="p">[</span><span class="n">imu_i</span><span class="p">]</span> <span class="o">*</span> <span class="n">tic</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">R0</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="n">imu_i</span><span class="p">]</span> <span class="o">*</span> <span class="n">ric</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="n">leftPose</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">R0</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+      <span class="n">leftPose</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="o">-</span><span class="n">R0</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">t0</span><span class="p">;</span>
+
+      <span class="n">imu_i</span><span class="o">++</span><span class="p">;</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="o">&gt;</span> <span class="n">rightPose</span><span class="p">;</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">imu_i</span><span class="p">]</span> <span class="o">+</span> <span class="n">Rs</span><span class="p">[</span><span class="n">imu_i</span><span class="p">]</span> <span class="o">*</span> <span class="n">tic</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">R1</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="n">imu_i</span><span class="p">]</span> <span class="o">*</span> <span class="n">ric</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="n">rightPose</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">R1</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+      <span class="n">rightPose</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="o">-</span><span class="n">R1</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">t1</span><span class="p">;</span>
+
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector2d</span> <span class="n">point0</span><span class="p">,</span> <span class="n">point1</span><span class="p">;</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">point3d</span><span class="p">;</span>
+      <span class="n">point0</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">point</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+      <span class="n">point1</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">point</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+      <span class="n">triangulatePoint</span><span class="p">(</span><span class="n">leftPose</span><span class="p">,</span> <span class="n">rightPose</span><span class="p">,</span> <span class="n">point0</span><span class="p">,</span> <span class="n">point1</span><span class="p">,</span> <span class="n">point3d</span><span class="p">);</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">localPoint</span><span class="p">;</span>
+      <span class="n">localPoint</span> <span class="o">=</span> <span class="n">leftPose</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">*</span> <span class="n">point3d</span> <span class="o">+</span> <span class="n">leftPose</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">();</span>
+      <span class="kt">double</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">localPoint</span><span class="p">.</span><span class="n">z</span><span class="p">();</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+          <span class="n">it_per_id</span><span class="p">.</span><span class="n">estimated_depth</span> <span class="o">=</span> <span class="n">depth</span><span class="p">;</span>
+      <span class="k">else</span>
+          <span class="n">it_per_id</span><span class="p">.</span><span class="n">estimated_depth</span> <span class="o">=</span> <span class="n">INIT_DEPTH</span><span class="p">;</span>
+      <span class="k">continue</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">it_per_id</span><span class="p">.</span><span class="n">used_num</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">used_num</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">)</span>
+      <span class="k">continue</span><span class="p">;</span>
+
+  <span class="kt">int</span> <span class="n">imu_i</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">start_frame</span><span class="p">,</span> <span class="n">imu_j</span> <span class="o">=</span> <span class="n">imu_i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+  <span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span> <span class="n">svd_A</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="mi">4</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="n">svd_idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="o">&gt;</span> <span class="n">P0</span><span class="p">;</span>
+  <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">t0</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">imu_i</span><span class="p">]</span> <span class="o">+</span> <span class="n">Rs</span><span class="p">[</span><span class="n">imu_i</span><span class="p">]</span> <span class="o">*</span> <span class="n">tic</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">R0</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="n">imu_i</span><span class="p">]</span> <span class="o">*</span> <span class="n">ric</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="n">P0</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+  <span class="n">P0</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">::</span><span class="n">Zero</span><span class="p">();</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_frame</span> <span class="o">:</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">)</span>
+  <span class="p">{</span>
+      <span class="n">imu_j</span><span class="o">++</span><span class="p">;</span>
+
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">imu_j</span><span class="p">]</span> <span class="o">+</span> <span class="n">Rs</span><span class="p">[</span><span class="n">imu_j</span><span class="p">]</span> <span class="o">*</span> <span class="n">tic</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">R1</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="n">imu_j</span><span class="p">]</span> <span class="o">*</span> <span class="n">ric</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">t</span> <span class="o">=</span> <span class="n">R0</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="p">);</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">R</span> <span class="o">=</span> <span class="n">R0</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">R1</span><span class="p">;</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="o">&gt;</span> <span class="n">P</span><span class="p">;</span>
+      <span class="n">P</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+      <span class="n">P</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="o">-</span><span class="n">R</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">t</span><span class="p">;</span>
+      <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">f</span> <span class="o">=</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">point</span><span class="p">.</span><span class="n">normalized</span><span class="p">();</span>
+      <span class="n">svd_A</span><span class="p">.</span><span class="n">row</span><span class="p">(</span><span class="n">svd_idx</span><span class="o">++</span><span class="p">)</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">P</span><span class="p">.</span><span class="n">row</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">P</span><span class="p">.</span><span class="n">row</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+      <span class="n">svd_A</span><span class="p">.</span><span class="n">row</span><span class="p">(</span><span class="n">svd_idx</span><span class="o">++</span><span class="p">)</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">P</span><span class="p">.</span><span class="n">row</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">P</span><span class="p">.</span><span class="n">row</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="n">imu_i</span> <span class="o">==</span> <span class="n">imu_j</span><span class="p">)</span>
+          <span class="k">continue</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">ROS_ASSERT</span><span class="p">(</span><span class="n">svd_idx</span> <span class="o">==</span> <span class="n">svd_A</span><span class="p">.</span><span class="n">rows</span><span class="p">());</span>
+  <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector4d</span> <span class="n">svd_V</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">JacobiSVD</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span><span class="o">&gt;</span><span class="p">(</span><span class="n">svd_A</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">ComputeThinV</span><span class="p">).</span><span class="n">matrixV</span><span class="p">().</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">();</span>
+  <span class="kt">double</span> <span class="n">svd_method</span> <span class="o">=</span> <span class="n">svd_V</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">svd_V</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+
+  <span class="n">it_per_id</span><span class="p">.</span><span class="n">estimated_depth</span> <span class="o">=</span> <span class="n">svd_method</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">estimated_depth</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">)</span>
+  <span class="p">{</span>
+      <span class="n">it_per_id</span><span class="p">.</span><span class="n">estimated_depth</span> <span class="o">=</span> <span class="n">INIT_DEPTH</span><span class="p">;</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>첫 if문에서 Rs, Ps ( <strong>\(q^{w}_{b_k}\), \(p_{b_k}^{w}\)</strong> )에 tic[0], ric[0] 등을 곱함으로써,</p>
+
+    <p>t0는 world frame에서 camera의 위치(Translation : camera k to world frame)  <br />
+  R0는 camera k to world frame rotation 변환이 된다.  <br />
+  이후 leftPose는 이들의 역변환을 넣어줌으로써, world frame to camera frame k transformation matrix가 된다.  <br />
+  (마찬가지로 rightPose는 다음 k+1 frame에 대한 변환이 된다.)  <br />
+  이제 triangulatePoint함수를 이용해 world frame에서의 point3d를 구할 수 있고, 이를 camera frame으로 변환하여 해당 feature의 depth를 구할 수 있다.</p>
+  </li>
+  <li>
+    <p>만약, feature가 들어 있는 다른 모든 frame의 정보도 활용하기 위해, SVD와 triangulation 수식을 혼합하여 estimated_depth를 구한다. (현재는 미사용)</p>
+  </li>
+</ul>
+
+<hr />
+
+<p>VINS-Fusion 코드를 정리한 포스트입니다.</p>
+
+<ol>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-1/">VINS-Fusion Code Review - (1) Image Processing</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-2/">VINS-Fusion Code Review - (2) IMU Processing</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-3/">VINS-Fusion Code Review - (3) Initialization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-4/">VINS-Fusion Code Review - (4) Sliding window &amp; Optimization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-5/">VINS-Fusion Code Review - (5) Marginalization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-6/">VINS-Fusion Code Review - (6) Graph optimization</a></li>
+</ol>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li><a href="https://arxiv.org/abs/1711.02508">[2017] Quaternion kinematics for the error-state Kalman filter.pdf</a></li>
+  <li><a href="http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf">[2005] Indirect Kalman Filter for 3D Attitude Estimation.pdf</a></li>
+  <li><a href="https://arxiv.org/abs/1912.11986">Formula Derivation and Analysis of the VINS-Mono.pdf</a></li>
+  <li><a href="https://slideplayer.com/slide/12551914/">Marginalization&amp;Shcurcomplement.pptx</a></li>
+  <li><a href="https://kvmanohar22.github.io/notes/w03/main.pdf">[TRO2012] Visual-Inertial-Aided Navigation for High-Dynamic Motion in Built Environments Without Initial Conditions.pdf</a></li>
+  <li><a href="https://ieeexplore.ieee.org/document/8421746">VINS-Mono.pdf</a></li>
+</ul>
+
+      </article>
+      <script type="text/javascript" async
+       src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+      </script>
+
+      
+        <div class="blog-tags">
+          <span>Tags:</span>
+          
+            <a href="/tags#Visual SLAM">Visual SLAM</a>
+          
+        </div>
+      
+
+      
+
+      
+        <!-- Check if any share-links are active -->
+
+
+
+
+
+      
+
+      <ul class="pagination blog-pager">
+        
+        <li class="page-item previous">
+          <a class="page-link" href="/2022-01-05-VINS-Fusion-2/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (2) IMU Processing">&larr; Previous Post</a>
+        </li>
+        
+        
+        <li class="page-item next">
+          <a class="page-link" href="/2022-01-05-VINS-Fusion-4/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (4) Sliding window &amp; Optimization">Next Post &rarr;</a>
+        </li>
+        
+      </ul>
+      
+  
+  
+  
+
+  
+
+
+  
+
+  
+
+
+
+    </div>
+  </div>
+</div>
+
+
+  <footer>
+  <div class="container-md beautiful-jekyll-footer">
+    <div class="row">
+      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+      
+<ul class="list-inline text-center footer-links"><li class="list-inline-item">
+    <a href="mailto:dongukseo@kaist.ac.kr" title="Email me">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">Email me</span>
+   </a>
+  </li><li class="list-inline-item">
+    <a href="https://github.com/SeoDU" title="GitHub">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">GitHub</span>
+   </a>
+  </li><li class="list-inline-item">
+    <a href="https://www.youtube.com/channel/UCaON-AWswqdv9hzrOxZDdWA" title="YouTube">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fab fa-youtube fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">YouTube</span>
+   </a>
+  </li></ul>
+
+      
+      <p class="copyright text-muted">
+      
+        Dong-Uk Seo
+        &nbsp;&bull;&nbsp;
+      
+      2023
+
+      
+
+      
+
+
+      </p>
+      <p class="theme-by text-muted">
+        Powered by
+        <a href="https://beautifuljekyll.com">Beautiful Jekyll</a>
+      </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  
+  
+    
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+
+
+  
+    
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+
+  
+    
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+
+  
+
+
+
+  
+    <!-- doing something a bit funky here because I want to be careful not to include JQuery twice! -->
+    
+      <script src="/assets/js/beautifuljekyll.js"></script>
+    
+  
+
+
+
+
+
+
+
+
+
+</body>
+</html>

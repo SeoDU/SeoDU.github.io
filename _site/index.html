@@ -166,6 +166,54 @@
         }, \
        \
         { \
+          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-6/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
+          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-5/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-4/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
+          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-3/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-2/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
+          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-1/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
           "title"    : "Frame간의 Transformation matrix", \
           "desc"     : "Frame간의 Transformation matrix", \
           "category" : "SLAM", \
@@ -176,7 +224,7 @@
         { \
           "title"    : "Getting Stereo-Inertial data with Realsense camera", \
           "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
-          "category" : "SLAMCamera", \
+          "category" : "Camera", \
           "url"      : "/2021-08-27-orb-slam3-d435i/", \
           "date"     : "August 27, 2021" \
         }, \
@@ -227,6 +275,14 @@
           "desc"     : "", \
           "category" : "page", \
           "url"      : "/tags/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/page2/", \
           "date"     : "January 1, 1970" \
         } \
        \
@@ -382,19 +438,15 @@
 
       
 
-      <a href="http://localhost:4000/2021-12-18-calc-tf/">
-        <h2 class="post-title">Frame간의 Transformation matrix</h2>
+      <a href="http://localhost:4000/2022-01-05-VINS-Fusion-6/">
+        <h2 class="post-title">VINS-Fusion Code Review - (6) Graph optimization</h2>
 
-        
-          <h3 class="post-subtitle">
-          SLAM configuration file
-          </h3>
         
       </a>
 
       <p class="post-meta">
         
-        Posted on December 18, 2021
+        Posted on January 5, 2022
       </p>
 
       
@@ -404,13 +456,12 @@
 
       <div class="post-entry">
         
-        SLAM분야에서는 Calibration등의 과정에서 두 프레임이 주어졌을때 transformation matrix를 구해야하는 상황이 흔히 발생한다.  
-하지만 transformation의 기준, 예를들어 Transformation from camera to body-frame이 어떤것을 나타내는지는 오픈소스의 저자마다 axis기준인지 point기준인지 다를수 있어 주의가 필요하다.
+        6. Graph optimization 파트 중요 코드 정리
 
 
         
         
-          <a href="http://localhost:4000/2021-12-18-calc-tf/" class="post-read-more">[Read&nbsp;More]</a>
+          <a href="http://localhost:4000/2022-01-05-VINS-Fusion-6/" class="post-read-more">[Read&nbsp;More]</a>
         
       </div>
       
@@ -422,7 +473,7 @@
         <ul class="d-inline list-inline" role="list">
           
           <li class="list-inline-item">
-            <a href="http://localhost:4000/tags#SLAM">SLAM</a>
+            <a href="http://localhost:4000/tags#Visual SLAM">Visual SLAM</a>
           </li>
           
         </ul>
@@ -438,15 +489,15 @@
 
       
 
-      <a href="http://localhost:4000/2021-08-27-orb-slam3-d435i/">
-        <h2 class="post-title">Getting Stereo-Inertial data with Realsense camera</h2>
+      <a href="http://localhost:4000/2022-01-05-VINS-Fusion-5/">
+        <h2 class="post-title">VINS-Fusion Code Review - (5) Marginalization</h2>
 
         
       </a>
 
       <p class="post-meta">
         
-        Posted on August 27, 2021
+        Posted on January 5, 2022
       </p>
 
       
@@ -456,12 +507,12 @@
 
       <div class="post-entry">
         
-        Tips for acquiring data in d435i camera
+        (5) Marginalization 파트 중요 코드 정리
 
 
         
         
-          <a href="http://localhost:4000/2021-08-27-orb-slam3-d435i/" class="post-read-more">[Read&nbsp;More]</a>
+          <a href="http://localhost:4000/2022-01-05-VINS-Fusion-5/" class="post-read-more">[Read&nbsp;More]</a>
         
       </div>
       
@@ -473,11 +524,58 @@
         <ul class="d-inline list-inline" role="list">
           
           <li class="list-inline-item">
-            <a href="http://localhost:4000/tags#SLAM">SLAM</a>
+            <a href="http://localhost:4000/tags#Visual SLAM">Visual SLAM</a>
           </li>
           
+        </ul>
+      </div>
+      
+
+    </article>
+  </li>
+  
+  <li class="post-preview">
+    <article>
+      
+
+      
+
+      <a href="http://localhost:4000/2022-01-05-VINS-Fusion-4/">
+        <h2 class="post-title">VINS-Fusion Code Review - (4) Sliding window & Optimization</h2>
+
+        
+      </a>
+
+      <p class="post-meta">
+        
+        Posted on January 5, 2022
+      </p>
+
+      
+
+      
+      
+
+      <div class="post-entry">
+        
+        (4) Sliding window &amp; Optimization 파트 중요 코드 정리
+
+
+        
+        
+          <a href="http://localhost:4000/2022-01-05-VINS-Fusion-4/" class="post-read-more">[Read&nbsp;More]</a>
+        
+      </div>
+      
+
+      
+      <div class="blog-tags">
+        <span>Tags:</span>
+        <!-- role="list" needed so that `list-style: none` in Safari doesn't remove the list semantics -->
+        <ul class="d-inline list-inline" role="list">
+          
           <li class="list-inline-item">
-            <a href="http://localhost:4000/tags#Camera">Camera</a>
+            <a href="http://localhost:4000/tags#Visual SLAM">Visual SLAM</a>
           </li>
           
         </ul>
@@ -489,6 +587,15 @@
   
 </ul>
 
+
+<ul class="pagination main-pager">
+  
+  
+  <li class="page-item next">
+    <a class="page-link" href="http://localhost:4000/page2">Older Posts &rarr;</a>
+  </li>
+  
+</ul>
 
 
 

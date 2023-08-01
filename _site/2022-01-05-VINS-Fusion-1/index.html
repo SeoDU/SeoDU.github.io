@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Beautiful Jekyll 6.0.1 | Copyright Dean Attali 2023 -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+
+  
+
+  <title>VINS-Fusion Code Review - (1) Image Processing</title>
+
+  
+  <meta name="author" content="Dong-Uk Seo">
+  
+
+  <meta name="description" content="(1) Image processing 파트 중요 코드 정리 1. Parameter 초기화 main() readParameters(config_file); // yaml 파일형식으로 parameters(camera 등)를 읽어옴 estimator.setParameter(); // Multi thread의　경우　ProcessMeasurements　실행 ... std::thread sync_thread{sync_process}; // sync_process를 진행하는 thread 생성 ... global 변수로 선언된 estimator의 setParameter함수 호출. publish, subscribe할 topic과 node, callback함수 지정. 이때, feature_callback은 사용되지 않는다. vins-mono에서는 독립적인 node로...">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+      
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+    
+      
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+
+
+    
+  
+
+  
+    
+      <link rel="stylesheet" href="/assets/css/bootstrap-social.css">
+    
+      <link rel="stylesheet" href="/assets/css/beautifuljekyll.css">
+    
+  
+
+  
+
+  
+  
+  
+
+  
+
+  
+  <meta property="og:site_name" content="Dong-Uk Seo">
+  <meta property="og:title" content="VINS-Fusion Code Review - (1) Image Processing">
+  <meta property="og:description" content="(1) Image processing 파트 중요 코드 정리 1. Parameter 초기화 main() readParameters(config_file); // yaml 파일형식으로 parameters(camera 등)를 읽어옴 estimator.setParameter(); // Multi thread의　경우　ProcessMeasurements　실행 ... std::thread sync_thread{sync_process}; // sync_process를 진행하는 thread 생성 ... global 변수로 선언된 estimator의 setParameter함수 호출. publish, subscribe할 topic과 node, callback함수 지정. 이때, feature_callback은 사용되지 않는다. vins-mono에서는 독립적인 node로...">
+
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:article:author" content="Dong-Uk Seo">
+  <meta property="og:article:published_time" content="2022-01-05T00:00:00-05:00">
+  <meta property="og:url" content="http://localhost:4000/2022-01-05-VINS-Fusion-1/">
+  <link rel="canonical" href="http://localhost:4000/2022-01-05-VINS-Fusion-1/">
+  
+
+  
+  <meta name="twitter:card" content="summary">
+  
+  <meta name="twitter:site" content="@">
+  <meta name="twitter:creator" content="@">
+
+  <meta property="twitter:title" content="VINS-Fusion Code Review - (1) Image Processing">
+  <meta property="twitter:description" content="(1) Image processing 파트 중요 코드 정리 1. Parameter 초기화 main() readParameters(config_file); // yaml 파일형식으로 parameters(camera 등)를 읽어옴 estimator.setParameter(); // Multi thread의　경우　ProcessMeasurements　실행 ... std::thread sync_thread{sync_process}; // sync_process를 진행하는 thread 생성 ... global 변수로 선언된 estimator의 setParameter함수 호출. publish, subscribe할 topic과 node, callback함수 지정. 이때, feature_callback은 사용되지 않는다. vins-mono에서는 독립적인 node로...">
+
+  
+
+  
+
+
+  
+
+  
+
+</head>
+
+
+<body>
+
+  
+
+
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><a class="navbar-brand" href="http://localhost:4000/">Dong-Uk Seo</a><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="main-navbar">
+    <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/aboutme">About Me</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/tags">Contents</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" id="nav-search-link" href="#" title="Search">
+            <span id="nav-search-icon" class="fa fa-search"></span>
+            <span id="nav-search-text">Search</span>
+          </a>
+        </li></ul>
+  </div>
+
+  
+
+  
+
+</nav>
+
+
+
+<div id="beautifuljekyll-search-overlay">
+
+  <div id="nav-search-exit" title="Exit search">✕</div>
+  <input type="text" id="nav-search-input" placeholder="Search">
+  <ul id="search-results-container"></ul>
+  
+  <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+  <script>
+    var searchjson = '[ \
+       \
+        { \
+          "title"    : "Azure Kinect DK install", \
+          "desc"     : "Azure Kinect DK install", \
+          "category" : "Camera", \
+          "url"      : "/2023-07-07-Azure-Kinect-Dk-install/", \
+          "date"     : "July  7, 2023" \
+        }, \
+       \
+        { \
+          "title"    : "RPG trajectory evaluation on multiple trajectories", \
+          "desc"     : "RPG trajectory evaluation on multiple trajectories", \
+          "category" : "SLAM", \
+          "url"      : "/2022-03-19-rpg-trajectories/", \
+          "date"     : "March 19, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-6/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
+          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-5/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-4/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
+          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-3/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-2/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
+          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-1/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "Frame간의 Transformation matrix", \
+          "desc"     : "Frame간의 Transformation matrix", \
+          "category" : "SLAM", \
+          "url"      : "/2021-12-18-calc-tf/", \
+          "date"     : "December 18, 2021" \
+        }, \
+       \
+        { \
+          "title"    : "Getting Stereo-Inertial data with Realsense camera", \
+          "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
+          "category" : "Camera", \
+          "url"      : "/2021-08-27-orb-slam3-d435i/", \
+          "date"     : "August 27, 2021" \
+        }, \
+       \
+       \
+        { \
+          "title"    : "Flake it till you make it", \
+          "desc"     : "Flake it till you make it", \
+          "category" : "bookstest", \
+          "url"      : "/sample_posts/2020-02-26-flake-it-till-you-make-it/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "Sample blog post", \
+          "desc"     : "Sample blog post", \
+          "category" : "test", \
+          "url"      : "/sample_posts/2020-02-28-test-markdown/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "About Me", \
+          "desc"     : "About Me", \
+          "category" : "page", \
+          "url"      : "/aboutme/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "About me", \
+          "desc"     : "About me", \
+          "category" : "page", \
+          "url"      : "/aboutme_org/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/tags/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/page2/", \
+          "date"     : "January 1, 1970" \
+        } \
+       \
+    ]';
+    searchjson = JSON.parse(searchjson);
+
+    var sjs = SimpleJekyllSearch({
+      searchInput: document.getElementById('nav-search-input'),
+      resultsContainer: document.getElementById('search-results-container'),
+      json: searchjson
+    });
+  </script>
+</div>
+
+
+
+
+
+  <!-- TODO this file has become a mess, refactor it -->
+
+
+
+
+
+
+
+<header class="header-section ">
+
+<div class="intro-header no-img">
+  <div class="container-md">
+    <div class="row">
+      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+        <div class="post-heading">
+          <h1>VINS-Fusion Code Review - (1) Image Processing</h1>
+          
+
+          
+            <span class="post-meta">Posted on January 5, 2022</span>
+            
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+
+
+
+<div class=" container-md ">
+  <div class="row">
+    <div class=" col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 ">
+
+      
+        
+        
+        
+
+        <div id="header-gh-btns">
+          
+        </div>
+      
+
+      
+
+      <article role="main" class="blog-post">
+        <h1 id="1-image-processing-파트-중요-코드-정리">(1) Image processing 파트 중요 코드 정리</h1>
+
+<h2 id="1-parameter-초기화">1. Parameter 초기화</h2>
+
+<ol>
+  <li>main()
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">readParameters</span><span class="p">(</span><span class="n">config_file</span><span class="p">);</span> <span class="c1">// yaml 파일형식으로 parameters(camera 등)를 읽어옴</span>
+ <span class="n">estimator</span><span class="p">.</span><span class="n">setParameter</span><span class="p">();</span> <span class="c1">// Multi thread의　경우　ProcessMeasurements　실행</span>
+ <span class="p">...</span>
+ <span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">sync_thread</span><span class="p">{</span><span class="n">sync_process</span><span class="p">};</span> <span class="c1">// sync_process를 진행하는 thread 생성</span>
+ <span class="p">...</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>global 변수로 선언된 estimator의 setParameter함수 호출.</li>
+      <li>publish, subscribe할 topic과 node, callback함수 지정.  <br />
+  이때, feature_callback은 사용되지 않는다. vins-mono에서는 독립적인 node로 분리되어 있으나, vins-fusion에서는 직접 map으로 전달하는 형식을 사용한다.</li>
+      <li>sync_process 함수를 진행하는 thread를 생성.</li>
+      <li>또한 estimator 생성시에 clearState()함수 call.</li>
+    </ul>
+  </li>
+  <li>estimator.setParameter()
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="p">...</span>
+ <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_OF_CAM</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="n">tic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">TIC</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+     <span class="n">ric</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">RIC</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+     <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">" exitrinsic cam "</span> <span class="o">&lt;&lt;</span> <span class="n">i</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span>  <span class="o">&lt;&lt;</span> <span class="n">ric</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span> <span class="o">&lt;&lt;</span> <span class="n">tic</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">transpose</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="p">...</span>
+ <span class="n">td</span> <span class="o">=</span> <span class="n">TD</span><span class="p">;</span>
+ <span class="n">g</span> <span class="o">=</span> <span class="n">G</span><span class="p">;</span>
+ <span class="n">f_manager</span><span class="p">.</span><span class="n">setRic</span><span class="p">(</span><span class="n">ric</span><span class="p">);</span>
+ <span class="n">featureTracker</span><span class="p">.</span><span class="n">readIntrinsicParameter</span><span class="p">(</span><span class="n">CAM_NAMES</span><span class="p">);</span>
+ <span class="p">...</span>
+ <span class="n">processThread</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Estimator</span><span class="o">::</span><span class="n">processMeasurements</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+ <span class="p">...</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>readParameters() 에서 body_T_cam0으로 읽은 RIC, TIC의 값을 저장한다.</li>
+      <li>f_manager ric 초기화</li>
+      <li>time offset (td), gravity(G) 초기화</li>
+      <li>featureTracker.readIntrinsicParameter() → camera model 초기화</li>
+      <li>Mutl thread인 경우 processMeasurements함수를 추가 thread에서 진행한다</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="2-image-estimation">2. Image estimation</h2>
+
+<ol>
+  <li>
+    <p>sync_process()</p>
+
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="p">...</span>
+ <span class="n">estimator</span><span class="p">.</span><span class="n">inputImage</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">image</span><span class="p">);</span>
+ <span class="p">...</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>image message를 opencv Mat으로 변환 후, <strong>estimator.inputImage(time,image)</strong>를 호출</li>
+    </ul>
+  </li>
+  <li>
+    <p>Estimator::inputImage(double t, const cv::Mat &amp;_img, const cv::Mat &amp;_img1)</p>
+
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;&gt;&gt;&gt;</span> <span class="n">featureFrame</span><span class="p">;</span> <span class="c1">// 7x1 matrix</span>
+ <span class="k">if</span><span class="p">(</span><span class="n">_img1</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+     <span class="n">featureFrame</span> <span class="o">=</span> <span class="n">featureTracker</span><span class="p">.</span><span class="n">trackImage</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">_img</span><span class="p">);</span>
+ <span class="k">else</span>
+     <span class="n">featureFrame</span> <span class="o">=</span> <span class="n">featureTracker</span><span class="p">.</span><span class="n">trackImage</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">_img</span><span class="p">,</span> <span class="n">_img1</span><span class="p">);</span>
+ <span class="p">...</span>
+ <span class="n">featureBuf</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">make_pair</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">featureFrame</span><span class="p">));</span>
+ <span class="n">processMeasurements</span><span class="p">();</span>
+ <span class="p">...</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>featureTracker.trackImage(t,_img)로 얻은 값으로 featureFrame map에 지정</li>
+      <li>queue&lt;pair&lt;double, map&lt;int, vector&lt;pair&lt;int, Eigen::Matrix&lt;double, 7, 1»»»</li>
+      <li>Multithread가 아닌경우 여기서 processMeasurements()함수 진행</li>
+    </ul>
+
+    <p>type을 가지는 featureBuf에 pair를 만들어서 넣어준다.</p>
+  </li>
+  <li>
+    <p>… FeatureTracker::trackImage(…)</p>
+
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">**</span><span class="n">cv</span><span class="o">::</span><span class="n">calcOpticalFlowPyrLK</span><span class="p">(</span><span class="n">prev_img</span><span class="p">,</span> <span class="n">cur_img</span><span class="p">,</span> <span class="n">prev_pts</span><span class="p">,</span> <span class="n">cur_pts</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">cv</span><span class="o">::</span><span class="n">Size</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">21</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span><span class="o">**</span>
+ <span class="nf">reduceVector</span><span class="p">(</span><span class="n">prev_pts</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+ <span class="n">reduceVector</span><span class="p">(</span><span class="n">cur_pts</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+ <span class="n">reduceVector</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+ <span class="n">reduceVector</span><span class="p">(</span><span class="n">track_cnt</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+    
+ <span class="o">**</span><span class="nf">setMask</span><span class="p">();</span> <span class="c1">// track_cnt가 높은순으로 30pixel 반지름 원마다 feature를 추려냄.**</span>
+ <span class="n">cv</span><span class="o">::</span><span class="n">goodFeaturesToTrack</span><span class="p">(</span><span class="n">cur_img</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">,</span> <span class="n">MAX_CNT</span> <span class="o">-</span> <span class="n">cur_pts</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">MIN_DIST</span><span class="p">,</span> <span class="n">mask</span><span class="p">);</span>
+ <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">p</span> <span class="o">:</span> <span class="n">n_pts</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="n">cur_pts</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">p</span><span class="p">);</span> <span class="c1">// n_pts에 담겨있는 코너들에 추가로 cur_pts에 넣는다.</span>
+     <span class="n">ids</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">n_id</span><span class="o">++</span><span class="p">);</span> <span class="c1">// 새로운 코너(feature)마다 새 id를 붙임</span>
+     <span class="n">track_cnt</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// track_cnt 도 1로 intialization해줌</span>
+ <span class="p">}</span>
+ <span class="n">cur_un_pts</span> <span class="o">=</span> <span class="n">undistortedPts</span><span class="p">(</span><span class="n">cur_pts</span><span class="p">,</span> <span class="n">m_camera</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span> <span class="c1">// 3D로 바꾸고 다시 2D homogeneous로</span>
+ <span class="n">pts_velocity</span> <span class="o">=</span> <span class="n">ptsVelocity</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">cur_un_pts</span><span class="p">,</span> <span class="n">cur_un_pts_map</span><span class="p">,</span> <span class="n">prev_un_pts_map</span><span class="p">);</span> <span class="c1">// 이동한 feature 찾으면 v구하고, 아니면 (0,0)</span>
+    
+ <span class="n">prev_img</span> <span class="o">=</span> <span class="n">cur_img</span><span class="p">;</span>
+ <span class="n">prev_pts</span> <span class="o">=</span> <span class="n">cur_pts</span><span class="p">;</span>
+ <span class="n">prev_un_pts</span> <span class="o">=</span> <span class="n">cur_un_pts</span><span class="p">;</span>
+ <span class="n">prev_un_pts_map</span> <span class="o">=</span> <span class="n">cur_un_pts_map</span><span class="p">;</span>
+ <span class="n">prev_time</span> <span class="o">=</span> <span class="n">cur_time</span><span class="p">;</span>
+ <span class="n">hasPrediction</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    
+ <span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;&gt;&gt;&gt;</span> <span class="n">featureFrame</span><span class="p">;</span>
+ <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ids</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="kt">int</span> <span class="n">feature_id</span> <span class="o">=</span> <span class="n">ids</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+     <span class="kt">double</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">,</span><span class="n">z</span><span class="p">;</span>
+     <span class="n">x</span> <span class="o">=</span> <span class="n">cur_un_pts</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">;</span>
+     <span class="n">y</span> <span class="o">=</span> <span class="n">cur_un_pts</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">;</span>
+     <span class="n">z</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+     <span class="kt">double</span> <span class="n">p_u</span><span class="p">,</span> <span class="n">p_v</span><span class="p">;</span>
+     <span class="n">p_u</span> <span class="o">=</span> <span class="n">cur_pts</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">;</span>
+     <span class="n">p_v</span> <span class="o">=</span> <span class="n">cur_pts</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">;</span>
+     <span class="kt">int</span> <span class="n">camera_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+     <span class="kt">double</span> <span class="n">velocity_x</span><span class="p">,</span> <span class="n">velocity_y</span><span class="p">;</span>
+     <span class="n">velocity_x</span> <span class="o">=</span> <span class="n">pts_velocity</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">;</span>
+     <span class="n">velocity_y</span> <span class="o">=</span> <span class="n">pts_velocity</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">;</span>
+    
+     <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;</span> <span class="n">xyz_uv_velocity</span><span class="p">;</span>
+     <span class="n">xyz_uv_velocity</span> <span class="o">&lt;&lt;</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">p_u</span><span class="p">,</span> <span class="n">p_v</span><span class="p">,</span> <span class="n">velocity_x</span><span class="p">,</span> <span class="n">velocity_y</span><span class="p">;</span>
+     <span class="n">featureFrame</span><span class="p">[</span><span class="n">feature_id</span><span class="p">].</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">camera_id</span><span class="p">,</span>  <span class="n">xyz_uv_velocity</span><span class="p">);</span>
+ <span class="p">}</span>
+    
+ <span class="k">return</span> <span class="n">featureFrame</span><span class="p">;</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>calcOpticalFlowPyrLK를 이용하여 prev_pts가 cur_img에서 찾아지면 cur_pts에 넣는다.</li>
+      <li>같은 feature를 찾으면 status  = 1, 아니면 0으로 지정 (reverse check도 수행)</li>
+      <li>reduceVector에서는 status가 0인 부분은 지우고 resize한다.</li>
+      <li>mask를 지정하여 feature를 30pixel 이상 떨어지도록 분포시킨다</li>
+      <li>cv::goodFeaturesToTrack은 코너검출을 위해 4가지 커널을 통해 추출하는 것이다. mask로 지정한 부분은 추출되지 않는다. 이외의 새로운 feature를 max를 안넘게 추출하려는 의도이다.</li>
+      <li>undistortedPts 에서 distortion을 없애고, ptsVelocity에서 undistorted points를 이용하여 이전과 지금 feature간의 velocity들을 계산한다. (reduceVector로 인해 id에는 이미 이전과 지금 frame 두곳에 존재하는 것만 있음)</li>
+      <li>featureFrame의 feature_id index에, (camera_id , xyz_uv_velocity) (vector) 를 넣어준다.  <br />
+  xyz_uv_velocity는 undistort된 x,y와 z=1 (undistortPts에서 normalized됨), image의 x,y, <strong>(u,v)</strong>, 위에서 구한 velocity x, velocity y를 넣어준다.</li>
+    </ul>
+
+    <p>특징점(corners)를 찾는 알고리즘에 대해서는 다음을 참조한다.</p>
+
+    <p>[reference] : <a href="https://darkpgmr.tistory.com/131">https://darkpgmr.tistory.com/131</a></p>
+  </li>
+  <li>
+    <p>FeatureTracker::setMask()</p>
+
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    
+ <span class="n">vector</span><span class="o">&lt;</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">pair</span><span class="o">&lt;</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;&gt;&gt;</span> <span class="n">cnt_pts_id</span><span class="p">;</span>
+    
+ <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">cur_pts</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+     <span class="n">cnt_pts_id</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">make_pair</span><span class="p">(</span><span class="n">track_cnt</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">make_pair</span><span class="p">(</span><span class="n">cur_pts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ids</span><span class="p">[</span><span class="n">i</span><span class="p">])));</span>
+ <span class="n">sort</span><span class="p">(</span><span class="n">cnt_pts_id</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">cnt_pts_id</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="p">[](</span><span class="k">const</span> <span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">pair</span><span class="o">&lt;</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">pair</span><span class="o">&lt;</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">)</span>
+ <span class="p">{</span>
+   <span class="k">return</span> <span class="n">a</span><span class="p">.</span><span class="n">first</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">first</span><span class="p">;</span>
+ <span class="p">});</span>
+    
+ <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it</span> <span class="o">:</span> <span class="n">cnt_pts_id</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">mask</span><span class="p">.</span><span class="n">at</span><span class="o">&lt;</span><span class="n">uchar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">first</span><span class="p">)</span> <span class="o">==</span> <span class="mi">255</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="n">cur_pts</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">first</span><span class="p">);</span>
+         <span class="n">ids</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">second</span><span class="p">);</span>
+         <span class="n">track_cnt</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">first</span><span class="p">);</span>
+         <span class="n">cv</span><span class="o">::</span><span class="n">circle</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">it</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">first</span><span class="p">,</span> <span class="n">MIN_DIST</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>cnt_pts_id에 [track_cnt, [cur_pts, ids] ]로 pair를 만들어 넣는다.</li>
+      <li>track_cnt가 높은 순으로 정렬하고,  mask는 처음에 255로 초기화 되있으므로, mask에서 <strong>feature들 위치의 주변에 circle을 만들어 이 주변 값들은 cur_pts, ids, track_cnt에서 제외한다.</strong></li>
+    </ul>
+  </li>
+  <li>
+    <p>… FeatureTracker::undistortedPts(vectorcv::Point2f &amp;pts, camodocal::CameraPtr cam)</p>
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">vector</span><span class="o">&lt;</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="o">&gt;</span> <span class="n">un_pts</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">pts</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+ <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector2d</span> <span class="n">a</span><span class="p">(</span><span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">,</span> <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">);</span>
+ <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">b</span><span class="p">;</span>
+ <span class="n">cam</span><span class="o">-&gt;</span><span class="n">liftProjective</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+ <span class="n">un_pts</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">x</span><span class="p">()</span> <span class="o">/</span> <span class="n">b</span><span class="p">.</span><span class="n">z</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="n">y</span><span class="p">()</span> <span class="o">/</span> <span class="n">b</span><span class="p">.</span><span class="n">z</span><span class="p">()));</span>
+<span class="p">}</span>
+<span class="k">return</span> <span class="n">un_pts</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<ul>
+  <li>cam→liftProjective에서 intrinsic matrix를 이용해 normalize하고 recursive distortion model을 사용하여 cur_pts의 점들의 distortion을 제거한다. (Recursive distortion model 출처 확인 필요)</li>
+</ul>
+
+<h2 id="3-keyframe-selection">3. KeyFrame Selection</h2>
+
+<ol>
+  <li>Estimator::processMeasurements()
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">...</span>
+<span class="n">processImage</span><span class="p">(</span><span class="n">feature</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">feature</span><span class="p">.</span><span class="n">first</span><span class="p">);</span>
+<span class="p">...</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>앞의 IMU 처리과정은 다음 Page에서 리뷰.</li>
+      <li>feature는 queue인 featureBuf에서 가장 앞에 것을 꺼낸 것으로, 가장 오래된 time과 featureFrame을 얻는다. → feature.second가 addFeatureCheckParallax의 image</li>
+      <li>processImage에서 f_manager.addFeatureCheckParallax(frame_count, image, td) 진행</li>
+      <li>frame_count는 처음에는 0이지만 window_size까지 증가한다.</li>
+    </ul>
+  </li>
+  <li>
+    <p>bool FeatureManager::addFeatureCheckParallax(int frame_count, const map&lt;int, vector&lt;pair&lt;int, Eigen::Matrix&lt;double, 7, 1»» &amp;image, double td)</p>
+
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="p">...</span>
+ <span class="kt">int</span> <span class="n">feature_id</span> <span class="o">=</span> <span class="n">id_pts</span><span class="p">.</span><span class="n">first</span><span class="p">;</span>
+ <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">id_pts</span> <span class="o">:</span> <span class="n">image</span><span class="p">)</span> <span class="c1">// Image에　있는　feature points마다　iteration</span>
+ <span class="p">{</span>
+ 	<span class="n">FeaturePerFrame</span> <span class="n">f_per_fra</span><span class="p">(</span><span class="n">id_pts</span><span class="p">.</span><span class="n">second</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">second</span><span class="p">,</span> <span class="n">td</span><span class="p">);</span>
+ 	<span class="k">auto</span> <span class="n">it</span> <span class="o">=</span> <span class="n">find_if</span><span class="p">(</span><span class="n">feature</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">feature</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="p">[</span><span class="n">feature_id</span><span class="p">](</span><span class="k">const</span> <span class="n">FeaturePerId</span> <span class="o">&amp;</span><span class="n">it</span><span class="p">)</span>
+ 	                          <span class="p">{</span>
+ 	            <span class="k">return</span> <span class="n">it</span><span class="p">.</span><span class="n">feature_id</span> <span class="o">==</span> <span class="n">feature_id</span><span class="p">;</span>
+ 	                          <span class="p">});</span>
+ 	<span class="k">if</span> <span class="p">(</span><span class="n">it</span> <span class="o">==</span> <span class="n">feature</span><span class="p">.</span><span class="n">end</span><span class="p">())</span> <span class="c1">// 없다면　해당　feature와　frame_count를　넣어준다．(아마　해당　frame에　그　feature가　있다고　하는듯　하다．)</span>
+         <span class="p">{</span> 
+             <span class="n">feature</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">FeaturePerId</span><span class="p">(</span><span class="n">feature_id</span><span class="p">,</span> <span class="n">frame_count</span><span class="p">));</span>
+             <span class="n">feature</span><span class="p">.</span><span class="n">back</span><span class="p">().</span><span class="n">feature_per_frame</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">f_per_fra</span><span class="p">);</span>
+             <span class="n">new_feature_num</span><span class="o">++</span><span class="p">;</span>
+         <span class="p">}</span>
+         <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">it</span><span class="o">-&gt;</span><span class="n">feature_id</span> <span class="o">==</span> <span class="n">feature_id</span><span class="p">)</span> <span class="c1">// 만약　찾았으면　그　feature에　해당　FeaturePerFrame을　넣어준다．</span>
+         <span class="p">{</span>
+             <span class="n">it</span><span class="o">-&gt;</span><span class="n">feature_per_frame</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">f_per_fra</span><span class="p">);</span>
+             <span class="n">last_track_num</span><span class="o">++</span><span class="p">;</span>
+             <span class="k">if</span><span class="p">(</span> <span class="n">it</span><span class="o">-&gt;</span> <span class="n">feature_per_frame</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">)</span>
+                 <span class="n">long_track_num</span><span class="o">++</span><span class="p">;</span>
+         <span class="p">}</span>
+    
+ <span class="k">if</span> <span class="p">(</span><span class="n">frame_count</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">||</span> <span class="n">last_track_num</span> <span class="o">&lt;</span> <span class="mi">20</span> <span class="o">||</span> <span class="n">long_track_num</span> <span class="o">&lt;</span> <span class="mi">40</span> <span class="o">||</span> <span class="n">new_feature_num</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">last_track_num</span><span class="p">)</span>
+       <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    
+ <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_id</span> <span class="o">:</span> <span class="n">feature</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="c1">// 최소　2 step전에　찾아둔　frame이면서，이　feature를　가지는　frame이　start이후　계속　있다면</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">start_frame</span> <span class="o">&lt;=</span> <span class="n">frame_count</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span>
+         <span class="n">it_per_id</span><span class="p">.</span><span class="n">start_frame</span> <span class="o">+</span> <span class="kt">int</span><span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">.</span><span class="n">size</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="n">parallax_sum</span> <span class="o">+=</span> <span class="n">compensatedParallax2</span><span class="p">(</span><span class="n">it_per_id</span><span class="p">,</span> <span class="n">frame_count</span><span class="p">);</span> <span class="c1">// second, thrid　frame에서　feature의　위치차이를　보고</span>
+         <span class="n">parallax_num</span><span class="o">++</span><span class="p">;</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+    
+ <span class="k">if</span> <span class="p">(</span><span class="n">parallax_num</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="k">else</span>
+ <span class="p">{</span>
+     <span class="n">last_average_parallax</span> <span class="o">=</span> <span class="n">parallax_sum</span> <span class="o">/</span> <span class="n">parallax_num</span> <span class="o">*</span> <span class="n">FOCAL_LENGTH</span><span class="p">;</span>
+     <span class="k">return</span> <span class="n">parallax_sum</span> <span class="o">/</span> <span class="n">parallax_num</span> <span class="o">&gt;=</span> <span class="n">MIN_PARALLAX</span><span class="p">;</span>
+ <span class="p">}</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>feature_id는 id_pts.first 즉, <strong>featureFrame</strong>요소의 first이므로 <strong>feature_id</strong>가 된다.</li>
+      <li>
+        <p>FeaturePerId를 갖는 feature list에서 feature_id과 같은 것을 iterator로 가져온다.
+  (앞에서 processMeasurements와는 다른 feature임)</p>
+      </li>
+      <li>못찾으면 feature와 f_per_fra (FeaturePerFrame)을 feature에 넣어준다.</li>
+      <li>
+        <p>즉 feature리스트는 <strong>FeaturePerId</strong>를 요소로 갖는 리스트이고, 이 FeaturePerId가 갖는 <strong>feature_per_frame</strong> vector에 FeaturePerFrame인 <strong>f_epr_fra</strong>를 넣어준다.</p>
+      </li>
+      <li>&lt;Keyframe 지정 알고리즘&gt;  <br />
+(1) frame_count &lt; 2       <br />
+  (2) 지금 image에서 기존 feature를 별로 못찾은 경우 (last_track_num&lt;20)    <br />
+(3) image에서 기존 feature를 갖는 frame이 4개이상인 횟수가 적은경우 (long_track_num&lt;40)   <br />
+  (4) 새로운 feature의 갯수가 기존 image의 feature갯수의 반보다 큰 경우    <br />
+(5) second last third last frame에서의 parallax의 평균이 MIN_PARALLAX보다 큰 경우</li>
+    </ul>
+  </li>
+</ol>
+
+<p><br /></p>
+
+<hr />
+
+<p>VINS-Fusion 코드를 정리한 포스트입니다.</p>
+
+<ol>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-1/">VINS-Fusion Code Review - (1) Image Processing</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-2/">VINS-Fusion Code Review - (2) IMU Processing</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-3/">VINS-Fusion Code Review - (3) Initialization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-4/">VINS-Fusion Code Review - (4) Sliding window &amp; Optimization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-5/">VINS-Fusion Code Review - (5) Marginalization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-6/">VINS-Fusion Code Review - (6) Graph optimization</a></li>
+</ol>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li><a href="https://arxiv.org/abs/1711.02508">[2017] Quaternion kinematics for the error-state Kalman filter.pdf</a></li>
+  <li><a href="http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf">[2005] Indirect Kalman Filter for 3D Attitude Estimation.pdf</a></li>
+  <li><a href="https://arxiv.org/abs/1912.11986">Formula Derivation and Analysis of the VINS-Mono.pdf</a></li>
+  <li><a href="https://slideplayer.com/slide/12551914/">Marginalization&amp;Shcurcomplement.pptx</a></li>
+  <li><a href="https://kvmanohar22.github.io/notes/w03/main.pdf">[TRO2012] Visual-Inertial-Aided Navigation for High-Dynamic Motion in Built Environments Without Initial Conditions.pdf</a></li>
+  <li><a href="https://ieeexplore.ieee.org/document/8421746">VINS-Mono.pdf</a></li>
+</ul>
+
+
+      </article>
+      <script type="text/javascript" async
+       src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+      </script>
+
+      
+        <div class="blog-tags">
+          <span>Tags:</span>
+          
+            <a href="/tags#Visual SLAM">Visual SLAM</a>
+          
+        </div>
+      
+
+      
+
+      
+        <!-- Check if any share-links are active -->
+
+
+
+
+
+      
+
+      <ul class="pagination blog-pager">
+        
+        <li class="page-item previous">
+          <a class="page-link" href="/2021-12-18-calc-tf/" data-toggle="tooltip" data-placement="top" title="Frame간의 Transformation matrix">&larr; Previous Post</a>
+        </li>
+        
+        
+        <li class="page-item next">
+          <a class="page-link" href="/2022-01-05-VINS-Fusion-2/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (2) IMU Processing">Next Post &rarr;</a>
+        </li>
+        
+      </ul>
+      
+  
+  
+  
+
+  
+
+
+  
+
+  
+
+
+
+    </div>
+  </div>
+</div>
+
+
+  <footer>
+  <div class="container-md beautiful-jekyll-footer">
+    <div class="row">
+      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+      
+<ul class="list-inline text-center footer-links"><li class="list-inline-item">
+    <a href="mailto:dongukseo@kaist.ac.kr" title="Email me">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">Email me</span>
+   </a>
+  </li><li class="list-inline-item">
+    <a href="https://github.com/SeoDU" title="GitHub">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">GitHub</span>
+   </a>
+  </li><li class="list-inline-item">
+    <a href="https://www.youtube.com/channel/UCaON-AWswqdv9hzrOxZDdWA" title="YouTube">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fab fa-youtube fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">YouTube</span>
+   </a>
+  </li></ul>
+
+      
+      <p class="copyright text-muted">
+      
+        Dong-Uk Seo
+        &nbsp;&bull;&nbsp;
+      
+      2023
+
+      
+
+      
+
+
+      </p>
+      <p class="theme-by text-muted">
+        Powered by
+        <a href="https://beautifuljekyll.com">Beautiful Jekyll</a>
+      </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  
+  
+    
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+
+
+  
+    
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+
+  
+    
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+
+  
+
+
+
+  
+    <!-- doing something a bit funky here because I want to be careful not to include JQuery twice! -->
+    
+      <script src="/assets/js/beautifuljekyll.js"></script>
+    
+  
+
+
+
+
+
+
+
+
+
+</body>
+</html>

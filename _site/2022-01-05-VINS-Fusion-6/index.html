@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Beautiful Jekyll 6.0.1 | Copyright Dean Attali 2023 -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+
+  
+
+  <title>VINS-Fusion Code Review - (6) Graph optimization</title>
+
+  
+  <meta name="author" content="Dong-Uk Seo">
+  
+
+  <meta name="description" content="6. Graph optimization 파트 중요 코드 정리 1. Relocalization 1) int main(int argc, char **argv) ... VISUALIZATION_SHIFT_X = 0; VISUALIZATION_SHIFT_Y = 0; SKIP_CNT = 0; SKIP_DIS = 0; cameraposevisual.setScale(0.1); cameraposevisual.setLineWidth(0.01); string vocabulary_file = pkg_path + &quot;/../support_files/brief_k10L6.bin&quot;; posegraph.loadVocabulary(vocabulary_file); BRIEF_PATTERN_FILE = pkg_path + &quot;/../support_files/brief_pattern.yml&quot;; ... posegraph.setIMUFlag(USE_IMU); ros::Subscriber sub_vio = n.subscribe(&quot;/vins_estimator/odometry&quot;, 2000, vio_callback);...">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+      
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+    
+      
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+
+
+    
+  
+
+  
+    
+      <link rel="stylesheet" href="/assets/css/bootstrap-social.css">
+    
+      <link rel="stylesheet" href="/assets/css/beautifuljekyll.css">
+    
+  
+
+  
+
+  
+  
+  
+
+  
+
+  
+  <meta property="og:site_name" content="Dong-Uk Seo">
+  <meta property="og:title" content="VINS-Fusion Code Review - (6) Graph optimization">
+  <meta property="og:description" content="6. Graph optimization 파트 중요 코드 정리 1. Relocalization 1) int main(int argc, char **argv) ... VISUALIZATION_SHIFT_X = 0; VISUALIZATION_SHIFT_Y = 0; SKIP_CNT = 0; SKIP_DIS = 0; cameraposevisual.setScale(0.1); cameraposevisual.setLineWidth(0.01); string vocabulary_file = pkg_path + &quot;/../support_files/brief_k10L6.bin&quot;; posegraph.loadVocabulary(vocabulary_file); BRIEF_PATTERN_FILE = pkg_path + &quot;/../support_files/brief_pattern.yml&quot;; ... posegraph.setIMUFlag(USE_IMU); ros::Subscriber sub_vio = n.subscribe(&quot;/vins_estimator/odometry&quot;, 2000, vio_callback);...">
+
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:article:author" content="Dong-Uk Seo">
+  <meta property="og:article:published_time" content="2022-01-05T00:00:00-05:00">
+  <meta property="og:url" content="http://localhost:4000/2022-01-05-VINS-Fusion-6/">
+  <link rel="canonical" href="http://localhost:4000/2022-01-05-VINS-Fusion-6/">
+  
+
+  
+  <meta name="twitter:card" content="summary">
+  
+  <meta name="twitter:site" content="@">
+  <meta name="twitter:creator" content="@">
+
+  <meta property="twitter:title" content="VINS-Fusion Code Review - (6) Graph optimization">
+  <meta property="twitter:description" content="6. Graph optimization 파트 중요 코드 정리 1. Relocalization 1) int main(int argc, char **argv) ... VISUALIZATION_SHIFT_X = 0; VISUALIZATION_SHIFT_Y = 0; SKIP_CNT = 0; SKIP_DIS = 0; cameraposevisual.setScale(0.1); cameraposevisual.setLineWidth(0.01); string vocabulary_file = pkg_path + &quot;/../support_files/brief_k10L6.bin&quot;; posegraph.loadVocabulary(vocabulary_file); BRIEF_PATTERN_FILE = pkg_path + &quot;/../support_files/brief_pattern.yml&quot;; ... posegraph.setIMUFlag(USE_IMU); ros::Subscriber sub_vio = n.subscribe(&quot;/vins_estimator/odometry&quot;, 2000, vio_callback);...">
+
+  
+
+  
+
+
+  
+
+  
+
+</head>
+
+
+<body>
+
+  
+
+
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><a class="navbar-brand" href="http://localhost:4000/">Dong-Uk Seo</a><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="main-navbar">
+    <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/aboutme">About Me</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/tags">Contents</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" id="nav-search-link" href="#" title="Search">
+            <span id="nav-search-icon" class="fa fa-search"></span>
+            <span id="nav-search-text">Search</span>
+          </a>
+        </li></ul>
+  </div>
+
+  
+
+  
+
+</nav>
+
+
+
+<div id="beautifuljekyll-search-overlay">
+
+  <div id="nav-search-exit" title="Exit search">✕</div>
+  <input type="text" id="nav-search-input" placeholder="Search">
+  <ul id="search-results-container"></ul>
+  
+  <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+  <script>
+    var searchjson = '[ \
+       \
+        { \
+          "title"    : "Azure Kinect DK install", \
+          "desc"     : "Azure Kinect DK install", \
+          "category" : "Camera", \
+          "url"      : "/2023-07-07-Azure-Kinect-Dk-install/", \
+          "date"     : "July  7, 2023" \
+        }, \
+       \
+        { \
+          "title"    : "RPG trajectory evaluation on multiple trajectories", \
+          "desc"     : "RPG trajectory evaluation on multiple trajectories", \
+          "category" : "SLAM", \
+          "url"      : "/2022-03-19-rpg-trajectories/", \
+          "date"     : "March 19, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-6/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
+          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-5/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-4/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
+          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-3/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-2/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
+          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-1/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "Frame간의 Transformation matrix", \
+          "desc"     : "Frame간의 Transformation matrix", \
+          "category" : "SLAM", \
+          "url"      : "/2021-12-18-calc-tf/", \
+          "date"     : "December 18, 2021" \
+        }, \
+       \
+        { \
+          "title"    : "Getting Stereo-Inertial data with Realsense camera", \
+          "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
+          "category" : "Camera", \
+          "url"      : "/2021-08-27-orb-slam3-d435i/", \
+          "date"     : "August 27, 2021" \
+        }, \
+       \
+       \
+        { \
+          "title"    : "Flake it till you make it", \
+          "desc"     : "Flake it till you make it", \
+          "category" : "bookstest", \
+          "url"      : "/sample_posts/2020-02-26-flake-it-till-you-make-it/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "Sample blog post", \
+          "desc"     : "Sample blog post", \
+          "category" : "test", \
+          "url"      : "/sample_posts/2020-02-28-test-markdown/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "About Me", \
+          "desc"     : "About Me", \
+          "category" : "page", \
+          "url"      : "/aboutme/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "About me", \
+          "desc"     : "About me", \
+          "category" : "page", \
+          "url"      : "/aboutme_org/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/tags/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/page2/", \
+          "date"     : "January 1, 1970" \
+        } \
+       \
+    ]';
+    searchjson = JSON.parse(searchjson);
+
+    var sjs = SimpleJekyllSearch({
+      searchInput: document.getElementById('nav-search-input'),
+      resultsContainer: document.getElementById('search-results-container'),
+      json: searchjson
+    });
+  </script>
+</div>
+
+
+
+
+
+  <!-- TODO this file has become a mess, refactor it -->
+
+
+
+
+
+
+
+<header class="header-section ">
+
+<div class="intro-header no-img">
+  <div class="container-md">
+    <div class="row">
+      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+        <div class="post-heading">
+          <h1>VINS-Fusion Code Review - (6) Graph optimization</h1>
+          
+
+          
+            <span class="post-meta">Posted on January 5, 2022</span>
+            
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+
+
+
+<div class=" container-md ">
+  <div class="row">
+    <div class=" col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 ">
+
+      
+        
+        
+        
+
+        <div id="header-gh-btns">
+          
+        </div>
+      
+
+      
+
+      <article role="main" class="blog-post">
+        <h1 id="6-graph-optimization-파트-중요-코드-정리">6. Graph optimization 파트 중요 코드 정리</h1>
+
+<h2 id="1-relocalization">1. Relocalization</h2>
+
+<p>1) int main(int argc, char **argv)</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">...</span>
+<span class="n">VISUALIZATION_SHIFT_X</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">VISUALIZATION_SHIFT_Y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">SKIP_CNT</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">SKIP_DIS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="n">cameraposevisual</span><span class="p">.</span><span class="n">setScale</span><span class="p">(</span><span class="mf">0.1</span><span class="p">);</span>
+<span class="n">cameraposevisual</span><span class="p">.</span><span class="n">setLineWidth</span><span class="p">(</span><span class="mf">0.01</span><span class="p">);</span>
+
+<span class="n">string</span> <span class="n">vocabulary_file</span> <span class="o">=</span> <span class="n">pkg_path</span> <span class="o">+</span> <span class="s">"/../support_files/brief_k10L6.bin"</span><span class="p">;</span>
+<span class="n">posegraph</span><span class="p">.</span><span class="n">loadVocabulary</span><span class="p">(</span><span class="n">vocabulary_file</span><span class="p">);</span>
+
+<span class="n">BRIEF_PATTERN_FILE</span> <span class="o">=</span> <span class="n">pkg_path</span> <span class="o">+</span> <span class="s">"/../support_files/brief_pattern.yml"</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="n">posegraph</span><span class="p">.</span><span class="n">setIMUFlag</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">);</span>
+
+<span class="n">ros</span><span class="o">::</span><span class="n">Subscriber</span> <span class="n">sub_vio</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">"/vins_estimator/odometry"</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="n">vio_callback</span><span class="p">);</span>
+<span class="n">ros</span><span class="o">::</span><span class="n">Subscriber</span> <span class="n">sub_image</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">IMAGE_TOPIC</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="n">image_callback</span><span class="p">);</span>
+<span class="n">ros</span><span class="o">::</span><span class="n">Subscriber</span> <span class="n">sub_pose</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">"/vins_estimator/keyframe_pose"</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="n">pose_callback</span><span class="p">);</span>
+<span class="n">ros</span><span class="o">::</span><span class="n">Subscriber</span> <span class="n">sub_extrinsic</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">"/vins_estimator/extrinsic"</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="n">extrinsic_callback</span><span class="p">);</span>
+<span class="n">ros</span><span class="o">::</span><span class="n">Subscriber</span> <span class="n">sub_point</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">"/vins_estimator/keyframe_point"</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="n">point_callback</span><span class="p">);</span>
+<span class="n">ros</span><span class="o">::</span><span class="n">Subscriber</span> <span class="n">sub_margin_point</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s">"/vins_estimator/margin_cloud"</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="n">margin_point_callback</span><span class="p">);</span>
+
+<span class="n">pub_match_img</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">advertise</span><span class="o">&lt;</span><span class="n">sensor_msgs</span><span class="o">::</span><span class="n">Image</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"match_image"</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
+<span class="n">pub_camera_pose_visual</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">advertise</span><span class="o">&lt;</span><span class="n">visualization_msgs</span><span class="o">::</span><span class="n">MarkerArray</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"camera_pose_visual"</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
+<span class="n">pub_point_cloud</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">advertise</span><span class="o">&lt;</span><span class="n">sensor_msgs</span><span class="o">::</span><span class="n">PointCloud</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"point_cloud_loop_rect"</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
+<span class="n">pub_margin_cloud</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">advertise</span><span class="o">&lt;</span><span class="n">sensor_msgs</span><span class="o">::</span><span class="n">PointCloud</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"margin_cloud_loop_rect"</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
+<span class="n">pub_odometry_rect</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">advertise</span><span class="o">&lt;</span><span class="n">nav_msgs</span><span class="o">::</span><span class="n">Odometry</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"odometry_rect"</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">measurement_process</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="kr">thread</span> <span class="n">keyboard_command_process</span><span class="p">;</span>
+<span class="n">measurement_process</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">process</span><span class="p">);</span>
+<span class="n">keyboard_command_process</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>Three threads :  <br />
+  (1) measurement_process : process() :  <br />
+  (2) keyboard_command_process : command() : Just decide <em>save</em> or <em>new start</em>  <br />
+  (3) t_optimization : PoseGraph::optimze4DOF()</p>
+  </li>
+  <li>
+    <p>Callbacks :  <br />
+  (1) Odometry (nav_msgs::Odometry, vio_callback) → rviz에서 camera visualize  <br />
+  (2) Image (sensor_msgs::Image, image_callback) → image_buf에 넣기 / 시간차이 너무 크면 loop closing하는 sequence 새로 시작.  <br />
+  (3) Keyframe Pose (nav_msgs::Odometry, pose_callback) →pose_buf에 넣기  <br />
+  (4) Extrinsic (nav_msgs::Odometry, extrinsic_callback) →tic, ric  <br />
+  (5) Keyframe Points (sensor_msgs::PointCloud, point_callback) → point_buf에 넣기, 계산된 dritft로 조정하여 points visualize</p>
+  </li>
+</ul>
+
+<p>2) void process()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">sensor_msgs</span><span class="o">::</span><span class="n">ImageConstPtr</span> <span class="n">image_msg</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">sensor_msgs</span><span class="o">::</span><span class="n">PointCloudConstPtr</span> <span class="n">point_msg</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">nav_msgs</span><span class="o">::</span><span class="n">Odometry</span><span class="o">::</span><span class="n">ConstPtr</span> <span class="n">pose_msg</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="n">m_buf</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">image_buf</span><span class="p">.</span><span class="n">empty</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">point_buf</span><span class="p">.</span><span class="n">empty</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">pose_buf</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">image_buf</span><span class="p">.</span><span class="n">front</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">pose_buf</span><span class="p">.</span><span class="n">front</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">())</span>
+            <span class="n">pose_buf</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">image_buf</span><span class="p">.</span><span class="n">front</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">point_buf</span><span class="p">.</span><span class="n">front</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">())</span>
+            <span class="n">point_buf</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">image_buf</span><span class="p">.</span><span class="n">back</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">pose_buf</span><span class="p">.</span><span class="n">front</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">()</span> 
+            <span class="o">&amp;&amp;</span> <span class="n">point_buf</span><span class="p">.</span><span class="n">back</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">pose_buf</span><span class="p">.</span><span class="n">front</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">())</span>
+        <span class="p">{</span>
+            <span class="n">pose_msg</span> <span class="o">=</span> <span class="n">pose_buf</span><span class="p">.</span><span class="n">front</span><span class="p">();</span>
+            <span class="n">pose_buf</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+            <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">pose_buf</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+                <span class="n">pose_buf</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">image_buf</span><span class="p">.</span><span class="n">front</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">pose_msg</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">())</span>
+                <span class="n">image_buf</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+            <span class="n">image_msg</span> <span class="o">=</span> <span class="n">image_buf</span><span class="p">.</span><span class="n">front</span><span class="p">();</span>
+            <span class="n">image_buf</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+
+            <span class="k">while</span> <span class="p">(</span><span class="n">point_buf</span><span class="p">.</span><span class="n">front</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">pose_msg</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">())</span>
+                <span class="n">point_buf</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+            <span class="n">point_msg</span> <span class="o">=</span> <span class="n">point_buf</span><span class="p">.</span><span class="n">front</span><span class="p">();</span>
+            <span class="n">point_buf</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">m_buf</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">pose_msg</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">skip_first_cnt</span> <span class="o">&lt;</span> <span class="n">SKIP_FIRST_CNT</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">skip_first_cnt</span><span class="o">++</span><span class="p">;</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">cv_bridge</span><span class="o">::</span><span class="n">CvImageConstPtr</span> <span class="n">ptr</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">image_msg</span><span class="o">-&gt;</span><span class="n">encoding</span> <span class="o">==</span> <span class="s">"8UC1"</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">sensor_msgs</span><span class="o">::</span><span class="n">Image</span> <span class="n">img</span><span class="p">;</span>
+            <span class="n">img</span><span class="p">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">image_msg</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">;</span>
+            <span class="n">img</span><span class="p">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">image_msg</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span>
+            <span class="n">img</span><span class="p">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">image_msg</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span>
+            <span class="n">img</span><span class="p">.</span><span class="n">is_bigendian</span> <span class="o">=</span> <span class="n">image_msg</span><span class="o">-&gt;</span><span class="n">is_bigendian</span><span class="p">;</span>
+            <span class="n">img</span><span class="p">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">image_msg</span><span class="o">-&gt;</span><span class="n">step</span><span class="p">;</span>
+            <span class="n">img</span><span class="p">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">image_msg</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">;</span>
+            <span class="n">img</span><span class="p">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="s">"mono8"</span><span class="p">;</span>
+            <span class="n">ptr</span> <span class="o">=</span> <span class="n">cv_bridge</span><span class="o">::</span><span class="n">toCvCopy</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">sensor_msgs</span><span class="o">::</span><span class="n">image_encodings</span><span class="o">::</span><span class="n">MONO8</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+            <span class="n">ptr</span> <span class="o">=</span> <span class="n">cv_bridge</span><span class="o">::</span><span class="n">toCvCopy</span><span class="p">(</span><span class="n">image_msg</span><span class="p">,</span> <span class="n">sensor_msgs</span><span class="o">::</span><span class="n">image_encodings</span><span class="o">::</span><span class="n">MONO8</span><span class="p">);</span>
+        
+        <span class="n">cv</span><span class="o">::</span><span class="n">Mat</span> <span class="n">image</span> <span class="o">=</span> <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">image</span><span class="p">;</span>
+        <span class="c1">// build keyframe</span>
+        <span class="n">Vector3d</span> <span class="n">T</span> <span class="o">=</span> <span class="n">Vector3d</span><span class="p">(</span><span class="n">pose_msg</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">.</span><span class="n">pose</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">x</span><span class="p">,</span>
+                              <span class="n">pose_msg</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">.</span><span class="n">pose</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">y</span><span class="p">,</span>
+                              <span class="n">pose_msg</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">.</span><span class="n">pose</span><span class="p">.</span><span class="n">position</span><span class="p">.</span><span class="n">z</span><span class="p">);</span>
+        <span class="n">Matrix3d</span> <span class="n">R</span> <span class="o">=</span> <span class="n">Quaterniond</span><span class="p">(</span><span class="n">pose_msg</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">.</span><span class="n">pose</span><span class="p">.</span><span class="n">orientation</span><span class="p">.</span><span class="n">w</span><span class="p">,</span>
+                                 <span class="n">pose_msg</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">.</span><span class="n">pose</span><span class="p">.</span><span class="n">orientation</span><span class="p">.</span><span class="n">x</span><span class="p">,</span>
+                                 <span class="n">pose_msg</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">.</span><span class="n">pose</span><span class="p">.</span><span class="n">orientation</span><span class="p">.</span><span class="n">y</span><span class="p">,</span>
+                                 <span class="n">pose_msg</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">.</span><span class="n">pose</span><span class="p">.</span><span class="n">orientation</span><span class="p">.</span><span class="n">z</span><span class="p">).</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+        <span class="k">if</span><span class="p">((</span><span class="n">T</span> <span class="o">-</span> <span class="n">last_t</span><span class="p">).</span><span class="n">norm</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">SKIP_DIS</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">vector</span><span class="o">&lt;</span><span class="n">cv</span><span class="o">::</span><span class="n">Point3f</span><span class="o">&gt;</span> <span class="n">point_3d</span><span class="p">;</span> 
+            <span class="n">vector</span><span class="o">&lt;</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="o">&gt;</span> <span class="n">point_2d_uv</span><span class="p">;</span> 
+            <span class="n">vector</span><span class="o">&lt;</span><span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="o">&gt;</span> <span class="n">point_2d_normal</span><span class="p">;</span>
+            <span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">point_id</span><span class="p">;</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">point_msg</span><span class="o">-&gt;</span><span class="n">points</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">cv</span><span class="o">::</span><span class="n">Point3f</span> <span class="n">p_3d</span><span class="p">;</span>
+                <span class="n">p_3d</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">point_msg</span><span class="o">-&gt;</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">;</span>
+                <span class="n">p_3d</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">point_msg</span><span class="o">-&gt;</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">;</span>
+                <span class="n">p_3d</span><span class="p">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">point_msg</span><span class="o">-&gt;</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span><span class="p">;</span>
+                <span class="n">point_3d</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">p_3d</span><span class="p">);</span>
+
+                <span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span> <span class="n">p_2d_uv</span><span class="p">,</span> <span class="n">p_2d_normal</span><span class="p">;</span>
+                <span class="kt">double</span> <span class="n">p_id</span><span class="p">;</span>
+                <span class="n">p_2d_normal</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">point_msg</span><span class="o">-&gt;</span><span class="n">channels</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+                <span class="n">p_2d_normal</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">point_msg</span><span class="o">-&gt;</span><span class="n">channels</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+                <span class="n">p_2d_uv</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">point_msg</span><span class="o">-&gt;</span><span class="n">channels</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+                <span class="n">p_2d_uv</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">point_msg</span><span class="o">-&gt;</span><span class="n">channels</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+                <span class="n">p_id</span> <span class="o">=</span> <span class="n">point_msg</span><span class="o">-&gt;</span><span class="n">channels</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+                <span class="n">point_2d_normal</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">p_2d_normal</span><span class="p">);</span>
+                <span class="n">point_2d_uv</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">p_2d_uv</span><span class="p">);</span>
+                <span class="n">point_id</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">p_id</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="n">KeyFrame</span><span class="o">*</span> <span class="n">keyframe</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyFrame</span><span class="p">(</span><span class="n">pose_msg</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">stamp</span><span class="p">.</span><span class="n">toSec</span><span class="p">(),</span> <span class="n">frame_index</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span>
+                               <span class="n">point_3d</span><span class="p">,</span> <span class="n">point_2d_uv</span><span class="p">,</span> <span class="n">point_2d_normal</span><span class="p">,</span> <span class="n">point_id</span><span class="p">,</span> <span class="n">sequence</span><span class="p">);</span>   
+            <span class="n">m_process</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+            <span class="n">start_flag</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="n">posegraph</span><span class="p">.</span><span class="n">addKeyFrame</span><span class="p">(</span><span class="n">keyframe</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+            <span class="n">m_process</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+            <span class="n">frame_index</span><span class="o">++</span><span class="p">;</span>
+            <span class="n">last_t</span> <span class="o">=</span> <span class="n">T</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span> <span class="n">dura</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">dura</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>image (front) ≤ pose ≤ point(back) ≤ image(back) 순서가 되도록 맞추고, image_msg (front), pose_msg, point_msg를 각각 가져온다.</li>
+  <li>pose_msg는 estimator에서의 Ps,Rs (third last), point_msg는 f_manager.feature에 해당한다.</li>
+  <li>
+    <p>(1) point_3d : 3D points of features  <br />
+(2) point_2d_normal : noramlized된 image(third last frame) points  <br />
+(3) point_2d_uv : image(third last frame)의 original points  <br />
+(4) point_id : feature ids</p>
+  </li>
+  <li>KeyFrame 생성시 computeWindowBRIEFPoint(), computeBRIEFPoint() 가 실행된다.</li>
+</ul>
+
+<p>3) void KeyFrame::computeWindowBRIEFPoint()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">BriefExtractor</span> <span class="nf">extractor</span><span class="p">(</span><span class="n">BRIEF_PATTERN_FILE</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">point_2d_uv</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">cv</span><span class="o">::</span><span class="n">KeyPoint</span> <span class="n">key</span><span class="p">;</span>
+    <span class="n">key</span><span class="p">.</span><span class="n">pt</span> <span class="o">=</span> <span class="n">point_2d_uv</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">window_keypoints</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">key</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">extractor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">window_keypoints</span><span class="p">,</span> <span class="n">window_brief_descriptors</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Keyframe을 만들때, computeWindowBRIEFPoint(), computeBRIEFPoint() 함수를 호출하게 된다.</li>
+  <li>uv(original image points)를 window_keypoints vector에 저장 후, BRIEF extractor를 통해 pattern file을 이용한 keypoints에 해당하는 descriptor (vector<bitset>) 를 만든다</bitset></li>
+</ul>
+
+<p>4) void KeyFrame::computeBRIEFPoint()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">BriefExtractor</span> <span class="nf">extractor</span><span class="p">(</span><span class="n">BRIEF_PATTERN_FILE</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">fast_th</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span> <span class="c1">// corner detector response threshold</span>
+<span class="k">if</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+	<span class="n">cv</span><span class="o">::</span><span class="n">FAST</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">keypoints</span><span class="p">,</span> <span class="n">fast_th</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+
+<span class="n">extractor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">keypoints</span><span class="p">,</span> <span class="n">brief_descriptors</span><span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">keypoints</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">tmp_p</span><span class="p">;</span>
+	<span class="n">m_camera</span><span class="o">-&gt;</span><span class="n">liftProjective</span><span class="p">(</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector2d</span><span class="p">(</span><span class="n">keypoints</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">pt</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">keypoints</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">pt</span><span class="p">.</span><span class="n">y</span><span class="p">),</span> <span class="n">tmp_p</span><span class="p">);</span>
+	<span class="n">cv</span><span class="o">::</span><span class="n">KeyPoint</span> <span class="n">tmp_norm</span><span class="p">;</span>
+	<span class="n">tmp_norm</span><span class="p">.</span><span class="n">pt</span> <span class="o">=</span> <span class="n">cv</span><span class="o">::</span><span class="n">Point2f</span><span class="p">(</span><span class="n">tmp_p</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="o">/</span><span class="n">tmp_p</span><span class="p">.</span><span class="n">z</span><span class="p">(),</span> <span class="n">tmp_p</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="o">/</span><span class="n">tmp_p</span><span class="p">.</span><span class="n">z</span><span class="p">());</span>
+	<span class="n">keypoints_norm</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">tmp_norm</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>FAST 알고리즘으로 corners가 detect되고,  이 점들을 undistortion과 normalize를 거쳐 keypoints_norm에 저장한다.</li>
+  <li>brief_descriptor에는 불러온 것이 아닌 해당 이미지에서 FAST로 직접찾은 feature들의 description이 담겨 있다.</li>
+</ul>
+
+<p>5) void PoseGraph::addKeyFrame(KeyFrame* cur_kf, bool flag_detect_loop)</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Vector3d</span> <span class="n">vio_P_cur</span><span class="p">;</span>
+<span class="n">Matrix3d</span> <span class="n">vio_R_cur</span><span class="p">;</span>
+<span class="c1">// Initialization : 처음에 sequence_cnt = 0, cur_kf-&gt;sequence = 1이라 실행됨.</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">sequence_cnt</span> <span class="o">!=</span> <span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">sequence</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">sequence_cnt</span><span class="o">++</span><span class="p">;</span>
+    <span class="n">sequence_loop</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="n">w_t_vio</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">w_r_vio</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+    <span class="n">m_drift</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+    <span class="n">t_drift</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">r_drift</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+    <span class="n">m_drift</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">getVioPose</span><span class="p">(</span><span class="n">vio_P_cur</span><span class="p">,</span> <span class="n">vio_R_cur</span><span class="p">);</span> 
+<span class="n">vio_P_cur</span> <span class="o">=</span> <span class="n">w_r_vio</span> <span class="o">*</span> <span class="n">vio_P_cur</span> <span class="o">+</span> <span class="n">w_t_vio</span><span class="p">;</span>
+<span class="n">vio_R_cur</span> <span class="o">=</span> <span class="n">w_r_vio</span> <span class="o">*</span>  <span class="n">vio_R_cur</span><span class="p">;</span>
+<span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">updateVioPose</span><span class="p">(</span><span class="n">vio_P_cur</span><span class="p">,</span> <span class="n">vio_R_cur</span><span class="p">);</span>
+<span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">=</span> <span class="n">global_index</span><span class="p">;</span>
+<span class="n">global_index</span><span class="o">++</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">loop_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">flag_detect_loop</span><span class="p">)</span> <span class="c1">// 항상 1, 0이면 db에 descriptor 추가하고 끝.</span>
+<span class="p">{</span>
+    <span class="n">TicToc</span> <span class="n">tmp_t</span><span class="p">;</span>
+    <span class="n">loop_index</span> <span class="o">=</span> <span class="n">detectLoop</span><span class="p">(</span><span class="n">cur_kf</span><span class="p">,</span> <span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">loop_index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">KeyFrame</span><span class="o">*</span> <span class="n">old_kf</span> <span class="o">=</span> <span class="n">getKeyFrame</span><span class="p">(</span><span class="n">loop_index</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">findConnection</span><span class="p">(</span><span class="n">old_kf</span><span class="p">))</span>
+  <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">earliest_loop_index</span> <span class="o">&gt;</span> <span class="n">loop_index</span> <span class="o">||</span> <span class="n">earliest_loop_index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+          <span class="n">earliest_loop_index</span> <span class="o">=</span> <span class="n">loop_index</span><span class="p">;</span>
+
+      <span class="n">Vector3d</span> <span class="n">w_P_old</span><span class="p">,</span> <span class="n">w_P_cur</span><span class="p">,</span> <span class="n">vio_P_cur</span><span class="p">;</span>
+      <span class="n">Matrix3d</span> <span class="n">w_R_old</span><span class="p">,</span> <span class="n">w_R_cur</span><span class="p">,</span> <span class="n">vio_R_cur</span><span class="p">;</span>
+      <span class="n">old_kf</span><span class="o">-&gt;</span><span class="n">getVioPose</span><span class="p">(</span><span class="n">w_P_old</span><span class="p">,</span> <span class="n">w_R_old</span><span class="p">);</span>
+      <span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">getVioPose</span><span class="p">(</span><span class="n">vio_P_cur</span><span class="p">,</span> <span class="n">vio_R_cur</span><span class="p">);</span>
+
+      <span class="n">Vector3d</span> <span class="n">relative_t</span><span class="p">;</span>
+      <span class="n">Quaterniond</span> <span class="n">relative_q</span><span class="p">;</span>
+      <span class="n">relative_t</span> <span class="o">=</span> <span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">getLoopRelativeT</span><span class="p">();</span>
+      <span class="n">relative_q</span> <span class="o">=</span> <span class="p">(</span><span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">getLoopRelativeQ</span><span class="p">()).</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+      <span class="c1">// 기존것 world기준에서 상대적인 t,R이용해서</span>
+      <span class="c1">// 지금 frame 위치를 world로 바꿈.</span>
+      <span class="n">w_P_cur</span> <span class="o">=</span> <span class="n">w_R_old</span> <span class="o">*</span> <span class="n">relative_t</span> <span class="o">+</span> <span class="n">w_P_old</span><span class="p">;</span>
+      <span class="n">w_R_cur</span> <span class="o">=</span> <span class="n">w_R_old</span> <span class="o">*</span> <span class="n">relative_q</span><span class="p">;</span>
+      <span class="kt">double</span> <span class="n">shift_yaw</span><span class="p">;</span>
+      <span class="n">Matrix3d</span> <span class="n">shift_r</span><span class="p">;</span>
+      <span class="n">Vector3d</span> <span class="n">shift_t</span><span class="p">;</span> 
+      <span class="k">if</span><span class="p">(</span><span class="n">use_imu</span><span class="p">)</span>
+      <span class="p">{</span>
+          <span class="n">shift_yaw</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">w_R_cur</span><span class="p">).</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">vio_R_cur</span><span class="p">).</span><span class="n">x</span><span class="p">();</span>
+          <span class="n">shift_r</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">ypr2R</span><span class="p">(</span><span class="n">Vector3d</span><span class="p">(</span><span class="n">shift_yaw</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+      <span class="p">}</span>
+      <span class="k">else</span>
+          <span class="n">shift_r</span> <span class="o">=</span> <span class="n">w_R_cur</span> <span class="o">*</span> <span class="n">vio_R_cur</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+      <span class="n">shift_t</span> <span class="o">=</span> <span class="n">w_P_cur</span> <span class="o">-</span> <span class="n">w_R_cur</span> <span class="o">*</span> <span class="n">vio_R_cur</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">vio_P_cur</span><span class="p">;</span> 
+      <span class="c1">// shift vio pose of whole sequence to the world frame</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">old_kf</span><span class="o">-&gt;</span><span class="n">sequence</span> <span class="o">!=</span> <span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">sequence</span> <span class="o">&amp;&amp;</span> <span class="n">sequence_loop</span><span class="p">[</span><span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">sequence</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="p">{</span>  
+          <span class="n">w_r_vio</span> <span class="o">=</span> <span class="n">shift_r</span><span class="p">;</span>
+          <span class="n">w_t_vio</span> <span class="o">=</span> <span class="n">shift_t</span><span class="p">;</span>
+          <span class="n">vio_P_cur</span> <span class="o">=</span> <span class="n">w_r_vio</span> <span class="o">*</span> <span class="n">vio_P_cur</span> <span class="o">+</span> <span class="n">w_t_vio</span><span class="p">;</span>
+          <span class="n">vio_R_cur</span> <span class="o">=</span> <span class="n">w_r_vio</span> <span class="o">*</span>  <span class="n">vio_R_cur</span><span class="p">;</span>
+          <span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">updateVioPose</span><span class="p">(</span><span class="n">vio_P_cur</span><span class="p">,</span> <span class="n">vio_R_cur</span><span class="p">);</span>
+          <span class="n">list</span><span class="o">&lt;</span><span class="n">KeyFrame</span><span class="o">*&gt;::</span><span class="n">iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">keyframelist</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+          <span class="k">for</span> <span class="p">(;</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">keyframelist</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">it</span><span class="o">++</span><span class="p">)</span>   
+          <span class="p">{</span>
+              <span class="k">if</span><span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">sequence</span> <span class="o">==</span> <span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">sequence</span><span class="p">)</span>
+              <span class="p">{</span>
+                  <span class="n">Vector3d</span> <span class="n">vio_P_cur</span><span class="p">;</span>
+                  <span class="n">Matrix3d</span> <span class="n">vio_R_cur</span><span class="p">;</span>
+                  <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">getVioPose</span><span class="p">(</span><span class="n">vio_P_cur</span><span class="p">,</span> <span class="n">vio_R_cur</span><span class="p">);</span>
+                  <span class="n">vio_P_cur</span> <span class="o">=</span> <span class="n">w_r_vio</span> <span class="o">*</span> <span class="n">vio_P_cur</span> <span class="o">+</span> <span class="n">w_t_vio</span><span class="p">;</span>
+                  <span class="n">vio_R_cur</span> <span class="o">=</span> <span class="n">w_r_vio</span> <span class="o">*</span>  <span class="n">vio_R_cur</span><span class="p">;</span>
+                  <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">updateVioPose</span><span class="p">(</span><span class="n">vio_P_cur</span><span class="p">,</span> <span class="n">vio_R_cur</span><span class="p">);</span>
+              <span class="p">}</span>
+          <span class="p">}</span>
+          <span class="n">sequence_loop</span><span class="p">[</span><span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">sequence</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="n">m_optimize_buf</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+      <span class="n">optimize_buf</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">);</span>
+      <span class="n">m_optimize_buf</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">...</span>
+<span class="n">keyframelist</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">cur_kf</span><span class="p">);</span>
+<span class="p">...</span>
+</code></pre></div></div>
+
+<ul>
+  <li>initialize시에 vio_P_cur, vio_R_cur = $P_{b_k}^w$, $R_{b_k}^w$에 해당한다. 이 drift를 w_r_vio, w_t_vio로 고쳐주게 된다.</li>
+  <li>getKeyFrame으로 loop detect된 frame index를 가져와서, findConnection 함수를 수행한다.</li>
+  <li>old frame과 cur frame의 각각의 Pose를 얻어와, w_R_old로 world frame기준으로 바꾼후, w_P_cur, w_R_cur에 현재 frame의 world frame 기준 Pose를 저장한다. (relative_t, relative_q는 old frame과 cur frame의 feature matching 및 PnPRANSAC을 통해 상대적인 위치 차이를 구한 것이다.)</li>
+  <li>translation과 yaw값의 shift를 구한다. (translation의 경우 IMU frame 기준으로 바꾼후, 다시 w_R_cur을 적용하하여 world frame으로 기준으로 바꾼 rotation값을 구한다.)</li>
+  <li>old와 cur keyframe간의 sequence가 다른 경우에만, Relocalization을 통해 current keyframe의 위치를 update해준다. 또한 cur keyframe과 같은 sequence인 frame들의 위치도 전부 update해준다. sequence는 image_callback에 시간차가 큰 경우 달라진다.</li>
+  <li>cur keyframe의 frame index를 optimize_buf에 추가하여 global optimization에 사용한다.</li>
+</ul>
+
+<p>6) int PoseGraph::detectLoop(KeyFrame* keyframe, int frame_index)</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">QueryResults</span> <span class="n">ret</span><span class="p">;</span>
+<span class="n">db</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="n">keyframe</span><span class="o">-&gt;</span><span class="n">brief_descriptors</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">frame_index</span> <span class="o">-</span> <span class="mi">50</span><span class="p">);</span>
+<span class="n">db</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">keyframe</span><span class="o">-&gt;</span><span class="n">brief_descriptors</span><span class="p">);</span>
+<span class="c1">// ret[0] is the nearest neighbour's score. threshold change with neighour score</span>
+<span class="kt">bool</span> <span class="n">find_loop</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span><span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">Score</span> <span class="o">&gt;</span> <span class="mf">0.05</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ret</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">//if (ret[i].Score &gt; ret[0].Score * 0.3)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">Score</span> <span class="o">&gt;</span> <span class="mf">0.015</span><span class="p">)</span>
+        <span class="p">{</span>          
+            <span class="n">find_loop</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">find_loop</span> <span class="o">&amp;&amp;</span> <span class="n">frame_index</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">min_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ret</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">min_index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">||</span> <span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">Id</span> <span class="o">&lt;</span> <span class="n">min_index</span> <span class="o">&amp;&amp;</span> <span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">Score</span> <span class="o">&gt;</span> <span class="mf">0.015</span><span class="p">))</span>
+            <span class="n">min_index</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">Id</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">min_index</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">else</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>DBoW2를 사용해 loop detection을 진행한다. ret에 결과가 저장되며, db.add를 통해 keyframe의 descriptor를 추가해준다. Default는 L1_NORM으로 설정되어 query를 비교한다.</li>
+  <li>Score를 휴리스틱하게 <del>(추정)</del> 정하여, loop 여부를 판단한다.</li>
+</ul>
+
+<p>7) bool KeyFrame::findConnection(KeyFrame* old_kf)</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">matched_3d</span> <span class="o">=</span> <span class="n">point_3d</span><span class="p">;</span>
+<span class="n">matched_2d_cur</span> <span class="o">=</span> <span class="n">point_2d_uv</span><span class="p">;</span>
+<span class="n">matched_2d_cur_norm</span> <span class="o">=</span> <span class="n">point_2d_norm</span><span class="p">;</span>
+<span class="n">matched_id</span> <span class="o">=</span> <span class="n">point_id</span><span class="p">;</span>
+
+<span class="n">searchByBRIEFDes</span><span class="p">(</span><span class="n">matched_2d_old</span><span class="p">,</span> <span class="n">matched_2d_old_norm</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">old_kf</span><span class="o">-&gt;</span><span class="n">brief_descriptors</span><span class="p">,</span> <span class="n">old_kf</span><span class="o">-&gt;</span><span class="n">keypoints</span><span class="p">,</span> <span class="n">old_kf</span><span class="o">-&gt;</span><span class="n">keypoints_norm</span><span class="p">);</span>
+<span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_2d_cur</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+<span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_2d_old</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+<span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_2d_cur_norm</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+<span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_2d_old_norm</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+<span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_3d</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+<span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_id</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+<span class="n">status</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">PnP_T_old</span><span class="p">;</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">PnP_R_old</span><span class="p">;</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">relative_t</span><span class="p">;</span>
+<span class="n">Quaterniond</span> <span class="n">relative_q</span><span class="p">;</span>
+<span class="kt">double</span> <span class="n">relative_yaw</span><span class="p">;</span>
+
+<span class="c1">// Feature Retrieval</span>
+<span class="k">if</span> <span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">matched_2d_cur</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">MIN_LOOP_NUM</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">PnPRANSAC</span><span class="p">(</span><span class="n">matched_2d_old_norm</span><span class="p">,</span> <span class="n">matched_3d</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">PnP_T_old</span><span class="p">,</span> <span class="n">PnP_R_old</span><span class="p">);</span>
+    <span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_2d_cur</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+    <span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_2d_old</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+    <span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_2d_cur_norm</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+    <span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_2d_old_norm</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+    <span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_3d</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+    <span class="n">reduceVector</span><span class="p">(</span><span class="n">matched_id</span><span class="p">,</span> <span class="n">status</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">matched_2d_cur</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">MIN_LOOP_NUM</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">relative_t</span> <span class="o">=</span> <span class="n">PnP_R_old</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">origin_vio_T</span> <span class="o">-</span> <span class="n">PnP_T_old</span><span class="p">);</span>
+    <span class="n">relative_q</span> <span class="o">=</span> <span class="n">PnP_R_old</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">origin_vio_R</span><span class="p">;</span>
+    <span class="n">relative_yaw</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">normalizeAngle</span><span class="p">(</span><span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">origin_vio_R</span><span class="p">).</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">PnP_R_old</span><span class="p">).</span><span class="n">x</span><span class="p">());</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">abs</span><span class="p">(</span><span class="n">relative_yaw</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">30.0</span> <span class="o">&amp;&amp;</span> <span class="n">relative_t</span><span class="p">.</span><span class="n">norm</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">20.0</span><span class="p">)</span>
+    <span class="p">{</span>
+
+    	<span class="n">has_loop</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    	<span class="n">loop_index</span> <span class="o">=</span> <span class="n">old_kf</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">;</span>
+    	<span class="n">loop_info</span> <span class="o">&lt;&lt;</span> <span class="n">relative_t</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">relative_t</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">relative_t</span><span class="p">.</span><span class="n">z</span><span class="p">(),</span>
+    	             <span class="n">relative_q</span><span class="p">.</span><span class="n">w</span><span class="p">(),</span> <span class="n">relative_q</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">relative_q</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">relative_q</span><span class="p">.</span><span class="n">z</span><span class="p">(),</span>
+    	             <span class="n">relative_yaw</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">//printf("loop final use num %d %lf--------------- \n", (int)matched_2d_cur.size(), t_match.toc());</span>
+<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>searchByBRIEFDes함수에서, searchInAera(window_brief_descriptors[i], descriptors_old, keypoints_old, keypoints_old_norm, pt, pt_norm)를 호출하여 True일시 status.push_back(1) 아니면 0.</li>
+  <li>
+    <p>searchInAera함수 에서는, Hamming distance방식을 통해 descriptor의 거리를 비교한다. 이중 가장 근접한 feature의 point와 normalized point를 찾아 matched_2d_old, matched_2d_old_norm vector에 넣어주게 된다.</p>
+
+    <p>(이 점들이 Hamming Distance 80보다는 작아야하며, 그럴경우에만 True)</p>
+  </li>
+  <li>이 과정을 window_brief_descriptor, 즉 현재 frame의 feature에 대해 전부 진행한다. 즉, matched_2d_old에는 현재 frame와 loop detect된 old frame간에 매칭된 feature만 남게된다.</li>
+  <li>reduceVector들로 해당 feature들만 남긴다.</li>
+  <li>Outlier rejection을 위해 PnP RANSAC을 사용하여 correspondence를 찾고, (Feature Retrieval) reject 된 point는 삭제한다.</li>
+  <li>이전 값들과의 비교를 통해, 최종적으로 loop가 맞는지 판단한다. loop_info에는 상대적인 IMU frame 기준으로 상대적인 차이값이 저장(바뀌어야할 값)된다. 또한 loop_index에 loop closure해야하는 old keyframe의 index를 저장한다.</li>
+</ul>
+
+<p>8) void KeyFrame::PnPRANSAC(const vectorcv::Point2f &amp;matched_2d_old_norm, const std::vectorcv::Point3f &amp;matched_3d, std::vector<uchar> &amp;status, Eigen::Vector3d &amp;PnP_T_old, Eigen::Matrix3d &amp;PnP_R_old)</uchar></p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="n">cv</span><span class="o">::</span><span class="n">Mat</span> <span class="n">r</span><span class="p">,</span> <span class="n">rvec</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">tmp_r</span><span class="p">;</span>
+<span class="n">cv</span><span class="o">::</span><span class="n">Mat</span> <span class="n">K</span> <span class="o">=</span> <span class="p">(</span><span class="n">cv</span><span class="o">::</span><span class="n">Mat_</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+<span class="n">Matrix3d</span> <span class="n">R_inital</span><span class="p">;</span>
+<span class="n">Vector3d</span> <span class="n">P_inital</span><span class="p">;</span>
+<span class="n">Matrix3d</span> <span class="n">R_w_c</span> <span class="o">=</span> <span class="n">origin_vio_R</span> <span class="o">*</span> <span class="n">qic</span><span class="p">;</span>
+<span class="c1">// world frame 기준 body의 위치 + (body -&gt; world) * (body frame 기준 camera의 위치)</span>
+<span class="n">Vector3d</span> <span class="n">T_w_c</span> <span class="o">=</span> <span class="n">origin_vio_T</span> <span class="o">+</span> <span class="n">origin_vio_R</span> <span class="o">*</span> <span class="n">tic</span><span class="p">;</span> 
+
+<span class="n">R_inital</span> <span class="o">=</span> <span class="n">R_w_c</span><span class="p">.</span><span class="n">inverse</span><span class="p">();</span> 
+<span class="c1">// world frame 기준 카메라의 위치 -&gt; camera frame기준 world origin의 위치.</span>
+<span class="n">P_inital</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">R_inital</span> <span class="o">*</span> <span class="n">T_w_c</span><span class="p">);</span> 
+
+<span class="n">cv</span><span class="o">::</span><span class="n">eigen2cv</span><span class="p">(</span><span class="n">R_inital</span><span class="p">,</span> <span class="n">tmp_r</span><span class="p">);</span>
+<span class="n">cv</span><span class="o">::</span><span class="n">Rodrigues</span><span class="p">(</span><span class="n">tmp_r</span><span class="p">,</span> <span class="n">rvec</span><span class="p">);</span>
+<span class="n">cv</span><span class="o">::</span><span class="n">eigen2cv</span><span class="p">(</span><span class="n">P_inital</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
+
+<span class="n">cv</span><span class="o">::</span><span class="n">Mat</span> <span class="n">inliers</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">CV_MAJOR_VERSION</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">solvePnPRansac</span><span class="p">(</span><span class="n">matched_3d</span><span class="p">,</span> <span class="n">matched_2d_old_norm</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rvec</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">10.0</span> <span class="o">/</span> <span class="mf">460.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">inliers</span><span class="p">);</span>
+<span class="k">else</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">CV_MINOR_VERSION</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">solvePnPRansac</span><span class="p">(</span><span class="n">matched_3d</span><span class="p">,</span> <span class="n">matched_2d_old_norm</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rvec</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="mf">10.0</span> <span class="o">/</span> <span class="mf">460.0</span><span class="p">),</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">inliers</span><span class="p">);</span>
+    <span class="k">else</span>
+        <span class="n">solvePnPRansac</span><span class="p">(</span><span class="n">matched_3d</span><span class="p">,</span> <span class="n">matched_2d_old_norm</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">rvec</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">10.0</span> <span class="o">/</span> <span class="mf">460.0</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">inliers</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">matched_2d_old_norm</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">status</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="k">for</span><span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">inliers</span><span class="p">.</span><span class="n">rows</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">inliers</span><span class="p">.</span><span class="n">at</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="n">status</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">cv</span><span class="o">::</span><span class="n">Rodrigues</span><span class="p">(</span><span class="n">rvec</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>
+<span class="n">Matrix3d</span> <span class="n">R_pnp</span><span class="p">,</span> <span class="n">R_w_c_old</span><span class="p">;</span>
+<span class="n">cv</span><span class="o">::</span><span class="n">cv2eigen</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">R_pnp</span><span class="p">);</span>
+<span class="n">R_w_c_old</span> <span class="o">=</span> <span class="n">R_pnp</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+<span class="n">Vector3d</span> <span class="n">T_pnp</span><span class="p">,</span> <span class="n">T_w_c_old</span><span class="p">;</span>
+<span class="n">cv</span><span class="o">::</span><span class="n">cv2eigen</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">T_pnp</span><span class="p">);</span>
+<span class="n">T_w_c_old</span> <span class="o">=</span> <span class="n">R_w_c_old</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">T_pnp</span><span class="p">);</span>
+
+<span class="n">PnP_R_old</span> <span class="o">=</span> <span class="n">R_w_c_old</span> <span class="o">*</span> <span class="n">qic</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+<span class="n">PnP_T_old</span> <span class="o">=</span> <span class="n">T_w_c_old</span> <span class="o">-</span> <span class="n">PnP_R_old</span> <span class="o">*</span> <span class="n">tic</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>origin_vio_R, origin_vio_T ($R_{b_k}^w$, $P_{b_k}^w$)를 통해, R_w_c, T_w_c ($R_{c_k}^w$, $P_{c_k}^w$) 를 구한다. 다음 수식을 참고하면</p>
+
+    <p><img src="/assets/VINS_FUSION/4/Untitled%2013.png" alt="4%20Sliding%20window%20&amp;%20Optimization%20d57584158b3f4e2fb5e746c134c9b592/Untitled%2013.png" /></p>
+
+    <p>R_inital = rvec = $R^{c_k}_w$, P_initial  = t = $P^{c_k}_w$이다.</p>
+  </li>
+  <li>논문에서는 Two step으로 2D - 2D → 3D - 2D 를 하는것으로 보이나, 코드상에서는 3D - 2D 한번만 수행한다. openCV의 solvePnPRansac함수를 통해, inliers points와 refined rvec, t를 얻는다. 이미 normalize되어 있어 K는 identity 함수, D는 empty matrix를 사용한다.</li>
+  <li>
+    <p>PnP_R_old, PnP_P_old ($R_{b_k}^w$, $P_{b_k}^w$) 를 최종적으로 구해 반환한다.</p>
+
+    <p>*<del>(R_w_c_old, T_w_c_old 이름 거꾸로 지은듯)</del></p>
+  </li>
+</ul>
+
+<p>[reference] : <a href="https://docs.opencv.org/master/d9/d0c/group__calib3d.html#ga50620f0e26e02caa2e9adc07b5fbf24e">https://docs.opencv.org/master/d9/d0c/group__calib3d.html#ga50620f0e26e02caa2e9adc07b5fbf24e</a></p>
+
+<h1 id="2-pose-graph-optimization">2. Pose Graph Optimization</h1>
+
+<p>[논문내용 발췌]  Since our visual-inertial setup renders roll and pitch angles fully observable, the accumulated drift only occurs in four degrees-of-freedom</p>
+
+<p>→ 4DOF에 대해서만 optimize가 필요하다.</p>
+
+<p>1) void PoseGraph::optimize4DoF()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">optimize_buf</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+<span class="p">{</span>
+    <span class="n">cur_index</span> <span class="o">=</span> <span class="n">optimize_buf</span><span class="p">.</span><span class="n">front</span><span class="p">();</span>
+    <span class="n">first_looped_index</span> <span class="o">=</span> <span class="n">earliest_loop_index</span><span class="p">;</span> <span class="c1">// 가장 앞의 loop index</span>
+    <span class="n">optimize_buf</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">cur_index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">{</span>
+		<span class="n">KeyFrame</span><span class="o">*</span> <span class="n">cur_kf</span> <span class="o">=</span> <span class="n">getKeyFrame</span><span class="p">(</span><span class="n">cur_index</span><span class="p">);</span>
+
+    <span class="kt">int</span> <span class="n">max_length</span> <span class="o">=</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="c1">// w^t_i   w^q_i</span>
+    <span class="kt">double</span> <span class="n">t_array</span><span class="p">[</span><span class="n">max_length</span><span class="p">][</span><span class="mi">3</span><span class="p">];</span>
+    <span class="n">Quaterniond</span> <span class="n">q_array</span><span class="p">[</span><span class="n">max_length</span><span class="p">];</span>
+    <span class="kt">double</span> <span class="n">euler_array</span><span class="p">[</span><span class="n">max_length</span><span class="p">][</span><span class="mi">3</span><span class="p">];</span>
+    <span class="kt">double</span> <span class="n">sequence_array</span><span class="p">[</span><span class="n">max_length</span><span class="p">];</span>
+
+    <span class="n">options</span><span class="p">.</span><span class="n">linear_solver_type</span> <span class="o">=</span> <span class="n">ceres</span><span class="o">::</span><span class="n">SPARSE_NORMAL_CHOLESKY</span><span class="p">;</span>
+    <span class="n">options</span><span class="p">.</span><span class="n">max_num_iterations</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="n">ceres</span><span class="o">::</span><span class="n">LossFunction</span> <span class="o">*</span><span class="n">loss_function</span><span class="p">;</span>
+    <span class="n">loss_function</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ceres</span><span class="o">::</span><span class="n">HuberLoss</span><span class="p">(</span><span class="mf">0.1</span><span class="p">);</span>
+    <span class="n">ceres</span><span class="o">::</span><span class="n">LocalParameterization</span><span class="o">*</span> <span class="n">angle_local_parameterization</span> <span class="o">=</span>
+        <span class="n">AngleLocalParameterization</span><span class="o">::</span><span class="n">Create</span><span class="p">();</span>
+
+    <span class="n">list</span><span class="o">&lt;</span><span class="n">KeyFrame</span><span class="o">*&gt;::</span><span class="n">iterator</span> <span class="n">it</span><span class="p">;</span>
+		<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">it</span> <span class="o">=</span> <span class="n">keyframelist</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">keyframelist</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">it</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">first_looped_index</span><span class="p">)</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">local_index</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+        <span class="n">Quaterniond</span> <span class="n">tmp_q</span><span class="p">;</span>
+        <span class="n">Matrix3d</span> <span class="n">tmp_r</span><span class="p">;</span>
+        <span class="n">Vector3d</span> <span class="n">tmp_t</span><span class="p">;</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">getVioPose</span><span class="p">(</span><span class="n">tmp_t</span><span class="p">,</span> <span class="n">tmp_r</span><span class="p">);</span>
+        <span class="n">tmp_q</span> <span class="o">=</span> <span class="n">tmp_r</span><span class="p">;</span>
+        <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_t</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+        <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_t</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_t</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+        <span class="n">q_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_q</span><span class="p">;</span>
+				<span class="n">Vector3d</span> <span class="n">euler_angle</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">tmp_q</span><span class="p">.</span><span class="n">toRotationMatrix</span><span class="p">());</span>
+        <span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">euler_angle</span><span class="p">.</span><span class="n">x</span><span class="p">();</span>
+        <span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">euler_angle</span><span class="p">.</span><span class="n">y</span><span class="p">();</span>
+        <span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">euler_angle</span><span class="p">.</span><span class="n">z</span><span class="p">();</span>
+
+        <span class="n">sequence_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">sequence</span><span class="p">;</span> <span class="c1">// frame 순서대로 sequence 저장.</span>
+
+        <span class="n">problem</span><span class="p">.</span><span class="n">AddParameterBlock</span><span class="p">(</span><span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">angle_local_parameterization</span><span class="p">);</span>
+        <span class="n">problem</span><span class="p">.</span><span class="n">AddParameterBlock</span><span class="p">(</span><span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">3</span><span class="p">);</span>
+				<span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">==</span> <span class="n">first_looped_index</span> <span class="o">||</span> <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">sequence</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">{</span>   
+            <span class="n">problem</span><span class="p">.</span><span class="n">SetParameterBlockConstant</span><span class="p">(</span><span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+            <span class="n">problem</span><span class="p">.</span><span class="n">SetParameterBlockConstant</span><span class="p">(</span><span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+				<span class="c1">//add edge</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">sequence_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">sequence_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">])</span>
+          <span class="p">{</span>
+            <span class="n">Vector3d</span> <span class="n">euler_conncected</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">q_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">].</span><span class="n">toRotationMatrix</span><span class="p">());</span>
+            <span class="n">Vector3d</span> <span class="n">relative_t</span><span class="p">(</span><span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">][</span><span class="mi">2</span><span class="p">]);</span>
+            <span class="n">relative_t</span> <span class="o">=</span> <span class="n">q_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">].</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">relative_t</span><span class="p">;</span>
+            <span class="kt">double</span> <span class="n">relative_yaw</span> <span class="o">=</span> <span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+            <span class="n">ceres</span><span class="o">::</span><span class="n">CostFunction</span><span class="o">*</span> <span class="n">cost_function</span> <span class="o">=</span> <span class="n">FourDOFError</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span> <span class="n">relative_t</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">relative_t</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">relative_t</span><span class="p">.</span><span class="n">z</span><span class="p">(),</span>
+                                           <span class="n">relative_yaw</span><span class="p">,</span> <span class="n">euler_conncected</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">euler_conncected</span><span class="p">.</span><span class="n">z</span><span class="p">());</span>
+            <span class="n">problem</span><span class="p">.</span><span class="n">AddResidualBlock</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">],</span> 
+                                    <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="p">],</span> 
+                                    <span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
+                                    <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+				<span class="c1">//add loop edge</span>
+        <span class="k">if</span><span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">has_loop</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">assert</span><span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">loop_index</span> <span class="o">&gt;=</span> <span class="n">first_looped_index</span><span class="p">);</span>
+            <span class="kt">int</span> <span class="n">connected_index</span> <span class="o">=</span> <span class="n">getKeyFrame</span><span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">loop_index</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">local_index</span><span class="p">;</span> <span class="c1">// frame index</span>
+            <span class="n">Vector3d</span> <span class="n">euler_conncected</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">q_array</span><span class="p">[</span><span class="n">connected_index</span><span class="p">].</span><span class="n">toRotationMatrix</span><span class="p">());</span>
+            <span class="n">Vector3d</span> <span class="n">relative_t</span><span class="p">;</span>
+            <span class="n">relative_t</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">getLoopRelativeT</span><span class="p">();</span>
+            <span class="kt">double</span> <span class="n">relative_yaw</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">getLoopRelativeYaw</span><span class="p">();</span>
+            <span class="n">ceres</span><span class="o">::</span><span class="n">CostFunction</span><span class="o">*</span> <span class="n">cost_function</span> <span class="o">=</span> <span class="n">FourDOFWeightError</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span> <span class="n">relative_t</span><span class="p">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">relative_t</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">relative_t</span><span class="p">.</span><span class="n">z</span><span class="p">(),</span>
+                                                                       <span class="n">relative_yaw</span><span class="p">,</span> <span class="n">euler_conncected</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">euler_conncected</span><span class="p">.</span><span class="n">z</span><span class="p">());</span>
+            <span class="n">problem</span><span class="p">.</span><span class="n">AddResidualBlock</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="n">loss_function</span><span class="p">,</span> <span class="n">euler_array</span><span class="p">[</span><span class="n">connected_index</span><span class="p">],</span> 
+                                                          <span class="n">t_array</span><span class="p">[</span><span class="n">connected_index</span><span class="p">],</span> 
+                                                          <span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> 
+                                                          <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+            
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">==</span> <span class="n">cur_index</span><span class="p">)</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="n">ceres</span><span class="o">::</span><span class="n">Solve</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">problem</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">summary</span><span class="p">);</span>
+
+		<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">it</span> <span class="o">=</span> <span class="n">keyframelist</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">keyframelist</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">it</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">first_looped_index</span><span class="p">)</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="n">Quaterniond</span> <span class="n">tmp_q</span><span class="p">;</span>
+        <span class="n">tmp_q</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">ypr2R</span><span class="p">(</span><span class="n">Vector3d</span><span class="p">(</span><span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">euler_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]));</span>
+        <span class="n">Vector3d</span> <span class="n">tmp_t</span> <span class="o">=</span> <span class="n">Vector3d</span><span class="p">(</span><span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">t_array</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]);</span>
+        <span class="n">Matrix3d</span> <span class="n">tmp_r</span> <span class="o">=</span> <span class="n">tmp_q</span><span class="p">.</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">updatePose</span><span class="p">(</span><span class="n">tmp_t</span><span class="p">,</span> <span class="n">tmp_r</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">index</span> <span class="o">==</span> <span class="n">cur_index</span><span class="p">)</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+		<span class="n">Vector3d</span> <span class="n">cur_t</span><span class="p">,</span> <span class="n">vio_t</span><span class="p">;</span>
+    <span class="n">Matrix3d</span> <span class="n">cur_r</span><span class="p">,</span> <span class="n">vio_r</span><span class="p">;</span>
+    <span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">getPose</span><span class="p">(</span><span class="n">cur_t</span><span class="p">,</span> <span class="n">cur_r</span><span class="p">);</span>
+    <span class="n">cur_kf</span><span class="o">-&gt;</span><span class="n">getVioPose</span><span class="p">(</span><span class="n">vio_t</span><span class="p">,</span> <span class="n">vio_r</span><span class="p">);</span>
+
+    <span class="n">m_drift</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+    <span class="n">yaw_drift</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">cur_r</span><span class="p">).</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">vio_r</span><span class="p">).</span><span class="n">x</span><span class="p">();</span>
+    <span class="n">r_drift</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">ypr2R</span><span class="p">(</span><span class="n">Vector3d</span><span class="p">(</span><span class="n">yaw_drift</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+    <span class="n">t_drift</span> <span class="o">=</span> <span class="n">cur_t</span> <span class="o">-</span> <span class="n">r_drift</span> <span class="o">*</span> <span class="n">vio_t</span><span class="p">;</span>
+    <span class="n">m_drift</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+
+    <span class="n">it</span><span class="o">++</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(;</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">keyframelist</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">it</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Vector3d</span> <span class="n">P</span><span class="p">;</span>
+        <span class="n">Matrix3d</span> <span class="n">R</span><span class="p">;</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">getVioPose</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">);</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">r_drift</span> <span class="o">*</span> <span class="n">P</span> <span class="o">+</span> <span class="n">t_drift</span><span class="p">;</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">r_drift</span> <span class="o">*</span> <span class="n">R</span><span class="p">;</span>
+        <span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">updatePose</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">m_keyframelist</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+    <span class="n">updatePath</span><span class="p">();</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<ul>
+  <li>optimize_buf에는 loop closing 되야하는 cur keyframe의 frame index가 들어 있다.</li>
+  <li>cur_index로 optimize_buf에 있는 가장 최근 frame index로 지정한다.</li>
+  <li>
+    <p>AngleLocalParameterization::Create()에서 ceres::AutoDiffLocalParameterization로 ceres::LocalParameterization에 대해 auto differentiation으로 jacobian을 구한다. AngleLocalParameterization 내부에서 operator()는 다음을 계산한다.</p>
+
+    <p><img src="/assets/VINS_FUSION/6/Untitled.png" alt="/assets/VINS_FUSION/6/Untitled.png" /></p>
+
+    <p>AddParameterBlock에서 size가 1인 이유는 yaw값만 추가해주기 때문이다.</p>
+
+    <p>만약 첫 loop index이거나 sequence가 0인 것들(load keyframe하는 경우)은 4DOF parameter들을 고정한다.</p>
+  </li>
+</ul>
+
+<p>[reference] : <a href="http://ceres-solver.org/nnls_modeling.html#autodifflocalparameterization">http://ceres-solver.org/nnls_modeling.html#autodifflocalparameterization</a></p>
+
+<ul>
+  <li>
+    <p>Previous keyframe 4개에 대해 sequence가 같은 경우 edge로 추가한다.</p>
+
+    <p><img src="/assets/VINS_FUSION/6/Untitled%201.png" alt="/assets/VINS_FUSION/6/Untitled%201.png" /></p>
+  </li>
+  <li>loop가 detect된 frame에 대해 loop info를 활용하여 optimization에 추가 및 진행한다.</li>
+  <li>이후 update된 keyframe들의 Pose로 Keyframe들의 T_w_i, R_w_i 를 update해주고, 이후 추가적으로 들어온 frame들에 대해서의 Pose를 update해준다.</li>
+</ul>
+
+<p>2) struct FourDOFError</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">FourDOFError</span><span class="p">(</span><span class="kt">double</span> <span class="n">t_x</span><span class="p">,</span> <span class="kt">double</span> <span class="n">t_y</span><span class="p">,</span> <span class="kt">double</span> <span class="n">t_z</span><span class="p">,</span> <span class="kt">double</span> <span class="n">relative_yaw</span><span class="p">,</span> <span class="kt">double</span> <span class="n">pitch_i</span><span class="p">,</span> <span class="kt">double</span> <span class="n">roll_i</span><span class="p">)</span>
+				  <span class="o">:</span><span class="n">t_x</span><span class="p">(</span><span class="n">t_x</span><span class="p">),</span> <span class="n">t_y</span><span class="p">(</span><span class="n">t_y</span><span class="p">),</span> <span class="n">t_z</span><span class="p">(</span><span class="n">t_z</span><span class="p">),</span> <span class="n">relative_yaw</span><span class="p">(</span><span class="n">relative_yaw</span><span class="p">),</span> <span class="n">pitch_i</span><span class="p">(</span><span class="n">pitch_i</span><span class="p">),</span> <span class="n">roll_i</span><span class="p">(</span><span class="n">roll_i</span><span class="p">){}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="kt">bool</span> <span class="k">operator</span><span class="p">()(</span><span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="k">const</span> <span class="n">yaw_i</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="n">ti</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="n">yaw_j</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="n">tj</span><span class="p">,</span> <span class="n">T</span><span class="o">*</span> <span class="n">residuals</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+	<span class="n">T</span> <span class="n">t_w_ij</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+	<span class="n">t_w_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ti</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+	<span class="n">t_w_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ti</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+	<span class="n">t_w_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">tj</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">ti</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+	<span class="c1">// euler to rotation</span>
+	<span class="n">T</span> <span class="n">w_R_i</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
+	<span class="n">YawPitchRollToRotationMatrix</span><span class="p">(</span><span class="n">yaw_i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">T</span><span class="p">(</span><span class="n">pitch_i</span><span class="p">),</span> <span class="n">T</span><span class="p">(</span><span class="n">roll_i</span><span class="p">),</span> <span class="n">w_R_i</span><span class="p">);</span>
+	<span class="c1">// rotation transpose</span>
+	<span class="n">T</span> <span class="n">i_R_w</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
+	<span class="n">RotationMatrixTranspose</span><span class="p">(</span><span class="n">w_R_i</span><span class="p">,</span> <span class="n">i_R_w</span><span class="p">);</span>
+	<span class="c1">// rotation matrix rotate point</span>
+	<span class="n">T</span> <span class="n">t_i_ij</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+	<span class="n">RotationMatrixRotatePoint</span><span class="p">(</span><span class="n">i_R_w</span><span class="p">,</span> <span class="n">t_w_ij</span><span class="p">,</span> <span class="n">t_i_ij</span><span class="p">);</span>
+
+	<span class="n">residuals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_i_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">(</span><span class="n">t_x</span><span class="p">));</span>
+	<span class="n">residuals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_i_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">(</span><span class="n">t_y</span><span class="p">));</span>
+	<span class="n">residuals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_i_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">(</span><span class="n">t_z</span><span class="p">));</span>
+	<span class="n">residuals</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">NormalizeAngle</span><span class="p">(</span><span class="n">yaw_j</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">yaw_i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">(</span><span class="n">relative_yaw</span><span class="p">));</span>
+
+	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="n">ceres</span><span class="o">::</span><span class="n">CostFunction</span><span class="o">*</span> <span class="nf">Create</span><span class="p">(</span><span class="k">const</span> <span class="kt">double</span> <span class="n">t_x</span><span class="p">,</span> <span class="k">const</span> <span class="kt">double</span> <span class="n">t_y</span><span class="p">,</span> <span class="k">const</span> <span class="kt">double</span> <span class="n">t_z</span><span class="p">,</span>
+								   <span class="k">const</span> <span class="kt">double</span> <span class="n">relative_yaw</span><span class="p">,</span> <span class="k">const</span> <span class="kt">double</span> <span class="n">pitch_i</span><span class="p">,</span> <span class="k">const</span> <span class="kt">double</span> <span class="n">roll_i</span><span class="p">)</span> 
+<span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span><span class="k">new</span> <span class="n">ceres</span><span class="o">::</span><span class="n">AutoDiffCostFunction</span><span class="o">&lt;</span>
+          <span class="n">FourDOFError</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span> <span class="c1">// output(residual) dim / argument dims of operator()</span>
+          	<span class="k">new</span> <span class="n">FourDOFError</span><span class="p">(</span><span class="n">t_x</span><span class="p">,</span> <span class="n">t_y</span><span class="p">,</span> <span class="n">t_z</span><span class="p">,</span> <span class="n">relative_yaw</span><span class="p">,</span> <span class="n">pitch_i</span><span class="p">,</span> <span class="n">roll_i</span><span class="p">)));</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">t_x</span><span class="p">,</span> <span class="n">t_y</span><span class="p">,</span> <span class="n">t_z</span><span class="p">;</span>
+<span class="kt">double</span> <span class="n">relative_yaw</span><span class="p">,</span> <span class="n">pitch_i</span><span class="p">,</span> <span class="n">roll_i</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>FourDOFError의 operator()에 parameter의 dimension은 1,3,1,3으로, yaw(prev kf), tranlsation(prev kf), yaw (cur kf),translation(cur kf)이다.</li>
+  <li>
+    <p>w_R_i에는 prev kf의 rotation이 들어간다. 이후 t_i_ij 값은 prev kf frame기준으로 prev kf와 cur kf와의 translation 차이를 갖게 된다. 이때 residual은 다음 식과 같이</p>
+
+    <p><img src="/assets/VINS_FUSION/6/Untitled%202.png" alt="/assets/VINS_FUSION/6/Untitled%202.png" /></p>
+
+    <p>operator()에서 계산한 relative_t, relative yaw와 기존에 계산해준 값과의 차이가 된다.</p>
+
+    <p>처음에 둘이 같은 값을 가짐에도 residual이 되는 이유는, non-linear optimization이 iterative하게 진행됨에 따라 loop closing을 진행하면 기존에 계산해둔 relative_yaw는 인접 frame과의 차이를 상수를 갖고 있기 때문에 loop closing 후에 operator()에서 계산하는 relative 값이 바뀌게 되면 이에 맞춰서 인접 frame의 pose도 바꿔가면서 optimize하기 위함이다. (그래서 first_looped_index의 Pose는 상수로 고정하여 기준점으로 잡아주었다.)</p>
+
+    <p>물론 나중에 모든 keyframe의 Pose를 update하지만, optimize하는 Frame까지는 바꿔가며 optimize하게 된다.</p>
+
+    <p>AutoDiffCostFunction을 통해 jacobian은 자동 계산된다.</p>
+  </li>
+</ul>
+
+<p>3) struct FourDOFWeightError</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="n">FourDOFWeightError</span><span class="p">(</span><span class="kt">double</span> <span class="n">t_x</span><span class="p">,</span> <span class="kt">double</span> <span class="n">t_y</span><span class="p">,</span> <span class="kt">double</span> <span class="n">t_z</span><span class="p">,</span> <span class="kt">double</span> <span class="n">relative_yaw</span><span class="p">,</span> <span class="kt">double</span> <span class="n">pitch_i</span><span class="p">,</span> <span class="kt">double</span> <span class="n">roll_i</span><span class="p">)</span>
+				  <span class="o">:</span><span class="n">t_x</span><span class="p">(</span><span class="n">t_x</span><span class="p">),</span> <span class="n">t_y</span><span class="p">(</span><span class="n">t_y</span><span class="p">),</span> <span class="n">t_z</span><span class="p">(</span><span class="n">t_z</span><span class="p">),</span> <span class="n">relative_yaw</span><span class="p">(</span><span class="n">relative_yaw</span><span class="p">),</span> <span class="n">pitch_i</span><span class="p">(</span><span class="n">pitch_i</span><span class="p">),</span> <span class="n">roll_i</span><span class="p">(</span><span class="n">roll_i</span><span class="p">){</span>
+				  	<span class="n">weight</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+				  <span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="kt">bool</span> <span class="k">operator</span><span class="p">()(</span><span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="k">const</span> <span class="n">yaw_i</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="n">ti</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="n">yaw_j</span><span class="p">,</span> <span class="k">const</span> <span class="n">T</span><span class="o">*</span> <span class="n">tj</span><span class="p">,</span> <span class="n">T</span><span class="o">*</span> <span class="n">residuals</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+	<span class="n">T</span> <span class="n">t_w_ij</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+	<span class="n">t_w_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ti</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+	<span class="n">t_w_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ti</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+	<span class="n">t_w_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">tj</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">ti</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+	<span class="c1">// euler to rotation</span>
+	<span class="n">T</span> <span class="n">w_R_i</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
+	<span class="n">YawPitchRollToRotationMatrix</span><span class="p">(</span><span class="n">yaw_i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">T</span><span class="p">(</span><span class="n">pitch_i</span><span class="p">),</span> <span class="n">T</span><span class="p">(</span><span class="n">roll_i</span><span class="p">),</span> <span class="n">w_R_i</span><span class="p">);</span>
+	<span class="c1">// rotation transpose</span>
+	<span class="n">T</span> <span class="n">i_R_w</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
+	<span class="n">RotationMatrixTranspose</span><span class="p">(</span><span class="n">w_R_i</span><span class="p">,</span> <span class="n">i_R_w</span><span class="p">);</span>
+	<span class="c1">// rotation matrix rotate point</span>
+	<span class="n">T</span> <span class="n">t_i_ij</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+	<span class="n">RotationMatrixRotatePoint</span><span class="p">(</span><span class="n">i_R_w</span><span class="p">,</span> <span class="n">t_w_ij</span><span class="p">,</span> <span class="n">t_i_ij</span><span class="p">);</span>
+
+	<span class="n">residuals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_i_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">(</span><span class="n">t_x</span><span class="p">))</span> <span class="o">*</span> <span class="n">T</span><span class="p">(</span><span class="n">weight</span><span class="p">);</span>
+	<span class="n">residuals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_i_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">(</span><span class="n">t_y</span><span class="p">))</span> <span class="o">*</span> <span class="n">T</span><span class="p">(</span><span class="n">weight</span><span class="p">);</span>
+	<span class="n">residuals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_i_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">(</span><span class="n">t_z</span><span class="p">))</span> <span class="o">*</span> <span class="n">T</span><span class="p">(</span><span class="n">weight</span><span class="p">);</span>
+	<span class="n">residuals</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">NormalizeAngle</span><span class="p">((</span><span class="n">yaw_j</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">yaw_i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">(</span><span class="n">relative_yaw</span><span class="p">)))</span> <span class="o">*</span> <span class="n">T</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span> <span class="o">/</span> <span class="n">T</span><span class="p">(</span><span class="mf">10.0</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="n">ceres</span><span class="o">::</span><span class="n">CostFunction</span><span class="o">*</span> <span class="nf">Create</span><span class="p">(</span><span class="k">const</span> <span class="kt">double</span> <span class="n">t_x</span><span class="p">,</span> <span class="k">const</span> <span class="kt">double</span> <span class="n">t_y</span><span class="p">,</span> <span class="k">const</span> <span class="kt">double</span> <span class="n">t_z</span><span class="p">,</span>
+								   <span class="k">const</span> <span class="kt">double</span> <span class="n">relative_yaw</span><span class="p">,</span> <span class="k">const</span> <span class="kt">double</span> <span class="n">pitch_i</span><span class="p">,</span> <span class="k">const</span> <span class="kt">double</span> <span class="n">roll_i</span><span class="p">)</span> 
+<span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span><span class="k">new</span> <span class="n">ceres</span><span class="o">::</span><span class="n">AutoDiffCostFunction</span><span class="o">&lt;</span>
+          <span class="n">FourDOFWeightError</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span>
+          	<span class="k">new</span> <span class="n">FourDOFWeightError</span><span class="p">(</span><span class="n">t_x</span><span class="p">,</span> <span class="n">t_y</span><span class="p">,</span> <span class="n">t_z</span><span class="p">,</span> <span class="n">relative_yaw</span><span class="p">,</span> <span class="n">pitch_i</span><span class="p">,</span> <span class="n">roll_i</span><span class="p">)));</span>
+<span class="p">}</span>
+
+<span class="kt">double</span> <span class="n">t_x</span><span class="p">,</span> <span class="n">t_y</span><span class="p">,</span> <span class="n">t_z</span><span class="p">;</span>
+<span class="kt">double</span> <span class="n">relative_yaw</span><span class="p">,</span> <span class="n">pitch_i</span><span class="p">,</span> <span class="n">roll_i</span><span class="p">;</span>
+<span class="kt">double</span> <span class="n">weight</span><span class="p">;</span>
+
+</code></pre></div></div>
+
+<ul>
+  <li>현재 갖고 있는 relative Pose와 PnP로 계산해둔 loop_info를 가지고 residual을 계산한다.</li>
+</ul>
+
+<hr />
+
+<p>VINS-Fusion 코드를 정리한 포스트입니다.</p>
+
+<ol>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-1/">VINS-Fusion Code Review - (1) Image Processing</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-2/">VINS-Fusion Code Review - (2) IMU Processing</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-3/">VINS-Fusion Code Review - (3) Initialization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-4/">VINS-Fusion Code Review - (4) Sliding window &amp; Optimization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-5/">VINS-Fusion Code Review - (5) Marginalization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-6/">VINS-Fusion Code Review - (6) Graph optimization</a></li>
+</ol>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li><a href="https://arxiv.org/abs/1711.02508">[2017] Quaternion kinematics for the error-state Kalman filter.pdf</a></li>
+  <li><a href="http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf">[2005] Indirect Kalman Filter for 3D Attitude Estimation.pdf</a></li>
+  <li><a href="https://arxiv.org/abs/1912.11986">Formula Derivation and Analysis of the VINS-Mono.pdf</a></li>
+  <li><a href="https://slideplayer.com/slide/12551914/">Marginalization&amp;Shcurcomplement.pptx</a></li>
+  <li><a href="https://kvmanohar22.github.io/notes/w03/main.pdf">[TRO2012] Visual-Inertial-Aided Navigation for High-Dynamic Motion in Built Environments Without Initial Conditions.pdf</a></li>
+  <li><a href="https://ieeexplore.ieee.org/document/8421746">VINS-Mono.pdf</a></li>
+</ul>
+
+      </article>
+      <script type="text/javascript" async
+       src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+      </script>
+
+      
+        <div class="blog-tags">
+          <span>Tags:</span>
+          
+            <a href="/tags#Visual SLAM">Visual SLAM</a>
+          
+        </div>
+      
+
+      
+
+      
+        <!-- Check if any share-links are active -->
+
+
+
+
+
+      
+
+      <ul class="pagination blog-pager">
+        
+        <li class="page-item previous">
+          <a class="page-link" href="/2022-01-05-VINS-Fusion-5/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (5) Marginalization">&larr; Previous Post</a>
+        </li>
+        
+        
+        <li class="page-item next">
+          <a class="page-link" href="/2022-03-19-rpg-trajectories/" data-toggle="tooltip" data-placement="top" title="RPG trajectory evaluation on multiple trajectories">Next Post &rarr;</a>
+        </li>
+        
+      </ul>
+      
+  
+  
+  
+
+  
+
+
+  
+
+  
+
+
+
+    </div>
+  </div>
+</div>
+
+
+  <footer>
+  <div class="container-md beautiful-jekyll-footer">
+    <div class="row">
+      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+      
+<ul class="list-inline text-center footer-links"><li class="list-inline-item">
+    <a href="mailto:dongukseo@kaist.ac.kr" title="Email me">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">Email me</span>
+   </a>
+  </li><li class="list-inline-item">
+    <a href="https://github.com/SeoDU" title="GitHub">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">GitHub</span>
+   </a>
+  </li><li class="list-inline-item">
+    <a href="https://www.youtube.com/channel/UCaON-AWswqdv9hzrOxZDdWA" title="YouTube">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fab fa-youtube fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">YouTube</span>
+   </a>
+  </li></ul>
+
+      
+      <p class="copyright text-muted">
+      
+        Dong-Uk Seo
+        &nbsp;&bull;&nbsp;
+      
+      2023
+
+      
+
+      
+
+
+      </p>
+      <p class="theme-by text-muted">
+        Powered by
+        <a href="https://beautifuljekyll.com">Beautiful Jekyll</a>
+      </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  
+  
+    
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+
+
+  
+    
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+
+  
+    
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+
+  
+
+
+
+  
+    <!-- doing something a bit funky here because I want to be careful not to include JQuery twice! -->
+    
+      <script src="/assets/js/beautifuljekyll.js"></script>
+    
+  
+
+
+
+
+
+
+
+
+
+</body>
+</html>

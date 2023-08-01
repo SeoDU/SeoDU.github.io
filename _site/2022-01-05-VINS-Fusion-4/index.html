@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Beautiful Jekyll 6.0.1 | Copyright Dean Attali 2023 -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+
+  
+
+  <title>VINS-Fusion Code Review - (4) Sliding window &amp; Optimization</title>
+
+  
+  <meta name="author" content="Dong-Uk Seo">
+  
+
+  <meta name="description" content="(4) Sliding window &amp;amp; Optimization 파트 중요 코드 정리 1. Optimizing local parameters 1) void Estimator::vector2double() for (int i = 0; i &amp;lt;= WINDOW_SIZE; i++) { para_Pose[i][0] = Ps[i].x(); para_Pose[i][1] = Ps[i].y(); para_Pose[i][2] = Ps[i].z(); Quaterniond q{Rs[i]}; para_Pose[i][3] = q.x(); para_Pose[i][4] = q.y(); para_Pose[i][5] = q.z(); para_Pose[i][6] = q.w(); if(USE_IMU)...">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+      
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+    
+      
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+
+
+    
+  
+
+  
+    
+      <link rel="stylesheet" href="/assets/css/bootstrap-social.css">
+    
+      <link rel="stylesheet" href="/assets/css/beautifuljekyll.css">
+    
+  
+
+  
+
+  
+  
+  
+
+  
+
+  
+  <meta property="og:site_name" content="Dong-Uk Seo">
+  <meta property="og:title" content="VINS-Fusion Code Review - (4) Sliding window &amp; Optimization">
+  <meta property="og:description" content="(4) Sliding window &amp;amp; Optimization 파트 중요 코드 정리 1. Optimizing local parameters 1) void Estimator::vector2double() for (int i = 0; i &amp;lt;= WINDOW_SIZE; i++) { para_Pose[i][0] = Ps[i].x(); para_Pose[i][1] = Ps[i].y(); para_Pose[i][2] = Ps[i].z(); Quaterniond q{Rs[i]}; para_Pose[i][3] = q.x(); para_Pose[i][4] = q.y(); para_Pose[i][5] = q.z(); para_Pose[i][6] = q.w(); if(USE_IMU)...">
+
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:article:author" content="Dong-Uk Seo">
+  <meta property="og:article:published_time" content="2022-01-05T00:00:00-05:00">
+  <meta property="og:url" content="http://localhost:4000/2022-01-05-VINS-Fusion-4/">
+  <link rel="canonical" href="http://localhost:4000/2022-01-05-VINS-Fusion-4/">
+  
+
+  
+  <meta name="twitter:card" content="summary">
+  
+  <meta name="twitter:site" content="@">
+  <meta name="twitter:creator" content="@">
+
+  <meta property="twitter:title" content="VINS-Fusion Code Review - (4) Sliding window &amp; Optimization">
+  <meta property="twitter:description" content="(4) Sliding window &amp;amp; Optimization 파트 중요 코드 정리 1. Optimizing local parameters 1) void Estimator::vector2double() for (int i = 0; i &amp;lt;= WINDOW_SIZE; i++) { para_Pose[i][0] = Ps[i].x(); para_Pose[i][1] = Ps[i].y(); para_Pose[i][2] = Ps[i].z(); Quaterniond q{Rs[i]}; para_Pose[i][3] = q.x(); para_Pose[i][4] = q.y(); para_Pose[i][5] = q.z(); para_Pose[i][6] = q.w(); if(USE_IMU)...">
+
+  
+
+  
+
+
+  
+
+  
+
+</head>
+
+
+<body>
+
+  
+
+
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><a class="navbar-brand" href="http://localhost:4000/">Dong-Uk Seo</a><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="main-navbar">
+    <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/aboutme">About Me</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/tags">Contents</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" id="nav-search-link" href="#" title="Search">
+            <span id="nav-search-icon" class="fa fa-search"></span>
+            <span id="nav-search-text">Search</span>
+          </a>
+        </li></ul>
+  </div>
+
+  
+
+  
+
+</nav>
+
+
+
+<div id="beautifuljekyll-search-overlay">
+
+  <div id="nav-search-exit" title="Exit search">✕</div>
+  <input type="text" id="nav-search-input" placeholder="Search">
+  <ul id="search-results-container"></ul>
+  
+  <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+  <script>
+    var searchjson = '[ \
+       \
+        { \
+          "title"    : "Azure Kinect DK install", \
+          "desc"     : "Azure Kinect DK install", \
+          "category" : "Camera", \
+          "url"      : "/2023-07-07-Azure-Kinect-Dk-install/", \
+          "date"     : "July  7, 2023" \
+        }, \
+       \
+        { \
+          "title"    : "RPG trajectory evaluation on multiple trajectories", \
+          "desc"     : "RPG trajectory evaluation on multiple trajectories", \
+          "category" : "SLAM", \
+          "url"      : "/2022-03-19-rpg-trajectories/", \
+          "date"     : "March 19, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-6/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
+          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-5/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-4/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
+          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-3/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-2/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
+          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-1/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "Frame간의 Transformation matrix", \
+          "desc"     : "Frame간의 Transformation matrix", \
+          "category" : "SLAM", \
+          "url"      : "/2021-12-18-calc-tf/", \
+          "date"     : "December 18, 2021" \
+        }, \
+       \
+        { \
+          "title"    : "Getting Stereo-Inertial data with Realsense camera", \
+          "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
+          "category" : "Camera", \
+          "url"      : "/2021-08-27-orb-slam3-d435i/", \
+          "date"     : "August 27, 2021" \
+        }, \
+       \
+       \
+        { \
+          "title"    : "Flake it till you make it", \
+          "desc"     : "Flake it till you make it", \
+          "category" : "bookstest", \
+          "url"      : "/sample_posts/2020-02-26-flake-it-till-you-make-it/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "Sample blog post", \
+          "desc"     : "Sample blog post", \
+          "category" : "test", \
+          "url"      : "/sample_posts/2020-02-28-test-markdown/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "About Me", \
+          "desc"     : "About Me", \
+          "category" : "page", \
+          "url"      : "/aboutme/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "About me", \
+          "desc"     : "About me", \
+          "category" : "page", \
+          "url"      : "/aboutme_org/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/tags/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/page2/", \
+          "date"     : "January 1, 1970" \
+        } \
+       \
+    ]';
+    searchjson = JSON.parse(searchjson);
+
+    var sjs = SimpleJekyllSearch({
+      searchInput: document.getElementById('nav-search-input'),
+      resultsContainer: document.getElementById('search-results-container'),
+      json: searchjson
+    });
+  </script>
+</div>
+
+
+
+
+
+  <!-- TODO this file has become a mess, refactor it -->
+
+
+
+
+
+
+
+<header class="header-section ">
+
+<div class="intro-header no-img">
+  <div class="container-md">
+    <div class="row">
+      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+        <div class="post-heading">
+          <h1>VINS-Fusion Code Review - (4) Sliding window & Optimization</h1>
+          
+
+          
+            <span class="post-meta">Posted on January 5, 2022</span>
+            
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+
+
+
+<div class=" container-md ">
+  <div class="row">
+    <div class=" col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 ">
+
+      
+        
+        
+        
+
+        <div id="header-gh-btns">
+          
+        </div>
+      
+
+      
+
+      <article role="main" class="blog-post">
+        <h1 id="4-sliding-window--optimization-파트-중요-코드-정리">(4) Sliding window &amp; Optimization 파트 중요 코드 정리</h1>
+
+<h2 id="1-optimizing-local-parameters">1. Optimizing local parameters</h2>
+
+<p>1) void Estimator::vector2double()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">WINDOW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">();</span>
+    <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">();</span>
+    <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span><span class="p">();</span>
+    <span class="n">Quaterniond</span> <span class="n">q</span><span class="p">{</span><span class="n">Rs</span><span class="p">[</span><span class="n">i</span><span class="p">]};</span>
+    <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="n">x</span><span class="p">();</span>
+    <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="n">y</span><span class="p">();</span>
+    <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="n">z</span><span class="p">();</span>
+    <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="n">w</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">();</span>
+        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">();</span>
+        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span><span class="p">();</span>
+
+        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bas</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">();</span>
+        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bas</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">();</span>
+        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bas</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span><span class="p">();</span>
+
+        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bgs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">();</span>
+        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bgs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">();</span>
+        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bgs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_OF_CAM</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tic</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">();</span>
+    <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tic</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">();</span>
+    <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">tic</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">z</span><span class="p">();</span>
+    <span class="n">Quaterniond</span> <span class="n">q</span><span class="p">{</span><span class="n">ric</span><span class="p">[</span><span class="n">i</span><span class="p">]};</span>
+    <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="n">x</span><span class="p">();</span>
+    <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="n">y</span><span class="p">();</span>
+    <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="n">z</span><span class="p">();</span>
+    <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="n">w</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="n">VectorXd</span> <span class="n">dep</span> <span class="o">=</span> <span class="n">f_manager</span><span class="p">.</span><span class="n">getDepthVector</span><span class="p">();</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">f_manager</span><span class="p">.</span><span class="n">getFeatureCount</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">para_Feature</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">dep</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+
+<span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">td</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>para_Pose[i][]에는 WINDOW내 i번째 frame에서의 Ps(\(p_{b_k}^{w}\)), Rs(\(q_{b_k}^{w}\))를 넣어준다. para_SpeedBias에는 Vs(\(v_{b_k}^{w}\)), Bas(\(b_a^w\)), Bgs(\(b_g^w\))를 넣어준다. 또한 para_Ex_Pose에는 tic (\(p_c^b\)), ric (\(q_c^b)\)값을 넣어준다. para_Feature에는 각 feature의 inverse depth를 넣어준다. (Because of numerical stability : (\(d_{min}\), ∞) → (0, 1/ \(d_{min}\)) )</li>
+</ul>
+
+<ol>
+  <li>void Estimator::optimization()</li>
+</ol>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">loss_function</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ceres</span><span class="o">::</span><span class="n">HuberLoss</span><span class="p">(</span><span class="mf">1.0</span><span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">frame_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">ceres</span><span class="o">::</span><span class="n">LocalParameterization</span> <span class="o">*</span><span class="n">local_parameterization</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PoseLocalParameterization</span><span class="p">();</span>
+    <span class="n">problem</span><span class="p">.</span><span class="n">AddParameterBlock</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">SIZE_POSE</span><span class="p">,</span> <span class="n">local_parameterization</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+        <span class="n">problem</span><span class="p">.</span><span class="n">AddParameterBlock</span><span class="p">(</span><span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">SIZE_SPEEDBIAS</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">USE_IMU</span><span class="p">)</span>
+    <span class="n">problem</span><span class="p">.</span><span class="n">SetParameterBlockConstant</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_OF_CAM</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">ceres</span><span class="o">::</span><span class="n">LocalParameterization</span> <span class="o">*</span><span class="n">local_parameterization</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PoseLocalParameterization</span><span class="p">();</span>
+    <span class="n">problem</span><span class="p">.</span><span class="n">AddParameterBlock</span><span class="p">(</span><span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">SIZE_POSE</span><span class="p">,</span> <span class="n">local_parameterization</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">ESTIMATE_EXTRINSIC</span> <span class="o">&amp;&amp;</span> <span class="n">frame_count</span> <span class="o">==</span> <span class="n">WINDOW_SIZE</span> <span class="o">&amp;&amp;</span> <span class="n">Vs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">norm</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">||</span> <span class="n">openExEstimation</span><span class="p">)</span>
+        <span class="n">openExEstimation</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span>
+        <span class="n">problem</span><span class="p">.</span><span class="n">SetParameterBlockConstant</span><span class="p">(</span><span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="p">}</span>
+<span class="n">problem</span><span class="p">.</span><span class="n">AddParameterBlock</span><span class="p">(</span><span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">ESTIMATE_TD</span> <span class="o">||</span> <span class="n">Vs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">norm</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">problem</span><span class="p">.</span><span class="n">SetParameterBlockConstant</span><span class="p">(</span><span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="p">...</span>
+<span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">frame_count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pre_integrations</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">sum_dt</span> <span class="o">&gt;</span> <span class="mf">10.0</span><span class="p">)</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="n">IMUFactor</span><span class="o">*</span> <span class="n">imu_factor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IMUFactor</span><span class="p">(</span><span class="n">pre_integrations</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+        <span class="n">problem</span><span class="p">.</span><span class="n">AddResidualBlock</span><span class="p">(</span><span class="n">imu_factor</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_id</span> <span class="o">:</span> <span class="n">f_manager</span><span class="p">.</span><span class="n">feature</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">it_per_id</span><span class="p">.</span><span class="n">used_num</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">used_num</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">continue</span><span class="p">;</span>
+
+    <span class="o">++</span><span class="n">feature_index</span><span class="p">;</span>
+
+    <span class="kt">int</span> <span class="n">imu_i</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">start_frame</span><span class="p">,</span> <span class="n">imu_j</span> <span class="o">=</span> <span class="n">imu_i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    
+    <span class="n">Vector3d</span> <span class="n">pts_i</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">point</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_frame</span> <span class="o">:</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">imu_j</span><span class="o">++</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">imu_i</span> <span class="o">!=</span> <span class="n">imu_j</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">Vector3d</span> <span class="n">pts_j</span> <span class="o">=</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">point</span><span class="p">;</span>
+            <span class="n">ProjectionTwoFrameOneCamFactor</span> <span class="o">*</span><span class="n">f_td</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProjectionTwoFrameOneCamFactor</span><span class="p">(</span><span class="n">pts_i</span><span class="p">,</span> <span class="n">pts_j</span><span class="p">,</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">velocity</span><span class="p">,</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">velocity</span><span class="p">,</span>
+                                                             <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cur_td</span><span class="p">,</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">cur_td</span><span class="p">);</span>
+            <span class="n">problem</span><span class="p">.</span><span class="n">AddResidualBlock</span><span class="p">(</span><span class="n">f_td</span><span class="p">,</span> <span class="n">loss_function</span><span class="p">,</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">imu_i</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">imu_j</span><span class="p">],</span> <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">para_Feature</span><span class="p">[</span><span class="n">feature_index</span><span class="p">],</span> <span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+        <span class="p">}</span>
+        <span class="n">f_m_cnt</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">...</span>
+<span class="n">ceres</span><span class="o">::</span><span class="n">Solve</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">problem</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">summary</span><span class="p">);</span>
+<span class="p">...</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>para_Pose, para_SpeedBias를 고정 변수로 지정하고 para_Pose[0]은 reference값으로 고정시킨다. 또한 한번이라도 Vs &gt; 0.2값을 발견하면 지속적으로 parameter로 지정한다.</p>
+
+    <p>여기서 <strong><em>LocalParameterization</em></strong>은 <strong>quaternion의 over-parametrization을 줄이기 위해</strong>  so(3)로 바꿔 계산하는 것으로, manifold상에서 계산 후 다시 쿼터니언의 increment로 돌리는 작업도 수행된다.</p>
+
+    <p>[ref] : <a href="http://ceres-solver.org/nnls_modeling.html#localparameterization">http://ceres-solver.org/nnls_modeling.html#localparameterization</a></p>
+
+    <ul>
+      <li>frame의 pre_integration이 10초 이하로 지난 것만 imu_factor를 이용하여 parameter로 추가한다.  이때 i번째 frame과 그 다음 frame의 para_Pose, para_SpeedBias를 추가해준다.  <br />
+  그런데, IMUFactor의 경우 다른 Factor들과 다르게 WINDOW_SIZE - 1개를 parameter로 넣어준다. 이는 IMU의 measurement model이 i와 i+1사이의 delta를 가지고 residual을 구하기 때문이다.</li>
+    </ul>
+  </li>
+  <li>td는 time offset으로, 최적화가 필요하면 parameter로 지정하지만, 필요없다고 초기에 설정되면 고정한다. (참고 : image time + td = IMU time)</li>
+  <li>marginalization관련 내용은 chapter5에서 다룰 예정.</li>
+  <li>
+    <p>모든 feature에 대해 for문을 돌면서  Huber loss function과 함께 ProjectionTwoFrameOneCamFactor을 cost function으로 추가한다. 이때 parameter는 para_Pose와 para_Ex_Pose[0], para_Feature (inverse depth), para_Td[0]이다.</p>
+  </li>
+  <li>double2vector를 통해 optimize된 값을 다시 Ps, Rs, Vs, Bas, Bgs, tic, ric, f_manager의 depth값들에 넣어준다.</li>
+  <li>
+    <p>Ceres Solver의 state estimation에 대한 설명 :  <br />
+\(P(x | z)\) : posterior probability, \(P(x)\) : priori probability, \(P(z|x)\) likelihood probability일때 다음식을 계산하는 것이다.</p>
+
+    <p><img src="/assets/VINS_FUSION/4/Untitled.png" alt="/assets/VINS_FUSION/4/Untitled.png" /></p>
+
+    <p>Posterior probability를 계산하는 것은 어렵지만, maximize하는 state를 찾는것은 상대적으로 쉽다.</p>
+
+    <p><img src="/assets/VINS_FUSION/4/Untitled%201.png" alt="/assets/VINS_FUSION/4/Untitled%201.png" /></p>
+
+    <p>가우시안을 가정하면, 다음과 같이 minimize해야하는 것을 알 수 있다.</p>
+
+    <p><img src="/assets/VINS_FUSION/4/Untitled%202.png" alt="/assets/VINS_FUSION/4/Untitled%202.png" /></p>
+
+    <p><img src="/assets/VINS_FUSION/4/Untitled%203.png" alt="/assets/VINS_FUSION/4/Untitled%203.png" /></p>
+
+    <p><img src="/assets/VINS_FUSION/4/Untitled%204.png" alt="/assets/VINS_FUSION/4/Untitled%204.png" /></p>
+  </li>
+  <li>
+    <p>이제, VINS-Mono (Fusion)의 cost function인 다음을</p>
+
+    <p><img src="/assets/VINS_FUSION/4/Untitled%205.png" alt="/assets/VINS_FUSION/4/Untitled%205.png" /></p>
+
+    <p>(이때 \((r_p, J_p)\)는 <em>prior information from marginalization</em>, \(r_B\)는 <em>IMU의 residual</em>, B는 <em>sliding window 내의 IMU measurements</em>, \(r_C\)는 <em>residual of visual model</em>, C는 <em>set of features</em> observed at least two times in sliding windows를 나타낸다.)</p>
+
+    <p>최소화 하는 state는 다음과 같이 생각해 볼 수 있다.</p>
+
+    <p><img src="/assets/VINS_FUSION/4/Untitled%206.png" alt="/assets/VINS_FUSION/4/Untitled%206.png" /></p>
+
+    <p><img src="/assets/VINS_FUSION/4/Untitled%207.png" alt="/assets/VINS_FUSION/4/Untitled%207.png" /></p>
+
+    <p>Taylor expansion을 통해 initial에서 delta x를 찾는 것으로 문제를 전환할 수 있고,</p>
+
+    <p>SVD를 통해서 다음식을 푸는 것으로 귀결된다.</p>
+
+    <p><img src="/assets/VINS_FUSION/4/Untitled%208.png" alt="/assets/VINS_FUSION/4/Untitled%208.png" /></p>
+
+    <p>따라서 ceres::Solve를 하게되면, 각 cost function의 evaluate를 통해 jacobian과 residual을 계산하게 되고, 이를통해 non-linear optimization을 parameter들을 조정하게 된다.</p>
+  </li>
+</ul>
+
+<p>3) void Estimator::double2vector()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Vector3d</span> <span class="n">origin_R0</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">Rs</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="n">Vector3d</span> <span class="n">origin_P0</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">failure_occur</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">origin_R0</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">last_R0</span><span class="p">);</span>
+    <span class="n">origin_P0</span> <span class="o">=</span> <span class="n">last_P0</span><span class="p">;</span>
+    <span class="n">failure_occur</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Vector3d</span> <span class="n">origin_R00</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">R2ypr</span><span class="p">(</span><span class="n">Quaterniond</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">6</span><span class="p">],</span>
+                                                      <span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                                                      <span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span>
+                                                      <span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">5</span><span class="p">]).</span><span class="n">toRotationMatrix</span><span class="p">());</span>
+    <span class="kt">double</span> <span class="n">y_diff</span> <span class="o">=</span> <span class="n">origin_R0</span><span class="p">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">origin_R00</span><span class="p">.</span><span class="n">x</span><span class="p">();</span>
+    <span class="c1">//TODO</span>
+    <span class="n">Matrix3d</span> <span class="n">rot_diff</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">ypr2R</span><span class="p">(</span><span class="n">Vector3d</span><span class="p">(</span><span class="n">y_diff</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">abs</span><span class="p">(</span><span class="n">abs</span><span class="p">(</span><span class="n">origin_R0</span><span class="p">.</span><span class="n">y</span><span class="p">())</span> <span class="o">-</span> <span class="mi">90</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0</span> <span class="o">||</span> <span class="n">abs</span><span class="p">(</span><span class="n">abs</span><span class="p">(</span><span class="n">origin_R00</span><span class="p">.</span><span class="n">y</span><span class="p">())</span> <span class="o">-</span> <span class="mi">90</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">ROS_DEBUG</span><span class="p">(</span><span class="s">"euler singular point!"</span><span class="p">);</span>
+        <span class="n">rot_diff</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">Quaterniond</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">6</span><span class="p">],</span>
+                                       <span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                                       <span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span>
+                                       <span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">5</span><span class="p">]).</span><span class="n">toRotationMatrix</span><span class="p">().</span><span class="n">transpose</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">WINDOW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+
+        <span class="n">Rs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rot_diff</span> <span class="o">*</span> <span class="n">Quaterniond</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">6</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">5</span><span class="p">]).</span><span class="n">normalized</span><span class="p">().</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+        
+        <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rot_diff</span> <span class="o">*</span> <span class="n">Vector3d</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">origin_P0</span><span class="p">;</span>
+
+            <span class="n">Vs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rot_diff</span> <span class="o">*</span> <span class="n">Vector3d</span><span class="p">(</span><span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                                        <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]);</span>
+
+            <span class="n">Bas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vector3d</span><span class="p">(</span><span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                              <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span>
+                              <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">5</span><span class="p">]);</span>
+
+            <span class="n">Bgs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vector3d</span><span class="p">(</span><span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">6</span><span class="p">],</span>
+                              <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">7</span><span class="p">],</span>
+                              <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">8</span><span class="p">]);</span>
+        
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">WINDOW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Rs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quaterniond</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">6</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">5</span><span class="p">]).</span><span class="n">normalized</span><span class="p">().</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+        
+        <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vector3d</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_OF_CAM</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">tic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vector3d</span><span class="p">(</span><span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                          <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                          <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]);</span>
+        <span class="n">ric</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quaterniond</span><span class="p">(</span><span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">6</span><span class="p">],</span>
+                             <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                             <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span>
+                             <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">5</span><span class="p">]).</span><span class="n">normalized</span><span class="p">().</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">VectorXd</span> <span class="n">dep</span> <span class="o">=</span> <span class="n">f_manager</span><span class="p">.</span><span class="n">getDepthVector</span><span class="p">();</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">f_manager</span><span class="p">.</span><span class="n">getFeatureCount</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">dep</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">para_Feature</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">f_manager</span><span class="p">.</span><span class="n">setDepth</span><span class="p">(</span><span class="n">dep</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+    <span class="n">td</span> <span class="o">=</span> <span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>[논문언급] In contrast, for monocular VINS, thanks to the addition of IMU, drift only occurs in 4 DOF, which is the 3D translation, and the rotation around the gravity direction (yaw angle).</p>
+
+<p><em>: 즉, IMU를 추가하였으면 rotation drift가 yaw값에서만 발생하는 것이 이론적으로 맞다는 것</em></p>
+
+<ul>
+  <li>
+    <p>origin_R0 : \(R_{b_0}^w\), origin_P0 : \(R_{b_0}^w\), <strong>origin_R00 : optimized된</strong> \(R_{b_0}^w\),</p>
+
+    <p>IMU는 yaw값을 알 수 없으므로, y_diff값은 optimization에서 marginalization, visual measurements로부터 구해진 것이다. 그런데 사실 R0, P0는 이미 이전에 optimization이 진행되었으므로 다시 바뀔 이유가 없는 parameter이나, yaw에서의 drift로 인해 optimization에서 변경될 수 있다. 또한, Initialization에서 이미 Identity로 지정하고 시작하기 때문에, yaw값의 변경은 drift로 생각해 볼수 있다.</p>
+
+    <p>따라서, 이 drift를 없애기 위해 rot_diff를 통해 yaw값의 추가값을 삭제한다. <strong>(이전 - 현재의 yaw값 이므로)</strong></p>
+
+    <ul>
+      <li>yaw각도가 90도 근처라면, gimbal lock에 해당하는 singular point이므로, yaw값이 제대로 구해지지 않을 수 있어 rotation matrix의 차이로 rot_diff를 구한다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="2-cost-function-factors">2. Cost function factors</h2>
+
+<p>1) virtual bool Evaluate(double const *const *parameters, double *residuals, double **jacobians) const, (imu_factor.h)</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">...</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">1</span><span class="o">&gt;&gt;</span> <span class="n">residual</span><span class="p">(</span><span class="n">residuals</span><span class="p">);</span>
+<span class="n">residual</span> <span class="o">=</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">evaluate</span><span class="p">(</span><span class="n">Pi</span><span class="p">,</span> <span class="n">Qi</span><span class="p">,</span> <span class="n">Vi</span><span class="p">,</span> <span class="n">Bai</span><span class="p">,</span> <span class="n">Bgi</span><span class="p">,</span>
+                                    <span class="n">Pj</span><span class="p">,</span> <span class="n">Qj</span><span class="p">,</span> <span class="n">Vj</span><span class="p">,</span> <span class="n">Baj</span><span class="p">,</span> <span class="n">Bgj</span><span class="p">);</span>
+
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="o">&gt;</span> <span class="n">sqrt_info</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">LLT</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">covariance</span><span class="p">.</span><span class="n">inverse</span><span class="p">()).</span><span class="n">matrixL</span><span class="p">().</span><span class="n">transpose</span><span class="p">();</span>
+<span class="n">residual</span> <span class="o">=</span> <span class="n">sqrt_info</span> <span class="o">*</span> <span class="n">residual</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">double</span> <span class="n">sum_dt</span> <span class="o">=</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">sum_dt</span><span class="p">;</span>
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">dp_dba</span> <span class="o">=</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">jacobian</span><span class="p">.</span><span class="k">template</span> <span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">&gt;(</span><span class="n">O_P</span><span class="p">,</span> <span class="n">O_BA</span><span class="p">);</span>
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">dp_dbg</span> <span class="o">=</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">jacobian</span><span class="p">.</span><span class="k">template</span> <span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">&gt;(</span><span class="n">O_P</span><span class="p">,</span> <span class="n">O_BG</span><span class="p">);</span>
+
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">dq_dbg</span> <span class="o">=</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">jacobian</span><span class="p">.</span><span class="k">template</span> <span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">&gt;(</span><span class="n">O_R</span><span class="p">,</span> <span class="n">O_BG</span><span class="p">);</span>
+
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">dv_dba</span> <span class="o">=</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">jacobian</span><span class="p">.</span><span class="k">template</span> <span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">&gt;(</span><span class="n">O_V</span><span class="p">,</span> <span class="n">O_BA</span><span class="p">);</span>
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">dv_dbg</span> <span class="o">=</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">jacobian</span><span class="p">.</span><span class="k">template</span> <span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">&gt;(</span><span class="n">O_V</span><span class="p">,</span> <span class="n">O_BG</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">RowMajor</span><span class="o">&gt;&gt;</span> <span class="n">jacobian_pose_i</span><span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+        <span class="n">jacobian_pose_i</span><span class="p">.</span><span class="n">setZero</span><span class="p">();</span>
+
+        <span class="n">jacobian_pose_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_P</span><span class="p">,</span> <span class="n">O_P</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">Qi</span><span class="p">.</span><span class="n">inverse</span><span class="p">().</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+        <span class="n">jacobian_pose_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_P</span><span class="p">,</span> <span class="n">O_R</span><span class="p">)</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">skewSymmetric</span><span class="p">(</span><span class="n">Qi</span><span class="p">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">G</span> <span class="o">*</span> <span class="n">sum_dt</span> <span class="o">*</span> <span class="n">sum_dt</span> <span class="o">+</span> <span class="n">Pj</span> <span class="o">-</span> <span class="n">Pi</span> <span class="o">-</span> <span class="n">Vi</span> <span class="o">*</span> <span class="n">sum_dt</span><span class="p">));</span>
+				<span class="n">Eigen</span><span class="o">::</span><span class="n">Quaterniond</span> <span class="n">corrected_delta_q</span> <span class="o">=</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">delta_q</span> <span class="o">*</span> <span class="n">Utility</span><span class="o">::</span><span class="n">deltaQ</span><span class="p">(</span><span class="n">dq_dbg</span> <span class="o">*</span> <span class="p">(</span><span class="n">Bgi</span> <span class="o">-</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">linearized_bg</span><span class="p">));</span>
+	      <span class="n">jacobian_pose_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_R</span><span class="p">,</span> <span class="n">O_R</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">Utility</span><span class="o">::</span><span class="n">Qleft</span><span class="p">(</span><span class="n">Qj</span><span class="p">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">Qi</span><span class="p">)</span> <span class="o">*</span> <span class="n">Utility</span><span class="o">::</span><span class="n">Qright</span><span class="p">(</span><span class="n">corrected_delta_q</span><span class="p">)).</span><span class="n">bottomRightCorner</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">();</span>		
+	      <span class="n">jacobian_pose_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_V</span><span class="p">,</span> <span class="n">O_R</span><span class="p">)</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">skewSymmetric</span><span class="p">(</span><span class="n">Qi</span><span class="p">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">G</span> <span class="o">*</span> <span class="n">sum_dt</span> <span class="o">+</span> <span class="n">Vj</span> <span class="o">-</span> <span class="n">Vi</span><span class="p">));</span>
+        <span class="n">jacobian_pose_i</span> <span class="o">=</span> <span class="n">sqrt_info</span> <span class="o">*</span> <span class="n">jacobian_pose_i</span><span class="p">;</span>
+
+    <span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">RowMajor</span><span class="o">&gt;&gt;</span> <span class="n">jacobian_speedbias_i</span><span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+        <span class="n">jacobian_speedbias_i</span><span class="p">.</span><span class="n">setZero</span><span class="p">();</span>
+        <span class="n">jacobian_speedbias_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_P</span><span class="p">,</span> <span class="n">O_V</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">Qi</span><span class="p">.</span><span class="n">inverse</span><span class="p">().</span><span class="n">toRotationMatrix</span><span class="p">()</span> <span class="o">*</span> <span class="n">sum_dt</span><span class="p">;</span>
+        <span class="n">jacobian_speedbias_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_P</span><span class="p">,</span> <span class="n">O_BA</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">dp_dba</span><span class="p">;</span>
+        <span class="n">jacobian_speedbias_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_P</span><span class="p">,</span> <span class="n">O_BG</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">dp_dbg</span><span class="p">;</span>
+				<span class="n">jacobian_speedbias_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_R</span><span class="p">,</span> <span class="n">O_BG</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">Utility</span><span class="o">::</span><span class="n">Qleft</span><span class="p">(</span><span class="n">Qj</span><span class="p">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">Qi</span> <span class="o">*</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">delta_q</span><span class="p">).</span><span class="n">bottomRightCorner</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">*</span> <span class="n">dq_dbg</span><span class="p">;</span>
+				<span class="n">jacobian_speedbias_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_V</span><span class="p">,</span> <span class="n">O_V</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">Qi</span><span class="p">.</span><span class="n">inverse</span><span class="p">().</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+        <span class="n">jacobian_speedbias_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_V</span><span class="p">,</span> <span class="n">O_BA</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">dv_dba</span><span class="p">;</span>
+        <span class="n">jacobian_speedbias_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_V</span><span class="p">,</span> <span class="n">O_BG</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">dv_dbg</span><span class="p">;</span>
+        <span class="n">jacobian_speedbias_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_BA</span><span class="p">,</span> <span class="n">O_BA</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+        <span class="n">jacobian_speedbias_i</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_BG</span><span class="p">,</span> <span class="n">O_BG</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="o">-</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+        <span class="n">jacobian_speedbias_i</span> <span class="o">=</span> <span class="n">sqrt_info</span> <span class="o">*</span> <span class="n">jacobian_speedbias_i</span><span class="p">;</span>
+    <span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">RowMajor</span><span class="o">&gt;&gt;</span> <span class="n">jacobian_pose_j</span><span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+        <span class="n">jacobian_pose_j</span><span class="p">.</span><span class="n">setZero</span><span class="p">();</span>
+        <span class="n">jacobian_pose_j</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_P</span><span class="p">,</span> <span class="n">O_P</span><span class="p">)</span> <span class="o">=</span> <span class="n">Qi</span><span class="p">.</span><span class="n">inverse</span><span class="p">().</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Quaterniond</span> <span class="n">corrected_delta_q</span> <span class="o">=</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">delta_q</span> <span class="o">*</span> <span class="n">Utility</span><span class="o">::</span><span class="n">deltaQ</span><span class="p">(</span><span class="n">dq_dbg</span> <span class="o">*</span> <span class="p">(</span><span class="n">Bgi</span> <span class="o">-</span> <span class="n">pre_integration</span><span class="o">-&gt;</span><span class="n">linearized_bg</span><span class="p">));</span>
+        <span class="n">jacobian_pose_j</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_R</span><span class="p">,</span> <span class="n">O_R</span><span class="p">)</span> <span class="o">=</span> <span class="n">Utility</span><span class="o">::</span><span class="n">Qleft</span><span class="p">(</span><span class="n">corrected_delta_q</span><span class="p">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">Qi</span><span class="p">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">Qj</span><span class="p">).</span><span class="n">bottomRightCorner</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">();</span>
+        <span class="n">jacobian_pose_j</span> <span class="o">=</span> <span class="n">sqrt_info</span> <span class="o">*</span> <span class="n">jacobian_pose_j</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">RowMajor</span><span class="o">&gt;&gt;</span> <span class="n">jacobian_speedbias_j</span><span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span>
+        <span class="n">jacobian_speedbias_j</span><span class="p">.</span><span class="n">setZero</span><span class="p">();</span>
+        <span class="n">jacobian_speedbias_j</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_V</span><span class="p">,</span> <span class="n">O_V</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="n">Qi</span><span class="p">.</span><span class="n">inverse</span><span class="p">().</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+        <span class="n">jacobian_speedbias_j</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_BA</span><span class="p">,</span> <span class="n">O_BA</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+        <span class="n">jacobian_speedbias_j</span><span class="p">.</span><span class="n">block</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">O_BG</span><span class="p">,</span> <span class="n">O_BG</span> <span class="o">-</span> <span class="n">O_V</span><span class="p">)</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">();</span>
+        <span class="n">jacobian_speedbias_j</span> <span class="o">=</span> <span class="n">sqrt_info</span> <span class="o">*</span> <span class="n">jacobian_speedbias_j</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>pre_integration의 evaluate를 통해, residual을 구할 수 있다.</li>
+  <li>다음식을 이용하면</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/4/Untitled%209.png" alt="/assets/VINS_FUSION/4/Untitled%209.png" /></p>
+
+<p>residual은 다음과 같이 표현되며,</p>
+
+<p><img src="/assets/VINS_FUSION/4/Untitled%2010.png" alt="/assets/VINS_FUSION/4/Untitled%2010.png" /></p>
+
+<p>코드도 위식과 동일하게 구현된다. 이때 코드상에서 corrected_ prefix가 붙은 \(\hat\gamma^{b_k}_{b_{k+1}}\),\(\hat\alpha^{b_k}_{b_{k+1}}\),\(\hat\beta^{b_k}_{b_{k+1}}\)는 Chapter3에서 본, integrationBase의 jacobian을 통해서 구해진다. (pre_integration)</p>
+
+<p><img src="/assets/VINS_FUSION/2/Untitled%207.png" alt="2%20IMU%20processing%208db9c5723a3141d7a2705da2572e44a3/Untitled%207.png" /></p>
+
+<p>예를 들면, 위의 bias에 대한 approximation을 이용한다. 구해둔 jacobian에서  \(\frac{\delta \hat \alpha^{b_k}_{b_{k+1}}}{\delta b_{a_k}}\)값을 얻어 낼 수 있으므로, \({\delta \hat \alpha^{b_k}_{b_{k+1}}}\) = \(\frac{\delta \hat \alpha^{b_k}_{b_{k+1}}}{\delta b_{a_k}}\) * \({\delta b_{a_k}}\) + \(\frac{\delta \hat \alpha^{b_k}_{b_{k+1}}}{\delta b_{g}}\) * \({\delta b_{g}}\)가 되고, \({\delta b_{a_k}}\) = \(b_{a_k}\) - \(\hat b_{a_k}\), \({\delta b_{g}}\) = \(b_{g}\) - \(\hat b_{g}\)를 이용한다. (bias만이 결국 pre-integration에서 update되지 않았다고 볼 수 있으므로)</p>
+
+<p>즉, <strong>new measurement값 \({\hat \alpha^{b_k}_{b_{k+1}}}\) = \({\hat \alpha^{b_k}_{b_{k+1}}}\) + \({\delta \hat \alpha^{b_k}_{b_{k+1}}}\)</strong>를 “pre-integration”의 jacobian을 통해 계산한다. 이에 따라 더 정확한 residual을 구할 수 있게된다.</p>
+
+<ul>
+  <li>LocalParameterization을 사용함에 따라 overparameterization을 줄여 rotation의 dimension을 하나 줄이는 과정이 언급되었다. 다음 parameter 순서에 따른 jacobian은</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/4/Untitled%2011.png" alt="/assets/VINS_FUSION/4/Untitled%2011.png" /></p>
+
+<p>&lt;7,9,7,9&gt; 에서 &lt;6,9,6,9&gt;가 되어야 할 것이다. <strong>즉, J[0]과 J[2]의 마지막 row는 0이된다.</strong></p>
+
+<p>이후 jacobian을 구하는 식은 Formula_Derivation_and_Analysis_of_the_VINS-Mono.pdf에 자세히 설명되어 있으며, 이 문서의 Appendix B에서 Lie algebra를 통한 유도과정까지 알 수 있다. 코드는 동일하게 작성되어 있다. (sqrt_info 변수는 jacobian에 covariance까지 포함하여 계산하기 위함이다.)</p>
+
+<p>2) bool ProjectionTwoFrameOneCamFactor::Evaluate(double const *const *parameters, double *residuals, double **jacobians) const, (projectionTwoFrameOneCamFactor.cpp)</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">pts_i_td</span><span class="p">,</span> <span class="n">pts_j_td</span><span class="p">;</span>
+<span class="n">pts_i_td</span> <span class="o">=</span> <span class="n">pts_i</span> <span class="o">-</span> <span class="p">(</span><span class="n">td</span> <span class="o">-</span> <span class="n">td_i</span><span class="p">)</span> <span class="o">*</span> <span class="n">velocity_i</span><span class="p">;</span>
+<span class="n">pts_j_td</span> <span class="o">=</span> <span class="n">pts_j</span> <span class="o">-</span> <span class="p">(</span><span class="n">td</span> <span class="o">-</span> <span class="n">td_j</span><span class="p">)</span> <span class="o">*</span> <span class="n">velocity_j</span><span class="p">;</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">pts_camera_i</span> <span class="o">=</span> <span class="n">pts_i_td</span> <span class="o">/</span> <span class="n">inv_dep_i</span><span class="p">;</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">pts_imu_i</span> <span class="o">=</span> <span class="n">qic</span> <span class="o">*</span> <span class="n">pts_camera_i</span> <span class="o">+</span> <span class="n">tic</span><span class="p">;</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">pts_w</span> <span class="o">=</span> <span class="n">Qi</span> <span class="o">*</span> <span class="n">pts_imu_i</span> <span class="o">+</span> <span class="n">Pi</span><span class="p">;</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">pts_imu_j</span> <span class="o">=</span> <span class="n">Qj</span><span class="p">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">pts_w</span> <span class="o">-</span> <span class="n">Pj</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span> <span class="n">pts_camera_j</span> <span class="o">=</span> <span class="n">qic</span><span class="p">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">pts_imu_j</span> <span class="o">-</span> <span class="n">tic</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector2d</span><span class="o">&gt;</span> <span class="n">residual</span><span class="p">(</span><span class="n">residuals</span><span class="p">);</span>
+
+<span class="kt">double</span> <span class="n">dep_j</span> <span class="o">=</span> <span class="n">pts_camera_j</span><span class="p">.</span><span class="n">z</span><span class="p">();</span>
+<span class="n">residual</span> <span class="o">=</span> <span class="p">(</span><span class="n">pts_camera_j</span> <span class="o">/</span> <span class="n">dep_j</span><span class="p">).</span><span class="n">head</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">-</span> <span class="n">pts_j_td</span><span class="p">.</span><span class="n">head</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">residual</span> <span class="o">=</span> <span class="n">sqrt_info</span> <span class="o">*</span> <span class="n">residual</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">Ri</span> <span class="o">=</span> <span class="n">Qi</span><span class="p">.</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">Rj</span> <span class="o">=</span> <span class="n">Qj</span><span class="p">.</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">ric</span> <span class="o">=</span> <span class="n">qic</span><span class="p">.</span><span class="n">toRotationMatrix</span><span class="p">();</span>
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span> <span class="n">reduce</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+		<span class="n">reduce</span> <span class="o">&lt;&lt;</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">dep_j</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">pts_camera_j</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dep_j</span> <span class="o">*</span> <span class="n">dep_j</span><span class="p">),</span>
+        <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">dep_j</span><span class="p">,</span> <span class="o">-</span><span class="n">pts_camera_j</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dep_j</span> <span class="o">*</span> <span class="n">dep_j</span><span class="p">);</span>
+		<span class="n">reduce</span> <span class="o">=</span> <span class="n">sqrt_info</span> <span class="o">*</span> <span class="n">reduce</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">RowMajor</span><span class="o">&gt;&gt;</span> <span class="n">jacobian_pose_i</span><span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span> <span class="n">jaco_i</span><span class="p">;</span>
+        <span class="n">jaco_i</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">ric</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Rj</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+        <span class="n">jaco_i</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">ric</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Rj</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Ri</span> <span class="o">*</span> <span class="o">-</span><span class="n">Utility</span><span class="o">::</span><span class="n">skewSymmetric</span><span class="p">(</span><span class="n">pts_imu_i</span><span class="p">);</span>
+
+        <span class="n">jacobian_pose_i</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">6</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">reduce</span> <span class="o">*</span> <span class="n">jaco_i</span><span class="p">;</span>
+        <span class="n">jacobian_pose_i</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">().</span><span class="n">setZero</span><span class="p">();</span>
+    <span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">RowMajor</span><span class="o">&gt;&gt;</span> <span class="n">jacobian_pose_j</span><span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span> <span class="n">jaco_j</span><span class="p">;</span>
+        <span class="n">jaco_j</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">ric</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="o">-</span><span class="n">Rj</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+        <span class="n">jaco_j</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">ric</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Utility</span><span class="o">::</span><span class="n">skewSymmetric</span><span class="p">(</span><span class="n">pts_imu_j</span><span class="p">);</span>
+
+        <span class="n">jacobian_pose_j</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">6</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">reduce</span> <span class="o">*</span> <span class="n">jaco_j</span><span class="p">;</span>
+        <span class="n">jacobian_pose_j</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">().</span><span class="n">setZero</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">RowMajor</span><span class="o">&gt;&gt;</span> <span class="n">jacobian_ex_pose</span><span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="o">&gt;</span> <span class="n">jaco_ex</span><span class="p">;</span>
+        <span class="n">jaco_ex</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">ric</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">Rj</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Ri</span> <span class="o">-</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span><span class="o">::</span><span class="n">Identity</span><span class="p">());</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix3d</span> <span class="n">tmp_r</span> <span class="o">=</span> <span class="n">ric</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Rj</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Ri</span> <span class="o">*</span> <span class="n">ric</span><span class="p">;</span>
+        <span class="n">jaco_ex</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="o">-</span><span class="n">tmp_r</span> <span class="o">*</span> <span class="n">Utility</span><span class="o">::</span><span class="n">skewSymmetric</span><span class="p">(</span><span class="n">pts_camera_i</span><span class="p">)</span> <span class="o">+</span> <span class="n">Utility</span><span class="o">::</span><span class="n">skewSymmetric</span><span class="p">(</span><span class="n">tmp_r</span> <span class="o">*</span> <span class="n">pts_camera_i</span><span class="p">)</span> <span class="o">+</span>
+                                 <span class="n">Utility</span><span class="o">::</span><span class="n">skewSymmetric</span><span class="p">(</span><span class="n">ric</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">Rj</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ri</span> <span class="o">*</span> <span class="n">tic</span> <span class="o">+</span> <span class="n">Pi</span> <span class="o">-</span> <span class="n">Pj</span><span class="p">)</span> <span class="o">-</span> <span class="n">tic</span><span class="p">));</span>
+        <span class="n">jacobian_ex_pose</span><span class="p">.</span><span class="n">leftCols</span><span class="o">&lt;</span><span class="mi">6</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">=</span> <span class="n">reduce</span> <span class="o">*</span> <span class="n">jaco_ex</span><span class="p">;</span>
+        <span class="n">jacobian_ex_pose</span><span class="p">.</span><span class="n">rightCols</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">().</span><span class="n">setZero</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector2d</span><span class="o">&gt;</span> <span class="n">jacobian_feature</span><span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span>
+        <span class="n">jacobian_feature</span> <span class="o">=</span> <span class="n">reduce</span> <span class="o">*</span> <span class="n">ric</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Rj</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Ri</span> <span class="o">*</span> <span class="n">ric</span> <span class="o">*</span> <span class="n">pts_i_td</span> <span class="o">*</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">inv_dep_i</span> <span class="o">*</span> <span class="n">inv_dep_i</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+    <span class="p">{</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector2d</span><span class="o">&gt;</span> <span class="n">jacobian_td</span><span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="mi">4</span><span class="p">]);</span>
+        <span class="n">jacobian_td</span> <span class="o">=</span> <span class="n">reduce</span> <span class="o">*</span> <span class="n">ric</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Rj</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">Ri</span> <span class="o">*</span> <span class="n">ric</span> <span class="o">*</span> <span class="n">velocity_i</span> <span class="o">/</span> <span class="n">inv_dep_i</span> <span class="o">*</span> <span class="o">-</span><span class="mf">1.0</span>  <span class="o">+</span>
+                      <span class="n">sqrt_info</span> <span class="o">*</span> <span class="n">velocity_j</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>코드상에서 residual은 다음 식을 통해 구해진다.</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/4/Untitled%2012.png" alt="/assets/VINS_FUSION/4/Untitled%2012.png" /></p>
+
+<p>논문과는 달리 tangent basis를 사용하지 않는다. (covariance를 pixel 단위로 계산하고 성능도 더 잘나와서 그렇게 한것으로 추정)</p>
+
+<p>이미 이전에 point들을 normalize해두었기 때문에 \(\pi^{-1}\)은 코드상에 없다.</p>
+
+<ul>
+  <li>논문에서 언급했듯이, \(\hat u_l^{c_i}, \hat v_l^{c_i}\)는 first observation의 \(l^{th}\) feature이다.  이것을 \(j^{th}\) frame의 feature와 비교하는 것으로, \(\hat u_l^{c_i}, \hat v_l^{c_i}\)를 \(j^{th}\) feature와 matching하여 reprojection error를 비교한다.</li>
+</ul>
+
+<p>또한, td (image time + td = IMU time)와 td_i, td_j는 이론적으로는 같은 값이어야 하지만, optimization parameter에 해당하여 각 frame에서 달라질 수 있다. 즉, IMU와의 보다 정밀한 synchronize를 위해 (td-td_i)*velocity_i 를 빼주게 된다. ()</p>
+
+<p>(optimization에서 td는 IMU pre integration 값을 구하는 것에만 직접적으로 사용되고 pre_integration을 통해 구한 residual과 image에서의 residual이 관련이 있어 synchronize해주는 것으로 보인다.)</p>
+
+<p>이제 \(i^{th}\) frame의 \(l^{th}\) feature를 \(j^{th}\) frame으로 옮긴 \(\tilde P^{c_j}_l\) 를 보면, 논문에서의 수식과 동일한 과정으로 전게 되는 것을 확인할 수 있다.</p>
+
+<p>[논문의 수식 해석]</p>
+
+<p>(1) depth를 곱하여 \(i^{th}\) frame에서의 X,Y,Z 3D points를 구한다.
+(2) (\(i^{th}\)) IMU frame coordinate로 변환한다.
+(3) \(i^{th}\) IMU frame에서 world coordinate로 변환한다. 
+(4) world coordinate에서 \(j^{th}\) frame의 IMU coordinate로 변환한다.
+(5) 최종적으로 \(j^{th}\) frame image coordinate로 변환한다.</p>
+
+<ul>
+  <li>괄호안으로의 변환은 다음 수식참조, \(P_w^b\) ( b frame 기준 b frame → world origin vector ) + \(R_w^b*P^w_b\) ( b frame기준으로 바꾼 world frame → b frame origin vector) = 0.  <br />
+qic, tic는 coordinate transform 기준이므로 논문에서의 수식(점변환)을 위해 inverse를 곱한다.</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/4/Untitled%2013.png" alt="/assets/VINS_FUSION/4/Untitled%2013.png" /></p>
+
+<p>따라서, 3D points를 이미지로 points로 바꾸어 residual은 다음식에 의해 구해진다.</p>
+
+<p><img src="/assets/VINS_FUSION/4/Untitled%2014.png" alt="/assets/VINS_FUSION/4/Untitled%2014.png" /></p>
+
+<ul>
+  <li>Jacobian의 경우 chain rule에 의해 다음과 같이 구할 수 있다.</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/4/Untitled%2015.png" alt="/assets/VINS_FUSION/4/Untitled%2015.png" /></p>
+
+<p>우선 \(\frac{\partial r_c}{\partial \tilde P_l^{c_j}}\)를 먼저 구하면,</p>
+
+<p><img src="/assets/VINS_FUSION/4/Untitled%2016.png" alt="/assets/VINS_FUSION/4/Untitled%2016.png" /></p>
+
+<p>이후, 코드에서 확인할 수 있듯이,  \(\frac{\partial \tilde P_l^{c_j}}{\partial \chi}\)를 구할 수 있다. state</p>
+
+<p><img src="/assets/VINS_FUSION/4/Untitled%2017.png" alt="/assets/VINS_FUSION/4/Untitled%2017.png" /></p>
+
+<p>에 대해, 해당 값을 구하고, (Formula_Derivation_and_Analysis_of_the_VINS-Mono.pdf 참조)</p>
+
+<p><strong>최종적으로 위에서 구한 \(\frac{\partial r_c}{\partial \tilde P_l^{c_j}}\) (code의 ‘reduce’)을 곱해주면 Jacobian이 완성된다</strong>.</p>
+
+<p>(td에 대한 jacobian은 pdf에 없지만, inverse depth에 대해 구한 것과 유사하며 코드에서 td가 들어가는 부분을 참조하면 쉽게 유도할 수 있다.)</p>
+
+<ul>
+  <li>sqrt_info는 Estimator::setParameter() 에서 다음과 같은 코드</li>
+</ul>
+
+<p>ProjectionTwoFrameOneCamFactor::sqrt_info = FOCAL_LENGTH / 1.5 * Matrix2d::Identity(); 로 지정한 값을 가진다. (information matrix 방식으로 sqrt covariance를 heuristic하게 1.5로 지정한 것으로 보인다.)</p>
+
+<h2 id="3-sliding-window">3. Sliding Window</h2>
+
+<p>initial인 경우, void Estimator::updateLatestStates()를 통해 window에 넣어주지 않은 값들로 fastPredictIMU를 하여 update해주었다. 이후 flag를 initial → non_linear로 바꾸고 window를 sliding 한다.</p>
+
+<ul>
+  <li>fastPredictIMU를 통해서 WINDOW_SIZE+1에 들어온 imu값들을 변수들을 update해준다.</li>
+  <li>initial이 아닌경우 sliding window를 먼저하고 이후 updateLatestStates를 하는 이유는, outlier나 failure를 삭제하기 <em>**</em>위함이다. initial의 경우 initialStructure함수에서 충분히 robustness함을 보장해가면서 하기때문에 그런듯 하다.</li>
+</ul>
+
+<p>1) void Estimator::slideWindow()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">marginalization_flag</span> <span class="o">==</span> <span class="n">MARGIN_OLD</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">double</span> <span class="n">t_0</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="n">back_R0</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="n">back_P0</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">frame_count</span> <span class="o">==</span> <span class="n">WINDOW_SIZE</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">WINDOW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">Headers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+            <span class="n">Rs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">swap</span><span class="p">(</span><span class="n">Rs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]);</span>
+            <span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">swap</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]);</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span><span class="n">pre_integrations</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pre_integrations</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]);</span>
+
+                <span class="n">dt_buf</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">swap</span><span class="p">(</span><span class="n">dt_buf</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]);</span>
+                <span class="n">linear_acceleration_buf</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">swap</span><span class="p">(</span><span class="n">linear_acceleration_buf</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]);</span>
+                <span class="n">angular_velocity_buf</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">swap</span><span class="p">(</span><span class="n">angular_velocity_buf</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]);</span>
+
+                <span class="n">Vs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">swap</span><span class="p">(</span><span class="n">Vs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]);</span>
+                <span class="n">Bas</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">swap</span><span class="p">(</span><span class="n">Bas</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]);</span>
+                <span class="n">Bgs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">swap</span><span class="p">(</span><span class="n">Bgs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">Headers</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">[</span><span class="n">WINDOW_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+        <span class="n">Ps</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">WINDOW_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+        <span class="n">Rs</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="n">WINDOW_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">Vs</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vs</span><span class="p">[</span><span class="n">WINDOW_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+            <span class="n">Bas</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bas</span><span class="p">[</span><span class="n">WINDOW_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+            <span class="n">Bgs</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bgs</span><span class="p">[</span><span class="n">WINDOW_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+
+            <span class="k">delete</span> <span class="n">pre_integrations</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">];</span>
+            <span class="n">pre_integrations</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntegrationBase</span><span class="p">{</span><span class="n">acc_0</span><span class="p">,</span> <span class="n">gyr_0</span><span class="p">,</span> <span class="n">Bas</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">],</span> <span class="n">Bgs</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">]};</span>
+
+            <span class="n">dt_buf</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">].</span><span class="n">clear</span><span class="p">();</span>
+            <span class="n">linear_acceleration_buf</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">].</span><span class="n">clear</span><span class="p">();</span>
+            <span class="n">angular_velocity_buf</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">].</span><span class="n">clear</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nb">true</span> <span class="o">||</span> <span class="n">solver_flag</span> <span class="o">==</span> <span class="n">INITIAL</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">map</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="n">ImageFrame</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">it_0</span><span class="p">;</span>
+            <span class="n">it_0</span> <span class="o">=</span> <span class="n">all_image_frame</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">t_0</span><span class="p">);</span>
+            <span class="k">delete</span> <span class="n">it_0</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">.</span><span class="n">pre_integration</span><span class="p">;</span>
+            <span class="n">all_image_frame</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">all_image_frame</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">it_0</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">slideWindowOld</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">frame_count</span> <span class="o">==</span> <span class="n">WINDOW_SIZE</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Headers</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">[</span><span class="n">frame_count</span><span class="p">];</span>
+        <span class="n">Ps</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">frame_count</span><span class="p">];</span>
+        <span class="n">Rs</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="n">frame_count</span><span class="p">];</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">dt_buf</span><span class="p">[</span><span class="n">frame_count</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="kt">double</span> <span class="n">tmp_dt</span> <span class="o">=</span> <span class="n">dt_buf</span><span class="p">[</span><span class="n">frame_count</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
+                <span class="n">Vector3d</span> <span class="n">tmp_linear_acceleration</span> <span class="o">=</span> <span class="n">linear_acceleration_buf</span><span class="p">[</span><span class="n">frame_count</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
+                <span class="n">Vector3d</span> <span class="n">tmp_angular_velocity</span> <span class="o">=</span> <span class="n">angular_velocity_buf</span><span class="p">[</span><span class="n">frame_count</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
+
+                <span class="n">pre_integrations</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">push_back</span><span class="p">(</span><span class="n">tmp_dt</span><span class="p">,</span> <span class="n">tmp_linear_acceleration</span><span class="p">,</span> <span class="n">tmp_angular_velocity</span><span class="p">);</span>
+
+                <span class="n">dt_buf</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span><span class="n">tmp_dt</span><span class="p">);</span>
+                    <span class="n">linear_acceleration_buf</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span><span class="n">tmp_linear_acceleration</span><span class="p">);</span>
+                    <span class="n">angular_velocity_buf</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span><span class="n">tmp_angular_velocity</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="n">Vs</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vs</span><span class="p">[</span><span class="n">frame_count</span><span class="p">];</span>
+            <span class="n">Bas</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bas</span><span class="p">[</span><span class="n">frame_count</span><span class="p">];</span>
+            <span class="n">Bgs</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Bgs</span><span class="p">[</span><span class="n">frame_count</span><span class="p">];</span>
+
+            <span class="k">delete</span> <span class="n">pre_integrations</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">];</span>
+            <span class="n">pre_integrations</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntegrationBase</span><span class="p">{</span><span class="n">acc_0</span><span class="p">,</span> <span class="n">gyr_0</span><span class="p">,</span> <span class="n">Bas</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">],</span> <span class="n">Bgs</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">]};</span>
+
+            <span class="n">dt_buf</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">].</span><span class="n">clear</span><span class="p">();</span>
+            <span class="n">linear_acceleration_buf</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">].</span><span class="n">clear</span><span class="p">();</span>
+            <span class="n">angular_velocity_buf</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">].</span><span class="n">clear</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="n">slideWindowNew</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>keyframe인 경우:
+    <ul>
+      <li>Headers, Ps, Rs, pre_integration, linear_acceleration_buf, angular_velocity_buf, dt_buf, Vs, Bas, Bgs에 대해 i = 0, … WINDOW_SIZE-1 까지는 1 … WINDOW_SIZE의 값을 넣어주고, WINDOW_SIZE에는 i=0의 값들이 있게된다. (swap)</li>
+      <li>이후, WINDOW_SIZE의 Headers, Ps, Rs, Vs, Bas, Bgs는 WINDOW_SIZE - 1과 동일하게 값을 설정한다. (IMU값이 들어올때마다 fastPredictIMU와 비슷하게 처리해주었고 optimization동안에 쌓인 것들에 대해서는 updateLatestStates로 fastPredictIMU를 호출해주었으므로 가능하다. 즉 마지막 i=WINDOW_SIZE에서의 parameter는 계속 변동되고 있는것)</li>
+      <li>window의 마지막부분에 대해 pre_integration의 경우 지금 acc_0, gyr_o로 IntegrationBase를 만들어주고, dt_buf, linear_acceleration_buf, angular_buf들 비워준다.</li>
+      <li>이후, all_image_frame에서 sliding전에 기존 0번 frame에 해당하는 것을 지워준다.</li>
+      <li>slideWindowOld() 함수에서, initial인경우에는 f_manager.removeBack()으로 들어가서 모든 feature들의 start frame을 한개씩 줄이고, 만약 0번째 start frame에 있던 feature였던 경우 feature_per_frame에서 0번째 frame을 삭제한다. 이로인해 feature의 size=0(즉 frame이 더이상 없으면)이면 feature를 삭제한다.</li>
+    </ul>
+  </li>
+  <li>keyframe이 아닌 경우:
+    <ul>
+      <li>WINDOW_SIZE-1에 있는 값들을 지워준다. 즉, 모든 frame_count-1에 있는 Headers, Ps, Rs, Vs등의 변수모음들에 대해 frame_count에 있는 값으로 덮어씌운다.</li>
+      <li>
+        <p>물론 dt_buf, linear_acceleration_buf, angular_velocity_buf 에는 값을 쌓는 느낌으로 추가해준다. <strong>즉, 기존 WINDOW_SIZE-1 frame이 없었던 것처럼 처리한 후, (또한 buf의 경우 기존 WINDOW_SIZE를 WINDOW_SIZE-1에 추가해준 후)</strong> WINDOW_SIZE에는 새로운 값들을 넣는다.</p>
+
+        <p><strong>이는 Chapter2의 processMeasurements()에서 dt를 계산할때 마지막 dt가 curTime까지인 이유이기도 하다.</strong></p>
+      </li>
+      <li>
+        <p>slideWindowNew() 함수의 경우, f_manager.removeFront(frame_count)함수를 호출하여 마찬가지로 feature의 start_frame이 WINDOW_SIZE 였던 경우 WINDOW_SIZE - 1로 지정하고, 그게 아닌경우 feature의 end_frame ==  frame_count -1인 곳의 frame을 삭제한다<strong>.</strong> 이것으로 인해 feature의 featurePerFrame이 없으면 feature를 삭제한다.</p>
+
+        <p>(그냥 feature_per_frame.end() -1 을 삭제하는 것과 같다)</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="4-outlier-rejection--failure-detection">4. Outlier Rejection &amp; Failure Detection</h2>
+
+<p>1) void Estimator::processImage 마무리 (initial이 아닌경우)</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">USE_IMU</span><span class="p">)</span>
+    <span class="n">f_manager</span><span class="p">.</span><span class="n">initFramePoseByPnP</span><span class="p">(</span><span class="n">frame_count</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">Rs</span><span class="p">,</span> <span class="n">tic</span><span class="p">,</span> <span class="n">ric</span><span class="p">);</span>
+<span class="n">f_manager</span><span class="p">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">frame_count</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">Rs</span><span class="p">,</span> <span class="n">tic</span><span class="p">,</span> <span class="n">ric</span><span class="p">);</span>
+<span class="n">optimization</span><span class="p">();</span>
+<span class="n">set</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">removeIndex</span><span class="p">;</span>
+<span class="n">outliersRejection</span><span class="p">(</span><span class="n">removeIndex</span><span class="p">);</span>
+<span class="n">f_manager</span><span class="p">.</span><span class="n">removeOutlier</span><span class="p">(</span><span class="n">removeIndex</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">MULTIPLE_THREAD</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">featureTracker</span><span class="p">.</span><span class="n">removeOutliers</span><span class="p">(</span><span class="n">removeIndex</span><span class="p">);</span>
+    <span class="n">predictPtsInNextFrame</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">failureDetection</span><span class="p">())</span>
+<span class="p">{</span>
+    <span class="n">ROS_WARN</span><span class="p">(</span><span class="s">"failure detection!"</span><span class="p">);</span>
+    <span class="n">failure_occur</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">clearState</span><span class="p">();</span>
+    <span class="n">setParameter</span><span class="p">();</span>
+    <span class="n">ROS_WARN</span><span class="p">(</span><span class="s">"system reboot!"</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">slideWindow</span><span class="p">();</span>
+<span class="n">f_manager</span><span class="p">.</span><span class="n">removeFailures</span><span class="p">();</span>
+<span class="c1">// prepare output of VINS</span>
+<span class="n">key_poses</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">WINDOW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">key_poses</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+
+<span class="n">last_R</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">];</span>
+<span class="n">last_P</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="n">WINDOW_SIZE</span><span class="p">];</span>
+<span class="n">last_R0</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">last_P0</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">updateLatestStates</span><span class="p">();</span>
+
+</code></pre></div></div>
+
+<ul>
+  <li>IMU를 안쓰면 PnP로 WINDOW_SIZE frame의 변수들을 구한다. (fastPredictIMU가 없으므로) 이후 triangulate하여 (chapter3 참고) feature들의 depth를 구한다.</li>
+  <li>outliersRejection을 통해 삭제할 feature id를 받아와 f_manager.removeOutlier에서 해당 feature를 삭제한다.</li>
+  <li>multi thread가 아니면 feature Track할때 제거해준다. (<em>prev_pts</em>) 또한 남은 feature들을 track 가능하도록 image data로 바꿔준다. (<em>cur_pts</em>)</li>
+  <li>failure detection은 하지않는다. (함수에서 바로 false 반환) 그러나 f_manager.removeFailures()에서 depth가 음수인 것을 삭제한다.</li>
+</ul>
+
+<p>2) void Estimator::outliersRejection(set<int> &amp;removeIndex)</int></p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">feature_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_id</span> <span class="o">:</span> <span class="n">f_manager</span><span class="p">.</span><span class="n">feature</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">it_per_id</span><span class="p">.</span><span class="n">used_num</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">used_num</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">continue</span><span class="p">;</span>
+    <span class="n">feature_index</span> <span class="o">++</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">imu_i</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">start_frame</span><span class="p">,</span> <span class="n">imu_j</span> <span class="o">=</span> <span class="n">imu_i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">Vector3d</span> <span class="n">pts_i</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">point</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">estimated_depth</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_frame</span> <span class="o">:</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">imu_j</span><span class="o">++</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">imu_i</span> <span class="o">!=</span> <span class="n">imu_j</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">Vector3d</span> <span class="n">pts_j</span> <span class="o">=</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">point</span><span class="p">;</span>             
+            <span class="kt">double</span> <span class="n">tmp_error</span> <span class="o">=</span> <span class="n">reprojectionError</span><span class="p">(</span><span class="n">Rs</span><span class="p">[</span><span class="n">imu_i</span><span class="p">],</span> <span class="n">Ps</span><span class="p">[</span><span class="n">imu_i</span><span class="p">],</span> <span class="n">ric</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tic</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                                <span class="n">Rs</span><span class="p">[</span><span class="n">imu_j</span><span class="p">],</span> <span class="n">Ps</span><span class="p">[</span><span class="n">imu_j</span><span class="p">],</span> <span class="n">ric</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tic</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                <span class="n">depth</span><span class="p">,</span> <span class="n">pts_i</span><span class="p">,</span> <span class="n">pts_j</span><span class="p">);</span>
+            <span class="n">err</span> <span class="o">+=</span> <span class="n">tmp_error</span><span class="p">;</span>
+            <span class="n">errCnt</span><span class="o">++</span><span class="p">;</span>
+            <span class="c1">//printf("tmp_error %f\n", FOCAL_LENGTH / 1.5 * tmp_error);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="kt">double</span> <span class="n">ave_err</span> <span class="o">=</span> <span class="n">err</span> <span class="o">/</span> <span class="n">errCnt</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ave_err</span> <span class="o">*</span> <span class="n">FOCAL_LENGTH</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">removeIndex</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_id</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>reprojectionError함수에서 2. Cost function factors와 동일한 방법을 사용해 error를 구한다.</li>
+  <li>Covariance를 1.5로 지정하는 것을 고려해볼때, 2 pixel이상 (2 * 1.5 = 3)보다 error가 크면 해당 feature를 removeIndex에 추가한다.</li>
+</ul>
+
+<p>3) void Estimator::outliersRejection(set<int> &amp;removeIndex)</int></p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">feature_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_id</span> <span class="o">:</span> <span class="n">f_manager</span><span class="p">.</span><span class="n">feature</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">it_per_id</span><span class="p">.</span><span class="n">used_num</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">used_num</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">continue</span><span class="p">;</span>
+    <span class="n">feature_index</span> <span class="o">++</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">imu_i</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">start_frame</span><span class="p">,</span> <span class="n">imu_j</span> <span class="o">=</span> <span class="n">imu_i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">Vector3d</span> <span class="n">pts_i</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">point</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">estimated_depth</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_frame</span> <span class="o">:</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">imu_j</span><span class="o">++</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">imu_i</span> <span class="o">!=</span> <span class="n">imu_j</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">Vector3d</span> <span class="n">pts_j</span> <span class="o">=</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">point</span><span class="p">;</span>             
+            <span class="kt">double</span> <span class="n">tmp_error</span> <span class="o">=</span> <span class="n">reprojectionError</span><span class="p">(</span><span class="n">Rs</span><span class="p">[</span><span class="n">imu_i</span><span class="p">],</span> <span class="n">Ps</span><span class="p">[</span><span class="n">imu_i</span><span class="p">],</span> <span class="n">ric</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tic</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                                <span class="n">Rs</span><span class="p">[</span><span class="n">imu_j</span><span class="p">],</span> <span class="n">Ps</span><span class="p">[</span><span class="n">imu_j</span><span class="p">],</span> <span class="n">ric</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tic</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                <span class="n">depth</span><span class="p">,</span> <span class="n">pts_i</span><span class="p">,</span> <span class="n">pts_j</span><span class="p">);</span>
+            <span class="n">err</span> <span class="o">+=</span> <span class="n">tmp_error</span><span class="p">;</span>
+            <span class="n">errCnt</span><span class="o">++</span><span class="p">;</span>
+            <span class="c1">//printf("tmp_error %f\n", FOCAL_LENGTH / 1.5 * tmp_error);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="kt">double</span> <span class="n">ave_err</span> <span class="o">=</span> <span class="n">err</span> <span class="o">/</span> <span class="n">errCnt</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ave_err</span> <span class="o">*</span> <span class="n">FOCAL_LENGTH</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">removeIndex</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_id</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>reprojectionError함수에서 2. Cost function factors와 동일한 방법을 사용해 error를 구한다.</li>
+  <li>Covariance를 1.5로 지정하는 것을 고려해볼때, 2 pixel이상 (2 * 1.5 = 3)보다 error가 크면 해당 feature를 removeIndex에 추가한다.</li>
+</ul>
+
+<hr />
+
+<p>VINS-Fusion 코드를 정리한 포스트입니다.</p>
+
+<ol>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-1/">VINS-Fusion Code Review - (1) Image Processing</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-2/">VINS-Fusion Code Review - (2) IMU Processing</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-3/">VINS-Fusion Code Review - (3) Initialization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-4/">VINS-Fusion Code Review - (4) Sliding window &amp; Optimization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-5/">VINS-Fusion Code Review - (5) Marginalization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-6/">VINS-Fusion Code Review - (6) Graph optimization</a></li>
+</ol>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li><a href="https://arxiv.org/abs/1711.02508">[2017] Quaternion kinematics for the error-state Kalman filter.pdf</a></li>
+  <li><a href="http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf">[2005] Indirect Kalman Filter for 3D Attitude Estimation.pdf</a></li>
+  <li><a href="https://arxiv.org/abs/1912.11986">Formula Derivation and Analysis of the VINS-Mono.pdf</a></li>
+  <li><a href="https://slideplayer.com/slide/12551914/">Marginalization&amp;Shcurcomplement.pptx</a></li>
+  <li><a href="https://kvmanohar22.github.io/notes/w03/main.pdf">[TRO2012] Visual-Inertial-Aided Navigation for High-Dynamic Motion in Built Environments Without Initial Conditions.pdf</a></li>
+  <li><a href="https://ieeexplore.ieee.org/document/8421746">VINS-Mono.pdf</a></li>
+</ul>
+
+      </article>
+      <script type="text/javascript" async
+       src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+      </script>
+
+      
+        <div class="blog-tags">
+          <span>Tags:</span>
+          
+            <a href="/tags#Visual SLAM">Visual SLAM</a>
+          
+        </div>
+      
+
+      
+
+      
+        <!-- Check if any share-links are active -->
+
+
+
+
+
+      
+
+      <ul class="pagination blog-pager">
+        
+        <li class="page-item previous">
+          <a class="page-link" href="/2022-01-05-VINS-Fusion-3/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (3) Initialization">&larr; Previous Post</a>
+        </li>
+        
+        
+        <li class="page-item next">
+          <a class="page-link" href="/2022-01-05-VINS-Fusion-5/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (5) Marginalization">Next Post &rarr;</a>
+        </li>
+        
+      </ul>
+      
+  
+  
+  
+
+  
+
+
+  
+
+  
+
+
+
+    </div>
+  </div>
+</div>
+
+
+  <footer>
+  <div class="container-md beautiful-jekyll-footer">
+    <div class="row">
+      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+      
+<ul class="list-inline text-center footer-links"><li class="list-inline-item">
+    <a href="mailto:dongukseo@kaist.ac.kr" title="Email me">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">Email me</span>
+   </a>
+  </li><li class="list-inline-item">
+    <a href="https://github.com/SeoDU" title="GitHub">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">GitHub</span>
+   </a>
+  </li><li class="list-inline-item">
+    <a href="https://www.youtube.com/channel/UCaON-AWswqdv9hzrOxZDdWA" title="YouTube">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fab fa-youtube fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">YouTube</span>
+   </a>
+  </li></ul>
+
+      
+      <p class="copyright text-muted">
+      
+        Dong-Uk Seo
+        &nbsp;&bull;&nbsp;
+      
+      2023
+
+      
+
+      
+
+
+      </p>
+      <p class="theme-by text-muted">
+        Powered by
+        <a href="https://beautifuljekyll.com">Beautiful Jekyll</a>
+      </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  
+  
+    
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+
+
+  
+    
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+
+  
+    
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+
+  
+
+
+
+  
+    <!-- doing something a bit funky here because I want to be careful not to include JQuery twice! -->
+    
+      <script src="/assets/js/beautifuljekyll.js"></script>
+    
+  
+
+
+
+
+
+
+
+
+
+</body>
+</html>

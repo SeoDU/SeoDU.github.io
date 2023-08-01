@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Beautiful Jekyll 6.0.1 | Copyright Dean Attali 2023 -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  
+
+  
+
+  <title>VINS-Fusion Code Review - (5) Marginalization</title>
+
+  
+  <meta name="author" content="Dong-Uk Seo">
+  
+
+  <meta name="description" content="(5) Marginalization 파트 중요 코드 정리 [논문설명 발췌] In order to bound the computational complexity of our optimization-based VIO, marginalization is incorporated Second-last frame이 keyframe이면 : oldest가 marginalized. Non-keyframe이면 : visual은 삭제하고 IMU값은 축적한다. → Our marginalization scheme aims to keep spatially separated keyframes in the window. This ensures sufficient...">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+      
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+    
+      
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+
+
+    
+      
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+
+
+    
+  
+
+  
+    
+      <link rel="stylesheet" href="/assets/css/bootstrap-social.css">
+    
+      <link rel="stylesheet" href="/assets/css/beautifuljekyll.css">
+    
+  
+
+  
+
+  
+  
+  
+
+  
+
+  
+  <meta property="og:site_name" content="Dong-Uk Seo">
+  <meta property="og:title" content="VINS-Fusion Code Review - (5) Marginalization">
+  <meta property="og:description" content="(5) Marginalization 파트 중요 코드 정리 [논문설명 발췌] In order to bound the computational complexity of our optimization-based VIO, marginalization is incorporated Second-last frame이 keyframe이면 : oldest가 marginalized. Non-keyframe이면 : visual은 삭제하고 IMU값은 축적한다. → Our marginalization scheme aims to keep spatially separated keyframes in the window. This ensures sufficient...">
+
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:article:author" content="Dong-Uk Seo">
+  <meta property="og:article:published_time" content="2022-01-05T00:00:00-05:00">
+  <meta property="og:url" content="http://localhost:4000/2022-01-05-VINS-Fusion-5/">
+  <link rel="canonical" href="http://localhost:4000/2022-01-05-VINS-Fusion-5/">
+  
+
+  
+  <meta name="twitter:card" content="summary">
+  
+  <meta name="twitter:site" content="@">
+  <meta name="twitter:creator" content="@">
+
+  <meta property="twitter:title" content="VINS-Fusion Code Review - (5) Marginalization">
+  <meta property="twitter:description" content="(5) Marginalization 파트 중요 코드 정리 [논문설명 발췌] In order to bound the computational complexity of our optimization-based VIO, marginalization is incorporated Second-last frame이 keyframe이면 : oldest가 marginalized. Non-keyframe이면 : visual은 삭제하고 IMU값은 축적한다. → Our marginalization scheme aims to keep spatially separated keyframes in the window. This ensures sufficient...">
+
+  
+
+  
+
+
+  
+
+  
+
+</head>
+
+
+<body>
+
+  
+
+
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular"><a class="navbar-brand" href="http://localhost:4000/">Dong-Uk Seo</a><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="main-navbar">
+    <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/aboutme">About Me</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/tags">Contents</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" id="nav-search-link" href="#" title="Search">
+            <span id="nav-search-icon" class="fa fa-search"></span>
+            <span id="nav-search-text">Search</span>
+          </a>
+        </li></ul>
+  </div>
+
+  
+
+  
+
+</nav>
+
+
+
+<div id="beautifuljekyll-search-overlay">
+
+  <div id="nav-search-exit" title="Exit search">✕</div>
+  <input type="text" id="nav-search-input" placeholder="Search">
+  <ul id="search-results-container"></ul>
+  
+  <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+  <script>
+    var searchjson = '[ \
+       \
+        { \
+          "title"    : "Azure Kinect DK install", \
+          "desc"     : "Azure Kinect DK install", \
+          "category" : "Camera", \
+          "url"      : "/2023-07-07-Azure-Kinect-Dk-install/", \
+          "date"     : "July  7, 2023" \
+        }, \
+       \
+        { \
+          "title"    : "RPG trajectory evaluation on multiple trajectories", \
+          "desc"     : "RPG trajectory evaluation on multiple trajectories", \
+          "category" : "SLAM", \
+          "url"      : "/2022-03-19-rpg-trajectories/", \
+          "date"     : "March 19, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-6/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
+          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-5/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-4/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
+          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-3/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-2/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
+          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/2022-01-05-VINS-Fusion-1/", \
+          "date"     : "January  5, 2022" \
+        }, \
+       \
+        { \
+          "title"    : "Frame간의 Transformation matrix", \
+          "desc"     : "Frame간의 Transformation matrix", \
+          "category" : "SLAM", \
+          "url"      : "/2021-12-18-calc-tf/", \
+          "date"     : "December 18, 2021" \
+        }, \
+       \
+        { \
+          "title"    : "Getting Stereo-Inertial data with Realsense camera", \
+          "desc"     : "Getting Stereo-Inertial data with Realsense camera", \
+          "category" : "Camera", \
+          "url"      : "/2021-08-27-orb-slam3-d435i/", \
+          "date"     : "August 27, 2021" \
+        }, \
+       \
+       \
+        { \
+          "title"    : "Flake it till you make it", \
+          "desc"     : "Flake it till you make it", \
+          "category" : "bookstest", \
+          "url"      : "/sample_posts/2020-02-26-flake-it-till-you-make-it/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "Sample blog post", \
+          "desc"     : "Sample blog post", \
+          "category" : "test", \
+          "url"      : "/sample_posts/2020-02-28-test-markdown/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "About Me", \
+          "desc"     : "About Me", \
+          "category" : "page", \
+          "url"      : "/aboutme/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "About me", \
+          "desc"     : "About me", \
+          "category" : "page", \
+          "url"      : "/aboutme_org/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/tags/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "", \
+          "desc"     : "", \
+          "category" : "page", \
+          "url"      : "/page2/", \
+          "date"     : "January 1, 1970" \
+        } \
+       \
+    ]';
+    searchjson = JSON.parse(searchjson);
+
+    var sjs = SimpleJekyllSearch({
+      searchInput: document.getElementById('nav-search-input'),
+      resultsContainer: document.getElementById('search-results-container'),
+      json: searchjson
+    });
+  </script>
+</div>
+
+
+
+
+
+  <!-- TODO this file has become a mess, refactor it -->
+
+
+
+
+
+
+
+<header class="header-section ">
+
+<div class="intro-header no-img">
+  <div class="container-md">
+    <div class="row">
+      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+        <div class="post-heading">
+          <h1>VINS-Fusion Code Review - (5) Marginalization</h1>
+          
+
+          
+            <span class="post-meta">Posted on January 5, 2022</span>
+            
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
+
+
+
+
+
+<div class=" container-md ">
+  <div class="row">
+    <div class=" col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 ">
+
+      
+        
+        
+        
+
+        <div id="header-gh-btns">
+          
+        </div>
+      
+
+      
+
+      <article role="main" class="blog-post">
+        <h1 id="5-marginalization-파트-중요-코드-정리">(5) Marginalization 파트 중요 코드 정리</h1>
+
+<p>[논문설명 발췌]  <br />
+In order to bound the computational complexity of our optimization-based VIO, marginalization is incorporated</p>
+
+<p><img src="/assets/VINS_FUSION/5/Untitled.png" alt="/assets/VINS_FUSION/5/Untitled.png" /></p>
+
+<p>Second-last frame이 keyframe이면 : oldest가 marginalized.</p>
+
+<p>Non-keyframe이면 : visual은 삭제하고 IMU값은 축적한다.</p>
+
+<p>→  Our marginalization scheme aims to keep spatially separated keyframes in the window. This ensures sufficient parallax for feature triangulation, and maximizes the probability of maintaining accelerometer measurements with large excitation. The marginalization is carried out using the Schur complement.</p>
+
+<p><strong>Marginalization result는 early-fix이기 때문에, sub-optimal한 결과를 줄 수도 있으나</strong> 이 정도 small drift는 VIO에서 acceptable하다고 한다.</p>
+
+<h2 id="1-marginalization">1. Marginalization</h2>
+
+<p>1) void Estimator::optimization()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">last_marginalization_info</span> <span class="o">&amp;&amp;</span> <span class="n">last_marginalization_info</span><span class="o">-&gt;</span><span class="n">valid</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// construct new marginlization_factor</span>
+    <span class="n">MarginalizationFactor</span> <span class="o">*</span><span class="n">marginalization_factor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MarginalizationFactor</span><span class="p">(</span><span class="n">last_marginalization_info</span><span class="p">);</span>
+    <span class="n">problem</span><span class="p">.</span><span class="n">AddResidualBlock</span><span class="p">(</span><span class="n">marginalization_factor</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span>
+                             <span class="n">last_marginalization_parameter_blocks</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="p">...</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">marginalization_flag</span> <span class="o">==</span> <span class="n">MARGIN_OLD</span><span class="p">)</span>
+    <span class="n">options</span><span class="p">.</span><span class="n">max_solver_time_in_seconds</span> <span class="o">=</span> <span class="n">SOLVER_TIME</span> <span class="o">*</span> <span class="mf">4.0</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">;</span>
+<span class="k">else</span>
+    <span class="n">options</span><span class="p">.</span><span class="n">max_solver_time_in_seconds</span> <span class="o">=</span> <span class="n">SOLVER_TIME</span><span class="p">;</span>
+<span class="p">...</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">marginalization_flag</span> <span class="o">==</span> <span class="n">MARGIN_OLD</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">MarginalizationInfo</span> <span class="o">*</span><span class="n">marginalization_info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MarginalizationInfo</span><span class="p">();</span>
+    <span class="n">vector2double</span><span class="p">();</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">last_marginalization_info</span> <span class="o">&amp;&amp;</span> <span class="n">last_marginalization_info</span><span class="o">-&gt;</span><span class="n">valid</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">drop_set</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">last_marginalization_parameter_blocks</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">last_marginalization_parameter_blocks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">||</span>
+                <span class="n">last_marginalization_parameter_blocks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">para_SpeedBias</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">drop_set</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="c1">// construct new marginlization_factor</span>
+        <span class="n">MarginalizationFactor</span> <span class="o">*</span><span class="n">marginalization_factor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MarginalizationFactor</span><span class="p">(</span><span class="n">last_marginalization_info</span><span class="p">);</span>
+        <span class="n">ResidualBlockInfo</span> <span class="o">*</span><span class="n">residual_block_info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ResidualBlockInfo</span><span class="p">(</span><span class="n">marginalization_factor</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span>
+                                                                       <span class="n">last_marginalization_parameter_blocks</span><span class="p">,</span>
+                                                                       <span class="n">drop_set</span><span class="p">);</span>
+        <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">addResidualBlockInfo</span><span class="p">(</span><span class="n">residual_block_info</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pre_integrations</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">sum_dt</span> <span class="o">&lt;</span> <span class="mf">10.0</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">IMUFactor</span><span class="o">*</span> <span class="n">imu_factor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IMUFactor</span><span class="p">(</span><span class="n">pre_integrations</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+            <span class="n">ResidualBlockInfo</span> <span class="o">*</span><span class="n">residual_block_info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ResidualBlockInfo</span><span class="p">(</span><span class="n">imu_factor</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span>
+                                                                       <span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span> <span class="o">*&gt;</span><span class="p">{</span><span class="n">para_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">para_SpeedBias</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">para_SpeedBias</span><span class="p">[</span><span class="mi">1</span><span class="p">]},</span>
+                                                                       <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">});</span>
+            <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">addResidualBlockInfo</span><span class="p">(</span><span class="n">residual_block_info</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>지난 optimization에서 marginalization이 있었다면 optimization factor에 사용된다.</li>
+  <li>keyframe인 경우 solve하는 시간이 더 짧다. (Why?)</li>
+  <li>
+    <p>추후 premarginalize(), marginalize()를위한 marginalization_info를 만든다.</p>
+
+    <p>이 marginalization_info에 marginalization_factor, imu_factor (0번째 frame과 1번째 frame사이의 값들인 pre_integrations[1]), ProjectionTwoFrameOneCamFactor 등을 ResidualBlockInfo로 만들어 marginalization_info→addResidualBlockInfo로 추가해준다.</p>
+  </li>
+  <li>last_marginalization_parameter_blocks[i] 가 para_Pose[0] (<strong><em>address</em></strong>) 와 같은 것은 drop_set으로 넣는다. (keyframe의 경우 addr_shift에서 para_Pose[0]의 address를 넣지 않기때문에 없다. Non-keyframe의 경우 이곳에서 dropset으로 추가함으로써 jacobian,residual 계산에 추가된다. → Accumulation)</li>
+</ul>
+
+<p><img src="/assets/VINS_FUSION/5/Untitled%201.png" alt="/assets/VINS_FUSION/5/Untitled%201.png" /></p>
+
+<p>2) void Estimator::optimization()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kt">int</span> <span class="n">feature_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_id</span> <span class="o">:</span> <span class="n">f_manager</span><span class="p">.</span><span class="n">feature</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">it_per_id</span><span class="p">.</span><span class="n">used_num</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">it_per_id</span><span class="p">.</span><span class="n">used_num</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="k">continue</span><span class="p">;</span>
+
+        <span class="o">++</span><span class="n">feature_index</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="n">imu_i</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">start_frame</span><span class="p">,</span> <span class="n">imu_j</span> <span class="o">=</span> <span class="n">imu_i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">imu_i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">continue</span><span class="p">;</span>
+
+        <span class="n">Vector3d</span> <span class="n">pts_i</span> <span class="o">=</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">point</span><span class="p">;</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it_per_frame</span> <span class="o">:</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">imu_j</span><span class="o">++</span><span class="p">;</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">imu_i</span> <span class="o">!=</span> <span class="n">imu_j</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">Vector3d</span> <span class="n">pts_j</span> <span class="o">=</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">point</span><span class="p">;</span>
+                <span class="n">ProjectionTwoFrameOneCamFactor</span> <span class="o">*</span><span class="n">f_td</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProjectionTwoFrameOneCamFactor</span><span class="p">(</span><span class="n">pts_i</span><span class="p">,</span> <span class="n">pts_j</span><span class="p">,</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">velocity</span><span class="p">,</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">velocity</span><span class="p">,</span>
+                                                                  <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cur_td</span><span class="p">,</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">cur_td</span><span class="p">);</span>
+                <span class="n">ResidualBlockInfo</span> <span class="o">*</span><span class="n">residual_block_info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ResidualBlockInfo</span><span class="p">(</span><span class="n">f_td</span><span class="p">,</span> <span class="n">loss_function</span><span class="p">,</span>
+                                                                                <span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span> <span class="o">*&gt;</span><span class="p">{</span><span class="n">para_Pose</span><span class="p">[</span><span class="n">imu_i</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">imu_j</span><span class="p">],</span> <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">para_Feature</span><span class="p">[</span><span class="n">feature_index</span><span class="p">],</span> <span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">]},</span>
+                                                                                <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span>
+                <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">addResidualBlockInfo</span><span class="p">(</span><span class="n">residual_block_info</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">STEREO</span> <span class="o">&amp;&amp;</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">is_stereo</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">Vector3d</span> <span class="n">pts_j_right</span> <span class="o">=</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">pointRight</span><span class="p">;</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">imu_i</span> <span class="o">!=</span> <span class="n">imu_j</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">ProjectionTwoFrameTwoCamFactor</span> <span class="o">*</span><span class="n">f</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProjectionTwoFrameTwoCamFactor</span><span class="p">(</span><span class="n">pts_i</span><span class="p">,</span> <span class="n">pts_j_right</span><span class="p">,</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">velocity</span><span class="p">,</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">velocityRight</span><span class="p">,</span>
+                                                                  <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cur_td</span><span class="p">,</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">cur_td</span><span class="p">);</span>
+                    <span class="n">ResidualBlockInfo</span> <span class="o">*</span><span class="n">residual_block_info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ResidualBlockInfo</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">loss_function</span><span class="p">,</span>
+                                                                                   <span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span> <span class="o">*&gt;</span><span class="p">{</span><span class="n">para_Pose</span><span class="p">[</span><span class="n">imu_i</span><span class="p">],</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">imu_j</span><span class="p">],</span> <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">para_Feature</span><span class="p">[</span><span class="n">feature_index</span><span class="p">],</span> <span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">]},</span>
+                                                                                   <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">});</span>
+                    <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">addResidualBlockInfo</span><span class="p">(</span><span class="n">residual_block_info</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">else</span>
+                <span class="p">{</span>
+                    <span class="n">ProjectionOneFrameTwoCamFactor</span> <span class="o">*</span><span class="n">f</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProjectionOneFrameTwoCamFactor</span><span class="p">(</span><span class="n">pts_i</span><span class="p">,</span> <span class="n">pts_j_right</span><span class="p">,</span> <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">velocity</span><span class="p">,</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">velocityRight</span><span class="p">,</span>
+                                                                  <span class="n">it_per_id</span><span class="p">.</span><span class="n">feature_per_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">cur_td</span><span class="p">,</span> <span class="n">it_per_frame</span><span class="p">.</span><span class="n">cur_td</span><span class="p">);</span>
+                    <span class="n">ResidualBlockInfo</span> <span class="o">*</span><span class="n">residual_block_info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ResidualBlockInfo</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">loss_function</span><span class="p">,</span>
+                                                                                   <span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span> <span class="o">*&gt;</span><span class="p">{</span><span class="n">para_Ex_Pose</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">para_Feature</span><span class="p">[</span><span class="n">feature_index</span><span class="p">],</span> <span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">]},</span>
+                                                                                   <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{</span><span class="mi">2</span><span class="p">});</span>
+                    <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">addResidualBlockInfo</span><span class="p">(</span><span class="n">residual_block_info</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+
+    <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">preMarginalize</span><span class="p">();</span>
+    <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">marginalize</span><span class="p">();</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="kt">long</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*&gt;</span> <span class="n">addr_shift</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">WINDOW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">addr_shift</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span> <span class="o">=</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+            <span class="n">addr_shift</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span> <span class="o">=</span> <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_OF_CAM</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">addr_shift</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span> <span class="o">=</span> <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+
+    <span class="n">addr_shift</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span> <span class="o">*&gt;</span> <span class="n">parameter_blocks</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">getParameterBlocks</span><span class="p">(</span><span class="n">addr_shift</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">last_marginalization_info</span><span class="p">)</span>
+        <span class="k">delete</span> <span class="n">last_marginalization_info</span><span class="p">;</span>
+    <span class="n">last_marginalization_info</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="p">;</span>
+    <span class="n">last_marginalization_parameter_blocks</span> <span class="o">=</span> <span class="n">parameter_blocks</span><span class="p">;</span>
+<span class="err">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>stereo는 만드는 ResidualBlockInfo도 다르고, drop_set도 다르다.</li>
+  <li>preMarginalize(), marginalize() 이후, addr_shift map container에 (key,value) = (i번째 parameter의 주소, i-1번째 parameter의 주소) 를 저장한다. (para_Pose, para_SpeedBias)  <br />
+  para_Ex_Pose, para_Td는 index 차이 없이 동일하게 저장한다.</li>
+</ul>
+
+<p>3) void Estimator::optimization()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">else</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">last_marginalization_info</span> <span class="o">&amp;&amp;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">count</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">last_marginalization_parameter_blocks</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">last_marginalization_parameter_blocks</span><span class="p">),</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">WINDOW_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
+    <span class="p">{</span>
+
+        <span class="n">MarginalizationInfo</span> <span class="o">*</span><span class="n">marginalization_info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MarginalizationInfo</span><span class="p">();</span>
+        <span class="n">vector2double</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">last_marginalization_info</span> <span class="o">&amp;&amp;</span> <span class="n">last_marginalization_info</span><span class="o">-&gt;</span><span class="n">valid</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">drop_set</span><span class="p">;</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">last_marginalization_parameter_blocks</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">ROS_ASSERT</span><span class="p">(</span><span class="n">last_marginalization_parameter_blocks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">WINDOW_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">last_marginalization_parameter_blocks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">WINDOW_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+                    <span class="n">drop_set</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="c1">// construct new marginlization_factor</span>
+            <span class="n">MarginalizationFactor</span> <span class="o">*</span><span class="n">marginalization_factor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MarginalizationFactor</span><span class="p">(</span><span class="n">last_marginalization_info</span><span class="p">);</span>
+            <span class="n">ResidualBlockInfo</span> <span class="o">*</span><span class="n">residual_block_info</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ResidualBlockInfo</span><span class="p">(</span><span class="n">marginalization_factor</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span>
+                                                                           <span class="n">last_marginalization_parameter_blocks</span><span class="p">,</span>
+                                                                           <span class="n">drop_set</span><span class="p">);</span>
+
+            <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">addResidualBlockInfo</span><span class="p">(</span><span class="n">residual_block_info</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">preMarginalize</span><span class="p">();</span>
+        <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">marginalize</span><span class="p">();</span>
+        
+        <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="kt">long</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*&gt;</span> <span class="n">addr_shift</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">WINDOW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">WINDOW_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">continue</span><span class="p">;</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">WINDOW_SIZE</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">addr_shift</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span> <span class="o">=</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+                    <span class="n">addr_shift</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span> <span class="o">=</span> <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+            <span class="p">}</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="n">addr_shift</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span> <span class="o">=</span> <span class="n">para_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">USE_IMU</span><span class="p">)</span>
+                    <span class="n">addr_shift</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span> <span class="o">=</span> <span class="n">para_SpeedBias</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_OF_CAM</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="n">addr_shift</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span> <span class="o">=</span> <span class="n">para_Ex_Pose</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+
+        <span class="n">addr_shift</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">para_Td</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+        
+        <span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span> <span class="o">*&gt;</span> <span class="n">parameter_blocks</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">getParameterBlocks</span><span class="p">(</span><span class="n">addr_shift</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">last_marginalization_info</span><span class="p">)</span>
+            <span class="k">delete</span> <span class="n">last_marginalization_info</span><span class="p">;</span>
+        <span class="n">last_marginalization_info</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="p">;</span>
+        <span class="n">last_marginalization_parameter_blocks</span> <span class="o">=</span> <span class="n">parameter_blocks</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>Non-keyframe의 경우, marginalization_info에 등록하는 ResidualBlockInfo에 marginalization_factor만 추가한다. 또한 marginalization_factor의 drop_set도 WINDOW_SIZE - 1의 주소값과 같은 것만 넣는다.</p>
+
+    <p>** 지금 frame이 non-keyframe이고 WINDOW_SIZE-1이 keyframe이면 WINDOW_SIZE-1을 무시하는 것, sliding에서도 동일함.</p>
+  </li>
+  <li>
+    <p>또한 addr_shift에서 i=WINDOW_SIZE, WINDOW_SIZE-1을 제외하고는 (key,value) = (i번째 parameter의 주소, i번째 parameter의 주소) 를 저장한다. i=WINDOW_SIZE-1은 아에 고려하지 않고, i=WINDOW_SIZE에 i-1 = WINDOW_SIZE-1의 parameters를 넣어준다.</p>
+  </li>
+</ul>
+
+<h2 id="2-several-marginalization-factors">2. Several Marginalization factors</h2>
+
+<p>[SUMMARY]</p>
+
+<ol>
+  <li>
+    <p>MarginalizationInfo 생성시에 ResidualBlockInfo 사용, 3개의 factor로 구성.</p>
+
+    <p><em>(MarginalizationFactor, IMUFactor, ProjectionOneFrameTwoCamFactor</em>)</p>
+  </li>
+  <li>
+    <p>Marginalize()로 MarginalizationInfo의 jacobian, residual을 구한다.</p>
+
+    <p><img src="/assets/VINS_FUSION/5/Untitled%202.png" alt="Hessian Matrix" /></p>
+  </li>
+  <li>
+    <p>IMU constraints to Prior (address를 유지)</p>
+
+    <p>우선, vision 관련 feature는 index 변환이 없으므로 addr_shift에서 <strong>IMU constraint만 변환 한다.</strong> (sliding window에서 frame을 삭제해주기도 한다.)</p>
+
+    <p>Keyframe : para_Pose[0, …, WINDOW_SIZE -1] , para_SpeedBias[0, …, WINDOW_SIZE-1] para_Ex_Pose[0] data들을 다음 marginalization factor로 넘긴다.</p>
+
+    <p>Non-Keyframe : Sliding에서 i=WINDOW_SIZE-1의 para_Pose, para_SpeedBias를 i=WINDOW_SIZE에 저장함으로써 constarint를 연결한다. (i=WINDOW_SIZE - 1)은 Sliding과정에서 삭제된다. address를 사용하는 이 과정으로,</p>
+
+    <p>(1) 이전에 Sliding으로 사라졌던 data들을 다음 optimiztion에 전달하여 jacobian, residual 계산에 사용되고</p>
+
+    <p>(2) MarginalizationFactor parameter blocks의 address는 계속 유지됨으로써, 매우 효율적으로 코드가 실행된다.</p>
+
+    <p>결국 marginalizationFactor로 수행하는 것은, 이전에 drop_set에서 out되어 계산되지 않던 data를 이 factor에서나마 jacobian, residual 계산에 dx로 포함시켜 linearize하는 것.</p>
+  </li>
+  <li>
+    <p>MarginalizationFactor에 last_marginalization_info를 저장. 논문의 cost function 수행</p>
+  </li>
+</ol>
+
+<p>1) MarginalizationFactor</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">MarginalizationFactor</span><span class="o">::</span><span class="n">MarginalizationFactor</span><span class="p">(</span><span class="n">MarginalizationInfo</span><span class="o">*</span> <span class="n">_marginalization_info</span><span class="p">)</span><span class="o">:</span><span class="n">marginalization_info</span><span class="p">(</span><span class="n">_marginalization_info</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">:</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">keep_block_size</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">mutable_parameter_block_sizes</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">push_back</span><span class="p">(</span><span class="n">it</span><span class="p">);</span>
+        <span class="n">cnt</span> <span class="o">+=</span> <span class="n">it</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">set_num_residuals</span><span class="p">(</span><span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">n</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kt">bool</span> <span class="n">MarginalizationFactor</span><span class="o">::</span><span class="n">Evaluate</span><span class="p">(</span><span class="kt">double</span> <span class="k">const</span> <span class="o">*</span><span class="k">const</span> <span class="o">*</span><span class="n">parameters</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">residuals</span><span class="p">,</span> <span class="kt">double</span> <span class="o">**</span><span class="n">jacobians</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">n</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">m</span><span class="p">;</span>
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="n">dx</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">keep_block_size</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">keep_block_size</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">keep_block_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">m</span><span class="p">;</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="n">x</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="o">&gt;</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">size</span><span class="p">);</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="n">x0</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="o">&gt;</span><span class="p">(</span><span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">keep_block_data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">size</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">7</span><span class="p">)</span>
+            <span class="n">dx</span><span class="p">.</span><span class="n">segment</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">;</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">dx</span><span class="p">.</span><span class="n">segment</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">head</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">-</span> <span class="n">x0</span><span class="p">.</span><span class="n">head</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">();</span>
+            <span class="n">dx</span><span class="p">.</span><span class="n">segment</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">Utility</span><span class="o">::</span><span class="n">positify</span><span class="p">(</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Quaterniond</span><span class="p">(</span><span class="n">x0</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">x0</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">x0</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">x0</span><span class="p">(</span><span class="mi">5</span><span class="p">)).</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Quaterniond</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="mi">5</span><span class="p">))).</span><span class="n">vec</span><span class="p">();</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">((</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Quaterniond</span><span class="p">(</span><span class="n">x0</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">x0</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">x0</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">x0</span><span class="p">(</span><span class="mi">5</span><span class="p">)).</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Quaterniond</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="mi">5</span><span class="p">))).</span><span class="n">w</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="n">dx</span><span class="p">.</span><span class="n">segment</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="o">-</span><span class="n">Utility</span><span class="o">::</span><span class="n">positify</span><span class="p">(</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Quaterniond</span><span class="p">(</span><span class="n">x0</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">x0</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">x0</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">x0</span><span class="p">(</span><span class="mi">5</span><span class="p">)).</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Quaterniond</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="mi">5</span><span class="p">))).</span><span class="n">vec</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="o">&gt;</span><span class="p">(</span><span class="n">residuals</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">linearized_residuals</span> <span class="o">+</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">linearized_jacobians</span> <span class="o">*</span> <span class="n">dx</span><span class="p">;</span> <span class="c1">// residuals의 index n부분에 대입.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">)</span>
+    <span class="p">{</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">keep_block_size</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">keep_block_size</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">local_size</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">localSize</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+                <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">keep_block_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">m</span><span class="p">;</span>
+                <span class="n">Eigen</span><span class="o">::</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Dynamic</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">Dynamic</span><span class="p">,</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">RowMajor</span><span class="o">&gt;&gt;</span> <span class="n">jacobian</span><span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">n</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span> <span class="c1">// (pointer object, index, size)</span>
+                <span class="n">jacobian</span><span class="p">.</span><span class="n">setZero</span><span class="p">();</span>
+                <span class="n">jacobian</span><span class="p">.</span><span class="n">leftCols</span><span class="p">(</span><span class="n">local_size</span><span class="p">)</span> <span class="o">=</span> <span class="n">marginalization_info</span><span class="o">-&gt;</span><span class="n">linearized_jacobians</span><span class="p">.</span><span class="n">middleCols</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">local_size</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>marginalization_factor에는 marginalization_info 포인터와, residual의 개수가 들어있다.</li>
+  <li>\(x_r\)  기존에 계산해둔 jacobain을 불러온다.</li>
+  <li>localSize하는 이유는 쿼터니언의 마지막 w값이 필요없기 때문 (overParameterization을 줄이는 것과 비슷)</li>
+  <li>
+    <p>dx는 이전에 addr_shift에서 데이터를 옮겨주므로, para_Pose를 예시로 들면</p>
+
+    <p>para_Pose[0] - para_Pose[1] (data기준, size추출)이 된다. 따라서, 다음 수식이</p>
+
+    <p><img src="/assets/VINS_FUSION/5/Untitled%203.png" alt="/assets/VINS_FUSION/5/Untitled%203.png" /></p>
+
+    <p>코드와 같음을 알 수 있다.</p>
+  </li>
+</ul>
+
+<p>2)ResidualBlockInfo</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">ResidualBlockInfo</span><span class="o">::</span><span class="n">Evaluate</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">residuals</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">cost_function</span><span class="o">-&gt;</span><span class="n">num_residuals</span><span class="p">());</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">block_sizes</span> <span class="o">=</span> <span class="n">cost_function</span><span class="o">-&gt;</span><span class="n">parameter_block_sizes</span><span class="p">();</span>
+    <span class="n">raw_jacobians</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">double</span> <span class="o">*</span><span class="p">[</span><span class="n">block_sizes</span><span class="p">.</span><span class="n">size</span><span class="p">()];</span>
+    <span class="n">jacobians</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">block_sizes</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">block_sizes</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">jacobians</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">resize</span><span class="p">(</span><span class="n">cost_function</span><span class="o">-&gt;</span><span class="n">num_residuals</span><span class="p">(),</span> <span class="n">block_sizes</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="n">raw_jacobians</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">jacobians</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">data</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="n">cost_function</span><span class="o">-&gt;</span><span class="n">Evaluate</span><span class="p">(</span><span class="n">parameter_blocks</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">residuals</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">raw_jacobians</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">loss_function</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">residual_scaling_</span><span class="p">,</span> <span class="n">alpha_sq_norm_</span><span class="p">;</span>
+
+        <span class="kt">double</span> <span class="n">sq_norm</span><span class="p">,</span> <span class="n">rho</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+
+        <span class="n">sq_norm</span> <span class="o">=</span> <span class="n">residuals</span><span class="p">.</span><span class="n">squaredNorm</span><span class="p">();</span>
+        <span class="n">loss_function</span><span class="o">-&gt;</span><span class="n">Evaluate</span><span class="p">(</span><span class="n">sq_norm</span><span class="p">,</span> <span class="n">rho</span><span class="p">);</span>
+        <span class="c1">//printf("sq_norm: %f, rho[0]: %f, rho[1]: %f, rho[2]: %f\n", sq_norm, rho[0], rho[1], rho[2]);</span>
+
+        <span class="kt">double</span> <span class="n">sqrt_rho1_</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">rho</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+        <span class="k">if</span> <span class="p">((</span><span class="n">sq_norm</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="n">rho</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">))</span>
+        <span class="p">{</span>
+            <span class="n">residual_scaling_</span> <span class="o">=</span> <span class="n">sqrt_rho1_</span><span class="p">;</span>
+            <span class="n">alpha_sq_norm_</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="k">const</span> <span class="kt">double</span> <span class="n">D</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">sq_norm</span> <span class="o">*</span> <span class="n">rho</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">rho</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+            <span class="k">const</span> <span class="kt">double</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">D</span><span class="p">);</span>
+            <span class="n">residual_scaling_</span> <span class="o">=</span> <span class="n">sqrt_rho1_</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">);</span>
+            <span class="n">alpha_sq_norm_</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">/</span> <span class="n">sq_norm</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">parameter_blocks</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">jacobians</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sqrt_rho1_</span> <span class="o">*</span> <span class="p">(</span><span class="n">jacobians</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">alpha_sq_norm_</span> <span class="o">*</span> <span class="n">residuals</span> <span class="o">*</span> <span class="p">(</span><span class="n">residuals</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">jacobians</span><span class="p">[</span><span class="n">i</span><span class="p">]));</span>
+        <span class="p">}</span>
+
+        <span class="n">residuals</span> <span class="o">*=</span> <span class="n">residual_scaling_</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="p">...</span>
+
+<span class="kt">int</span> <span class="nf">localSize</span><span class="p">(</span><span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">7</span> <span class="o">?</span> <span class="mi">6</span> <span class="o">:</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>raw_jacobian으로 각 parameter에 대해 jacobian을 만든다.</li>
+  <li>
+    <p>cost_function-&gt;Evaluate 에서는 각 factor들에 대한 Evaluate로 residual, jacobian을 계산한다.</p>
+
+    <p>loss function까지 적용된다. (Only for visual)</p>
+  </li>
+  <li>
+    <p>loss function → evaluate는 다음을 계산한다.</p>
+
+    <p><img src="/assets/VINS_FUSION/5/Untitled%204.png" alt="/assets/VINS_FUSION/5/Untitled%204.png" /></p>
+
+    <p><img src="/assets/VINS_FUSION/5/Untitled%205.png" alt="/assets/VINS_FUSION/5/Untitled%205.png" /></p>
+
+    <p>이때 사진의 out이 code에서의 rho가 된다.</p>
+  </li>
+  <li>
+    <p>Huber Loss에 대해 rho[2] 는 항상 ≤ 0 이므로 residual_scaling_  = 1,</p>
+
+    <p>s&gt;1인 경우 (outlier일 만큼 residual이 큰 경우) \(s^{-1/4}\)가 된다. alpha_sq_norm_  = 0.</p>
+
+    <p>SUMMARY : Jacobian과 1보다 큰 residual에 \(\sqrt{\rho'(s)}\) 를 곱해준다. 이를 통해, 그전에 거르지 못한 outlier의  weight를 줄이는 효과를 <strong>추가적으로</strong> 가져온다.</p>
+  </li>
+</ul>
+
+<p><em>Ceres 홈페이지 설명을 참조하면 :</em></p>
+
+<p><em>If we didn’t do anything special the residual for the erroneous measurement will result in the entire solution getting pulled away from the optimum to reduce the large error that would otherwise be attributed to the wrong measurement.</em></p>
+
+<p><em>Using a robust loss function, the cost for large residuals is reduced. In the example above, this leads to outlier terms getting down-weighted so they do not overly influence the final solution</em></p>
+
+<p>[reference] : <a href="http://ceres-solver.org/nnls_modeling.html#lossfunction">http://ceres-solver.org/nnls_modeling.html#lossfunction</a></p>
+
+<p>3) MarginalizationInfo</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">MarginalizationInfo</span><span class="o">::</span><span class="n">addResidualBlockInfo</span><span class="p">(</span><span class="n">ResidualBlockInfo</span> <span class="o">*</span><span class="n">residual_block_info</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">factors</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">residual_block_info</span><span class="p">);</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span> <span class="o">*&gt;</span> <span class="o">&amp;</span><span class="n">parameter_blocks</span> <span class="o">=</span> <span class="n">residual_block_info</span><span class="o">-&gt;</span><span class="n">parameter_blocks</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">parameter_block_sizes</span> <span class="o">=</span> <span class="n">residual_block_info</span><span class="o">-&gt;</span><span class="n">cost_function</span><span class="o">-&gt;</span><span class="n">parameter_block_sizes</span><span class="p">();</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">residual_block_info</span><span class="o">-&gt;</span><span class="n">parameter_blocks</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">double</span> <span class="o">*</span><span class="n">addr</span> <span class="o">=</span> <span class="n">parameter_blocks</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">parameter_block_sizes</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">parameter_block_size</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">addr</span><span class="p">)]</span> <span class="o">=</span> <span class="n">size</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">residual_block_info</span><span class="o">-&gt;</span><span class="n">drop_set</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">double</span> <span class="o">*</span><span class="n">addr</span> <span class="o">=</span> <span class="n">parameter_blocks</span><span class="p">[</span><span class="n">residual_block_info</span><span class="o">-&gt;</span><span class="n">drop_set</span><span class="p">[</span><span class="n">i</span><span class="p">]];</span>
+        <span class="n">parameter_block_idx</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">addr</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">MarginalizationInfo</span><span class="o">::</span><span class="n">preMarginalize</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">:</span> <span class="n">factors</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">it</span><span class="o">-&gt;</span><span class="n">Evaluate</span><span class="p">();</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">block_sizes</span> <span class="o">=</span> <span class="n">it</span><span class="o">-&gt;</span><span class="n">cost_function</span><span class="o">-&gt;</span><span class="n">parameter_block_sizes</span><span class="p">();</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">block_sizes</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">long</span> <span class="n">addr</span> <span class="o">=</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">it</span><span class="o">-&gt;</span><span class="n">parameter_blocks</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+            <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">block_sizes</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">parameter_block_data</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="o">==</span> <span class="n">parameter_block_data</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+            <span class="p">{</span>
+                <span class="kt">double</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">double</span><span class="p">[</span><span class="n">size</span><span class="p">];</span>
+                <span class="n">memcpy</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">it</span><span class="o">-&gt;</span><span class="n">parameter_blocks</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="o">*</span> <span class="n">size</span><span class="p">);</span>
+                <span class="n">parameter_block_data</span><span class="p">[</span><span class="n">addr</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">MarginalizationInfo</span><span class="o">::</span><span class="n">localSize</span><span class="p">(</span><span class="kt">int</span> <span class="n">size</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">7</span> <span class="o">?</span> <span class="mi">6</span> <span class="o">:</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">MarginalizationInfo</span><span class="o">::</span><span class="n">globalSize</span><span class="p">(</span><span class="kt">int</span> <span class="n">size</span><span class="p">)</span> <span class="k">const</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">6</span> <span class="o">?</span> <span class="mi">7</span> <span class="o">:</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span> <span class="o">*&gt;</span> <span class="n">MarginalizationInfo</span><span class="o">::</span><span class="n">getParameterBlocks</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="kt">long</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*&gt;</span> <span class="o">&amp;</span><span class="n">addr_shift</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span> <span class="o">*&gt;</span> <span class="n">keep_block_addr</span><span class="p">;</span>
+    <span class="n">keep_block_size</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+    <span class="n">keep_block_idx</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+    <span class="n">keep_block_data</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span><span class="n">it</span> <span class="o">:</span> <span class="n">parameter_block_idx</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">second</span> <span class="o">&gt;=</span> <span class="n">m</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">keep_block_size</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">parameter_block_size</span><span class="p">[</span><span class="n">it</span><span class="p">.</span><span class="n">first</span><span class="p">]);</span>
+            <span class="n">keep_block_idx</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">parameter_block_idx</span><span class="p">[</span><span class="n">it</span><span class="p">.</span><span class="n">first</span><span class="p">]);</span>
+            <span class="n">keep_block_data</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">parameter_block_data</span><span class="p">[</span><span class="n">it</span><span class="p">.</span><span class="n">first</span><span class="p">]);</span>
+            <span class="n">keep_block_addr</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">addr_shift</span><span class="p">[</span><span class="n">it</span><span class="p">.</span><span class="n">first</span><span class="p">]);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">sum_block_size</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">keep_block_size</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">keep_block_size</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="n">keep_block_addr</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>MarginalizationInfo class는 생성시에 valid = true를 지정하는 것 이외에 딱히 해주는 것은 없다.</li>
+  <li>addResidualBlockInfo 함수에서, residual_block_info의 parameter, 그리고 그 각각의 size를 가져온다.</li>
+  <li>
+    <p>address기반 map 정리 (jacobian,residual 중첩 계산을 위해 address 사용)</p>
+
+    <p><strong>parameter_block_size</strong> : 각 parameter block의 size (6,9 등)  <br />
+  <strong>parameter_block_idx</strong> : 각 parameter block의 index in A,b  <br />
+  <strong>parameter_block_data</strong> : 각 parameter block의 data를 복사해둠</p>
+  </li>
+  <li>preMarginalize함수에서, 각 factor의 jacobian, residual을 구한다. 또한 모든 parameter들의 data를 parameter_block_data map에 저장한다.</li>
+  <li>
+    <p>getParameterBlocks에서는, slidingWindow작업을 미리 해둔 addr_shift를 사용하여MarginalizationInfo를 위한 data를 만든다.</p>
+
+    <p>addr_shift에서 i의 address에 i-1 data를 넣고, it.second ≥ m 인 것만 keep_block으로 만듦으로써,  para_Feature는 버리면서 i=0, …, WINDOW_SIZE-1까지의 IMU constraint를 다음 MarginalizationFactor로 넘기게 된다.</p>
+
+    <p>추가적으로 it.first는 address이므로 parameter들의 address는 Marginalization에 대해 계속동일하다.</p>
+  </li>
+</ul>
+
+<p>4) void MarginalizationInfo::marginalize()</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="n">it</span> <span class="o">:</span> <span class="n">parameter_block_idx</span><span class="p">)</span> <span class="c1">// drop_set에 대한것만 넣음</span>
+<span class="p">{</span>
+    <span class="n">it</span><span class="p">.</span><span class="n">second</span> <span class="o">=</span> <span class="n">pos</span><span class="p">;</span> <span class="c1">// it.second는 이전까지의 size의 합이 된다.</span>
+    <span class="n">pos</span> <span class="o">+=</span> <span class="n">localSize</span><span class="p">(</span><span class="n">parameter_block_size</span><span class="p">[</span><span class="n">it</span><span class="p">.</span><span class="n">first</span><span class="p">]);</span>
+<span class="p">}</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">pos</span><span class="p">;</span> <span class="c1">// drop_set size들의 합.</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span><span class="n">it</span> <span class="o">:</span> <span class="n">parameter_block_size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// drop_set아닌 것들에 대해서도 parameter_block_idx에 (addr, 이전까지 size의 합)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">parameter_block_idx</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">first</span><span class="p">)</span> <span class="o">==</span> <span class="n">parameter_block_idx</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="n">parameter_block_idx</span><span class="p">[</span><span class="n">it</span><span class="p">.</span><span class="n">first</span><span class="p">]</span> <span class="o">=</span> <span class="n">pos</span><span class="p">;</span>
+        <span class="n">pos</span> <span class="o">+=</span> <span class="n">localSize</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">second</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="n">m</span><span class="p">;</span> <span class="c1">// 비 drop_set size들의 합.</span>
+<span class="c1">//ROS_INFO("marginalization, pos: %d, m: %d, n: %d, size: %d", pos, m, n, (int)parameter_block_idx.size());</span>
+<span class="k">if</span><span class="p">(</span><span class="n">m</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">valid</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"unstable tracking...</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span> <span class="nf">A</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">pos</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="nf">b</span><span class="p">(</span><span class="n">pos</span><span class="p">);</span>
+<span class="n">A</span><span class="p">.</span><span class="n">setZero</span><span class="p">();</span>
+<span class="n">b</span><span class="p">.</span><span class="n">setZero</span><span class="p">();</span>
+
+<span class="n">pthread_t</span> <span class="n">tids</span><span class="p">[</span><span class="n">NUM_THREADS</span><span class="p">];</span>
+<span class="n">ThreadsStruct</span> <span class="n">threadsstruct</span><span class="p">[</span><span class="n">NUM_THREADS</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">:</span> <span class="n">factors</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">threadsstruct</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">sub_factors</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">it</span><span class="p">);</span>
+    <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="n">NUM_THREADS</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NUM_THREADS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">TicToc</span> <span class="n">zero_matrix</span><span class="p">;</span>
+    <span class="n">threadsstruct</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">A</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span><span class="o">::</span><span class="n">Zero</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span><span class="n">pos</span><span class="p">);</span>
+    <span class="n">threadsstruct</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">b</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="o">::</span><span class="n">Zero</span><span class="p">(</span><span class="n">pos</span><span class="p">);</span>
+    <span class="n">threadsstruct</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">parameter_block_size</span> <span class="o">=</span> <span class="n">parameter_block_size</span><span class="p">;</span>
+    <span class="n">threadsstruct</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">parameter_block_idx</span> <span class="o">=</span> <span class="n">parameter_block_idx</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">tids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">ThreadsConstructA</span> <span class="p">,(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">threadsstruct</span><span class="p">[</span><span class="n">i</span><span class="p">]));</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">ROS_WARN</span><span class="p">(</span><span class="s">"pthread_create error"</span><span class="p">);</span>
+        <span class="n">ROS_BREAK</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">for</span><span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">NUM_THREADS</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span>  
+<span class="p">{</span>
+    <span class="n">pthread_join</span><span class="p">(</span> <span class="n">tids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">NULL</span> <span class="p">);</span> 
+    <span class="n">A</span> <span class="o">+=</span> <span class="n">threadsstruct</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">A</span><span class="p">;</span>
+    <span class="n">b</span> <span class="o">+=</span> <span class="n">threadsstruct</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">//이미 symmetric하지만 더 확실하게 (?)</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span> <span class="n">Amm</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">).</span><span class="n">transpose</span><span class="p">());</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">SelfAdjointEigenSolver</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span><span class="o">&gt;</span> <span class="n">saes</span><span class="p">(</span><span class="n">Amm</span><span class="p">);</span>
+
+<span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span> <span class="n">Amm_inv</span> <span class="o">=</span> <span class="n">saes</span><span class="p">.</span><span class="n">eigenvectors</span><span class="p">()</span> <span class="o">*</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="p">((</span><span class="n">saes</span><span class="p">.</span><span class="n">eigenvalues</span><span class="p">().</span><span class="n">array</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">eps</span><span class="p">).</span><span class="n">select</span><span class="p">(</span><span class="n">saes</span><span class="p">.</span><span class="n">eigenvalues</span><span class="p">().</span><span class="n">array</span><span class="p">().</span><span class="n">inverse</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)).</span><span class="n">asDiagonal</span><span class="p">()</span> <span class="o">*</span> <span class="n">saes</span><span class="p">.</span><span class="n">eigenvectors</span><span class="p">().</span><span class="n">transpose</span><span class="p">();</span>
+
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="n">bmm</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">segment</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span> <span class="n">Amr</span> <span class="o">=</span> <span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span> <span class="n">Arm</span> <span class="o">=</span> <span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span> <span class="n">Arr</span> <span class="o">=</span> <span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="n">brr</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">segment</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">Arr</span> <span class="o">-</span> <span class="n">Arm</span> <span class="o">*</span> <span class="n">Amm_inv</span> <span class="o">*</span> <span class="n">Amr</span><span class="p">;</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">brr</span> <span class="o">-</span> <span class="n">Arm</span> <span class="o">*</span> <span class="n">Amm_inv</span> <span class="o">*</span> <span class="n">bmm</span><span class="p">;</span>
+
+<span class="n">Eigen</span><span class="o">::</span><span class="n">SelfAdjointEigenSolver</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span><span class="o">&gt;</span> <span class="n">saes2</span><span class="p">(</span><span class="n">A</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="n">S</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="p">((</span><span class="n">saes2</span><span class="p">.</span><span class="n">eigenvalues</span><span class="p">().</span><span class="n">array</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">eps</span><span class="p">).</span><span class="n">select</span><span class="p">(</span><span class="n">saes2</span><span class="p">.</span><span class="n">eigenvalues</span><span class="p">().</span><span class="n">array</span><span class="p">(),</span> <span class="mi">0</span><span class="p">));</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="n">S_inv</span> <span class="o">=</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="p">((</span><span class="n">saes2</span><span class="p">.</span><span class="n">eigenvalues</span><span class="p">().</span><span class="n">array</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">eps</span><span class="p">).</span><span class="n">select</span><span class="p">(</span><span class="n">saes2</span><span class="p">.</span><span class="n">eigenvalues</span><span class="p">().</span><span class="n">array</span><span class="p">().</span><span class="n">inverse</span><span class="p">(),</span> <span class="mi">0</span><span class="p">));</span>
+
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="n">S_sqrt</span> <span class="o">=</span> <span class="n">S</span><span class="p">.</span><span class="n">cwiseSqrt</span><span class="p">();</span> 
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span> <span class="n">S_inv_sqrt</span> <span class="o">=</span> <span class="n">S_inv</span><span class="p">.</span><span class="n">cwiseSqrt</span><span class="p">();</span>
+
+<span class="n">linearized_jacobians</span> <span class="o">=</span> <span class="n">S_sqrt</span><span class="p">.</span><span class="n">asDiagonal</span><span class="p">()</span> <span class="o">*</span> <span class="n">saes2</span><span class="p">.</span><span class="n">eigenvectors</span><span class="p">().</span><span class="n">transpose</span><span class="p">();</span>
+<span class="n">linearized_residuals</span> <span class="o">=</span> <span class="n">S_inv_sqrt</span><span class="p">.</span><span class="n">asDiagonal</span><span class="p">()</span> <span class="o">*</span> <span class="n">saes2</span><span class="p">.</span><span class="n">eigenvectors</span><span class="p">().</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">b</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Thread마다 갖고있는 ThreadsStruct 에 factor들을 나눠서 담아서 ThreadsConstructA 함수를 각각 실행한다. 이후 각 A와 b를 합친다.</li>
+  <li>
+    <p>식 (43)과 같이 H = A를 정리하면</p>
+
+    <p><img src="/assets/VINS_FUSION/5/Untitled%206.png" alt="/assets/VINS_FUSION/5/Untitled%206.png" /></p>
+
+    <p><img src="/assets/VINS_FUSION/5/Untitled%207.png" alt="/assets/VINS_FUSION/5/Untitled%207.png" /></p>
+
+    <p>여기서 m은 marginalize off할 것들(버릴 것들), r은 유지할 정보들(나머지)을 의미한다. Schur complement를 통해 다음과 같이 식을 바꿀 수 있고,</p>
+
+    <p><img src="/assets/VINS_FUSION/5/Untitled%208.png" alt="/assets/VINS_FUSION/5/Untitled%208.png" /></p>
+
+    <p>이를통해, MarginalizationFactor에서 사용될 linearized_jacobians, linearized_residuals 를 구한다. marginalzation에 사용되는 state는 index ≥ m 이므로 \(x_r\)에 대한 jacobian과 residual이 구해진다. (MarginalizationInfo::getParameterBlocks 함수 참고.)</p>
+
+    <ul>
+      <li>Marginalization은 다음과 같이 p(x,y)를 p(x)로 바꾸는 과정에서 유래된 것으로, SLAM에서는 marginalization을 통해 old states를 remove한다.</li>
+    </ul>
+
+    <p><img src="/assets/VINS_FUSION/5/Untitled%209.png" alt="/assets/VINS_FUSION/5/Untitled%209.png" /></p>
+
+    <p>[reference1] : <a href="https://www.programmersought.com/article/77613780997/">https://www.programmersought.com/article/77613780997/</a></p>
+
+    <p>[reference2] : <a href="https://robotics.stackexchange.com/questions/8900/slam-why-is-marginalization-the-same-as-schurs-complement">https://robotics.stackexchange.com/questions/8900/slam-why-is-marginalization-the-same-as-schurs-complement</a></p>
+
+    <p>최종적으로, marginalization factor로 전환되어 ceres에서 optimization에 사용된다.</p>
+  </li>
+</ul>
+
+<p>5) void* ThreadsConstructA(void* threadsstruct)</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ThreadsStruct</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="p">((</span><span class="n">ThreadsStruct</span><span class="o">*</span><span class="p">)</span><span class="n">threadsstruct</span><span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">:</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">sub_factors</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">it</span><span class="o">-&gt;</span><span class="n">parameter_blocks</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">idx_i</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">parameter_block_idx</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">it</span><span class="o">-&gt;</span><span class="n">parameter_blocks</span><span class="p">[</span><span class="n">i</span><span class="p">])];</span>
+        <span class="kt">int</span> <span class="n">size_i</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">parameter_block_size</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">it</span><span class="o">-&gt;</span><span class="n">parameter_blocks</span><span class="p">[</span><span class="n">i</span><span class="p">])];</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">size_i</span> <span class="o">==</span> <span class="mi">7</span><span class="p">)</span>
+            <span class="n">size_i</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+        <span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span> <span class="n">jacobian_i</span> <span class="o">=</span> <span class="n">it</span><span class="o">-&gt;</span><span class="n">jacobians</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">leftCols</span><span class="p">(</span><span class="n">size_i</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">it</span><span class="o">-&gt;</span><span class="n">parameter_blocks</span><span class="p">.</span><span class="n">size</span><span class="p">());</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">idx_j</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">parameter_block_idx</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">it</span><span class="o">-&gt;</span><span class="n">parameter_blocks</span><span class="p">[</span><span class="n">j</span><span class="p">])];</span>
+            <span class="kt">int</span> <span class="n">size_j</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">parameter_block_size</span><span class="p">[</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">it</span><span class="o">-&gt;</span><span class="n">parameter_blocks</span><span class="p">[</span><span class="n">j</span><span class="p">])];</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">size_j</span> <span class="o">==</span> <span class="mi">7</span><span class="p">)</span>
+                <span class="n">size_j</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+            <span class="n">Eigen</span><span class="o">::</span><span class="n">MatrixXd</span> <span class="n">jacobian_j</span> <span class="o">=</span> <span class="n">it</span><span class="o">-&gt;</span><span class="n">jacobians</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">leftCols</span><span class="p">(</span><span class="n">size_j</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="p">)</span>
+                <span class="n">p</span><span class="o">-&gt;</span><span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="p">(</span><span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">size_i</span><span class="p">,</span> <span class="n">size_j</span><span class="p">)</span> <span class="o">+=</span> <span class="n">jacobian_i</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">jacobian_j</span><span class="p">;</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="n">p</span><span class="o">-&gt;</span><span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="p">(</span><span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">size_i</span><span class="p">,</span> <span class="n">size_j</span><span class="p">)</span> <span class="o">+=</span> <span class="n">jacobian_i</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">jacobian_j</span><span class="p">;</span>
+                <span class="n">p</span><span class="o">-&gt;</span><span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="p">(</span><span class="n">idx_j</span><span class="p">,</span> <span class="n">idx_i</span><span class="p">,</span> <span class="n">size_j</span><span class="p">,</span> <span class="n">size_i</span><span class="p">)</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">A</span><span class="p">.</span><span class="n">block</span><span class="p">(</span><span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">size_i</span><span class="p">,</span> <span class="n">size_j</span><span class="p">).</span><span class="n">transpose</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">p</span><span class="o">-&gt;</span><span class="n">b</span><span class="p">.</span><span class="n">segment</span><span class="p">(</span><span class="n">idx_i</span><span class="p">,</span> <span class="n">size_i</span><span class="p">)</span> <span class="o">+=</span> <span class="n">jacobian_i</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span> <span class="o">*</span> <span class="n">it</span><span class="o">-&gt;</span><span class="n">residuals</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">return</span> <span class="n">threadsstruct</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>변수 이름과 같이 p→parameter_block_idx는 인덱스, p→parameter_block_size는 각 parameter block의 사이즈이다.</li>
+  <li>
+    <p>i는 row, j는 col에 해당하며, (i,j)에서 size_i, size_j에 대해 A와 b를 계산한다.</p>
+
+    <p>다음식 (43)에 의해 state estimation을 위해 H = A, b를 만들어준다.</p>
+
+    <p><img src="/assets/VINS_FUSION/5/Untitled%206.png" alt="/assets/VINS_FUSION/5/Untitled%206.png" /></p>
+  </li>
+  <li>흥미로운 것은, idx_i, idx_j 가 <strong>address</strong>기준으로 정해지기 때문에, 해당 (idx_i, idx_j)에 해당하는 부분의 A에 factors의 \(J^TP^{-1}J\) 값이 합쳐져서 더해진다는 것이다.</li>
+  <li>-(minus)를 안 붙이는 것은 Mahalanobis norm에서 제곱되기 때문에 무시한것으로 보인다.</li>
+</ul>
+
+<hr />
+
+<p>VINS-Fusion 코드를 정리한 포스트입니다.</p>
+
+<ol>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-1/">VINS-Fusion Code Review - (1) Image Processing</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-2/">VINS-Fusion Code Review - (2) IMU Processing</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-3/">VINS-Fusion Code Review - (3) Initialization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-4/">VINS-Fusion Code Review - (4) Sliding window &amp; Optimization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-5/">VINS-Fusion Code Review - (5) Marginalization</a></li>
+  <li><a href="https://seodu.github.io/2022-01-05-VINS-Fusion-6/">VINS-Fusion Code Review - (6) Graph optimization</a></li>
+</ol>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li><a href="https://arxiv.org/abs/1711.02508">[2017] Quaternion kinematics for the error-state Kalman filter.pdf</a></li>
+  <li><a href="http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf">[2005] Indirect Kalman Filter for 3D Attitude Estimation.pdf</a></li>
+  <li><a href="https://arxiv.org/abs/1912.11986">Formula Derivation and Analysis of the VINS-Mono.pdf</a></li>
+  <li><a href="https://slideplayer.com/slide/12551914/">Marginalization&amp;Shcurcomplement.pptx</a></li>
+  <li><a href="https://kvmanohar22.github.io/notes/w03/main.pdf">[TRO2012] Visual-Inertial-Aided Navigation for High-Dynamic Motion in Built Environments Without Initial Conditions.pdf</a></li>
+  <li><a href="https://ieeexplore.ieee.org/document/8421746">VINS-Mono.pdf</a></li>
+</ul>
+
+
+      </article>
+      <script type="text/javascript" async
+       src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+      </script>
+
+      
+        <div class="blog-tags">
+          <span>Tags:</span>
+          
+            <a href="/tags#Visual SLAM">Visual SLAM</a>
+          
+        </div>
+      
+
+      
+
+      
+        <!-- Check if any share-links are active -->
+
+
+
+
+
+      
+
+      <ul class="pagination blog-pager">
+        
+        <li class="page-item previous">
+          <a class="page-link" href="/2022-01-05-VINS-Fusion-4/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (4) Sliding window &amp; Optimization">&larr; Previous Post</a>
+        </li>
+        
+        
+        <li class="page-item next">
+          <a class="page-link" href="/2022-01-05-VINS-Fusion-6/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (6) Graph optimization">Next Post &rarr;</a>
+        </li>
+        
+      </ul>
+      
+  
+  
+  
+
+  
+
+
+  
+
+  
+
+
+
+    </div>
+  </div>
+</div>
+
+
+  <footer>
+  <div class="container-md beautiful-jekyll-footer">
+    <div class="row">
+      <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+      
+<ul class="list-inline text-center footer-links"><li class="list-inline-item">
+    <a href="mailto:dongukseo@kaist.ac.kr" title="Email me">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">Email me</span>
+   </a>
+  </li><li class="list-inline-item">
+    <a href="https://github.com/SeoDU" title="GitHub">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">GitHub</span>
+   </a>
+  </li><li class="list-inline-item">
+    <a href="https://www.youtube.com/channel/UCaON-AWswqdv9hzrOxZDdWA" title="YouTube">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fab fa-youtube fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">YouTube</span>
+   </a>
+  </li></ul>
+
+      
+      <p class="copyright text-muted">
+      
+        Dong-Uk Seo
+        &nbsp;&bull;&nbsp;
+      
+      2023
+
+      
+
+      
+
+
+      </p>
+      <p class="theme-by text-muted">
+        Powered by
+        <a href="https://beautifuljekyll.com">Beautiful Jekyll</a>
+      </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+  
+  
+    
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+
+
+  
+    
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+
+  
+    
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+
+  
+
+
+
+  
+    <!-- doing something a bit funky here because I want to be careful not to include JQuery twice! -->
+    
+      <script src="/assets/js/beautifuljekyll.js"></script>
+    
+  
+
+
+
+
+
+
+
+
+
+</body>
+</html>

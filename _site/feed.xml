@@ -32,6 +32,72 @@
       </item>
     
       <item>
+        <title>VINS-Fusion Code Review - (6) Graph optimization</title>
+        <description>
+          
+          6. Graph optimization 파트 중요 코드 정리 1. Relocalization 1) int main(int argc, char **argv) ... VISUALIZATION_SHIFT_X = 0; VISUALIZATION_SHIFT_Y = 0; SKIP_CNT = 0; SKIP_DIS = 0; cameraposevisual.setScale(0.1); cameraposevisual.setLineWidth(0.01); string vocabulary_file = pkg_path + &quot;/../support_files/brief_k10L6.bin&quot;; posegraph.loadVocabulary(vocabulary_file); BRIEF_PATTERN_FILE = pkg_path + &quot;/../support_files/brief_pattern.yml&quot;; ... posegraph.setIMUFlag(USE_IMU); ros::Subscriber sub_vio = n.subscribe(&quot;/vins_estimator/odometry&quot;, 2000, vio_callback);...
+        </description>
+        <pubDate>Wed, 05 Jan 2022 00:00:00 -0500</pubDate>
+        <link>http://localhost:4000/2022-01-05-VINS-Fusion-6/</link>
+        <guid isPermaLink="true">http://localhost:4000/2022-01-05-VINS-Fusion-6/</guid>
+      </item>
+    
+      <item>
+        <title>VINS-Fusion Code Review - (5) Marginalization</title>
+        <description>
+          
+          (5) Marginalization 파트 중요 코드 정리 [논문설명 발췌] In order to bound the computational complexity of our optimization-based VIO, marginalization is incorporated Second-last frame이 keyframe이면 : oldest가 marginalized. Non-keyframe이면 : visual은 삭제하고 IMU값은 축적한다. → Our marginalization scheme aims to keep spatially separated keyframes in the window. This ensures sufficient...
+        </description>
+        <pubDate>Wed, 05 Jan 2022 00:00:00 -0500</pubDate>
+        <link>http://localhost:4000/2022-01-05-VINS-Fusion-5/</link>
+        <guid isPermaLink="true">http://localhost:4000/2022-01-05-VINS-Fusion-5/</guid>
+      </item>
+    
+      <item>
+        <title>VINS-Fusion Code Review - (4) Sliding window &amp; Optimization</title>
+        <description>
+          
+          (4) Sliding window &amp;amp; Optimization 파트 중요 코드 정리 1. Optimizing local parameters 1) void Estimator::vector2double() for (int i = 0; i &amp;lt;= WINDOW_SIZE; i++) { para_Pose[i][0] = Ps[i].x(); para_Pose[i][1] = Ps[i].y(); para_Pose[i][2] = Ps[i].z(); Quaterniond q{Rs[i]}; para_Pose[i][3] = q.x(); para_Pose[i][4] = q.y(); para_Pose[i][5] = q.z(); para_Pose[i][6] = q.w(); if(USE_IMU)...
+        </description>
+        <pubDate>Wed, 05 Jan 2022 00:00:00 -0500</pubDate>
+        <link>http://localhost:4000/2022-01-05-VINS-Fusion-4/</link>
+        <guid isPermaLink="true">http://localhost:4000/2022-01-05-VINS-Fusion-4/</guid>
+      </item>
+    
+      <item>
+        <title>VINS-Fusion Code Review - (3) Initialization</title>
+        <description>
+          
+          (3) Initialization 파트 중요 코드 정리 다음은 Initialization에 대한 VINS-Mono논문 설명이다. Since the scale is not directly observable from a monocular camera, it is hard to directly fuse these two measurements without good initial values. One may assume a stationary initial condition to start the monocular VINS estimator. However, this...
+        </description>
+        <pubDate>Wed, 05 Jan 2022 00:00:00 -0500</pubDate>
+        <link>http://localhost:4000/2022-01-05-VINS-Fusion-3/</link>
+        <guid isPermaLink="true">http://localhost:4000/2022-01-05-VINS-Fusion-3/</guid>
+      </item>
+    
+      <item>
+        <title>VINS-Fusion Code Review - (2) IMU Processing</title>
+        <description>
+          
+          (2) IMU processing 파트 중요 코드 정리 1. IMU - fast prediction imu_callback() ... estimator.inputIMU(t, acc, gyr); ... imu message로부터 time (second), linear_acceleration (x,y,z), angular_velocity(roll,pitch,yaw)를 얻어서 inputIMU에 넣는다. void inputIMU(double t, const Vector3d &amp;amp;linearAcceleration, const Vector3d &amp;amp;angularVelocity) if (solver_flag == NON_LINEAR) { fastPredictIMU(t, linearAcceleration, angularVelocity); pubLatestOdometry(latest_P, latest_Q, latest_V, t); }...
+        </description>
+        <pubDate>Wed, 05 Jan 2022 00:00:00 -0500</pubDate>
+        <link>http://localhost:4000/2022-01-05-VINS-Fusion-2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2022-01-05-VINS-Fusion-2/</guid>
+      </item>
+    
+      <item>
+        <title>VINS-Fusion Code Review - (1) Image Processing</title>
+        <description>
+          
+          (1) Image processing 파트 중요 코드 정리 1. Parameter 초기화 main() readParameters(config_file); // yaml 파일형식으로 parameters(camera 등)를 읽어옴 estimator.setParameter(); // Multi thread의　경우　ProcessMeasurements　실행 ... std::thread sync_thread{sync_process}; // sync_process를 진행하는 thread 생성 ... global 변수로 선언된 estimator의 setParameter함수 호출. publish, subscribe할 topic과 node, callback함수 지정. 이때, feature_callback은 사용되지 않는다. vins-mono에서는 독립적인 node로...
+        </description>
+        <pubDate>Wed, 05 Jan 2022 00:00:00 -0500</pubDate>
+        <link>http://localhost:4000/2022-01-05-VINS-Fusion-1/</link>
+        <guid isPermaLink="true">http://localhost:4000/2022-01-05-VINS-Fusion-1/</guid>
+      </item>
+    
+      <item>
         <title>Frame간의 Transformation matrix</title>
         <description>
           SLAM configuration file - 
