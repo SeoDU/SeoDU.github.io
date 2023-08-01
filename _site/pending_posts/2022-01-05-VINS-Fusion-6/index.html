@@ -15,7 +15,7 @@
   <meta name="author" content="Dong-Uk Seo">
   
 
-  <meta name="description" content="6. Graph optimization 파트 중요 코드 정리 1. Relocalization 1) int main(int argc, char **argv) ... VISUALIZATION_SHIFT_X = 0; VISUALIZATION_SHIFT_Y = 0; SKIP_CNT = 0; SKIP_DIS = 0; cameraposevisual.setScale(0.1); cameraposevisual.setLineWidth(0.01); string vocabulary_file = pkg_path + &quot;/../support_files/brief_k10L6.bin&quot;; posegraph.loadVocabulary(vocabulary_file); BRIEF_PATTERN_FILE = pkg_path + &quot;/../support_files/brief_pattern.yml&quot;; ... posegraph.setIMUFlag(USE_IMU); ros::Subscriber sub_vio = n.subscribe(&quot;/vins_estimator/odometry&quot;, 2000, vio_callback);...">
+  <meta name="description" content="# 6. Graph optimization 파트 중요 코드 정리 ## 1. Relocalization 1) int main(int argc, char **argv) ```cpp ... VISUALIZATION_SHIFT_X = 0; VISUALIZATION_SHIFT_Y = 0; SKIP_CNT = 0; SKIP_DIS = 0; cameraposevisual.setScale(0.1); cameraposevisual.setLineWidth(0.01); string vocabulary_file = pkg_path + &quot;/../support_files/brief_k10L6.bin&quot;; posegraph.loadVocabulary(vocabulary_file); BRIEF_PATTERN_FILE = pkg_path + &quot;/../support_files/brief_pattern.yml&quot;; ... posegraph.setIMUFlag(USE_IMU); ros::Subscriber sub_vio =...">
 
   
 
@@ -75,16 +75,14 @@
   
   <meta property="og:site_name" content="Dong-Uk Seo">
   <meta property="og:title" content="VINS-Fusion Code Review - (6) Graph optimization">
-  <meta property="og:description" content="6. Graph optimization 파트 중요 코드 정리 1. Relocalization 1) int main(int argc, char **argv) ... VISUALIZATION_SHIFT_X = 0; VISUALIZATION_SHIFT_Y = 0; SKIP_CNT = 0; SKIP_DIS = 0; cameraposevisual.setScale(0.1); cameraposevisual.setLineWidth(0.01); string vocabulary_file = pkg_path + &quot;/../support_files/brief_k10L6.bin&quot;; posegraph.loadVocabulary(vocabulary_file); BRIEF_PATTERN_FILE = pkg_path + &quot;/../support_files/brief_pattern.yml&quot;; ... posegraph.setIMUFlag(USE_IMU); ros::Subscriber sub_vio = n.subscribe(&quot;/vins_estimator/odometry&quot;, 2000, vio_callback);...">
+  <meta property="og:description" content="# 6. Graph optimization 파트 중요 코드 정리 ## 1. Relocalization 1) int main(int argc, char **argv) ```cpp ... VISUALIZATION_SHIFT_X = 0; VISUALIZATION_SHIFT_Y = 0; SKIP_CNT = 0; SKIP_DIS = 0; cameraposevisual.setScale(0.1); cameraposevisual.setLineWidth(0.01); string vocabulary_file = pkg_path + &quot;/../support_files/brief_k10L6.bin&quot;; posegraph.loadVocabulary(vocabulary_file); BRIEF_PATTERN_FILE = pkg_path + &quot;/../support_files/brief_pattern.yml&quot;; ... posegraph.setIMUFlag(USE_IMU); ros::Subscriber sub_vio =...">
 
   
 
   
-  <meta property="og:type" content="article">
-  <meta property="og:article:author" content="Dong-Uk Seo">
-  <meta property="og:article:published_time" content="2022-01-05T00:00:00-05:00">
-  <meta property="og:url" content="http://localhost:4000/2022-01-05-VINS-Fusion-6/">
-  <link rel="canonical" href="http://localhost:4000/2022-01-05-VINS-Fusion-6/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://localhost:4000/pending_posts/2022-01-05-VINS-Fusion-6/">
+  <link rel="canonical" href="http://localhost:4000/pending_posts/2022-01-05-VINS-Fusion-6/">
   
 
   
@@ -94,7 +92,7 @@
   <meta name="twitter:creator" content="@">
 
   <meta property="twitter:title" content="VINS-Fusion Code Review - (6) Graph optimization">
-  <meta property="twitter:description" content="6. Graph optimization 파트 중요 코드 정리 1. Relocalization 1) int main(int argc, char **argv) ... VISUALIZATION_SHIFT_X = 0; VISUALIZATION_SHIFT_Y = 0; SKIP_CNT = 0; SKIP_DIS = 0; cameraposevisual.setScale(0.1); cameraposevisual.setLineWidth(0.01); string vocabulary_file = pkg_path + &quot;/../support_files/brief_k10L6.bin&quot;; posegraph.loadVocabulary(vocabulary_file); BRIEF_PATTERN_FILE = pkg_path + &quot;/../support_files/brief_pattern.yml&quot;; ... posegraph.setIMUFlag(USE_IMU); ros::Subscriber sub_vio = n.subscribe(&quot;/vins_estimator/odometry&quot;, 2000, vio_callback);...">
+  <meta property="twitter:description" content="# 6. Graph optimization 파트 중요 코드 정리 ## 1. Relocalization 1) int main(int argc, char **argv) ```cpp ... VISUALIZATION_SHIFT_X = 0; VISUALIZATION_SHIFT_Y = 0; SKIP_CNT = 0; SKIP_DIS = 0; cameraposevisual.setScale(0.1); cameraposevisual.setLineWidth(0.01); string vocabulary_file = pkg_path + &quot;/../support_files/brief_k10L6.bin&quot;; posegraph.loadVocabulary(vocabulary_file); BRIEF_PATTERN_FILE = pkg_path + &quot;/../support_files/brief_pattern.yml&quot;; ... posegraph.setIMUFlag(USE_IMU); ros::Subscriber sub_vio =...">
 
   
 
@@ -168,54 +166,6 @@
         }, \
        \
         { \
-          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
-          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-6/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
-          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-5/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
-          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-4/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
-          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-3/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
-          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-2/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
-          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-1/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
           "title"    : "Frame간의 Transformation matrix", \
           "desc"     : "Frame간의 Transformation matrix", \
           "category" : "SLAM", \
@@ -249,6 +199,54 @@
         }, \
        \
         { \
+          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
+          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-1/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-2/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
+          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-3/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-4/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
+          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-5/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-6/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
           "title"    : "About Me", \
           "desc"     : "About Me", \
           "category" : "page", \
@@ -277,14 +275,6 @@
           "desc"     : "", \
           "category" : "page", \
           "url"      : "/tags/", \
-          "date"     : "January 1, 1970" \
-        }, \
-       \
-        { \
-          "title"    : "", \
-          "desc"     : "", \
-          "category" : "page", \
-          "url"      : "/page2/", \
           "date"     : "January 1, 1970" \
         } \
        \
@@ -322,7 +312,7 @@
           
 
           
-            <span class="post-meta">Posted on January 5, 2022</span>
+            <span class="post-meta">Posted on </span>
             
             
           
@@ -1166,39 +1156,12 @@
       
 
       
-        <!-- Check if any share-links are active -->
-
-
-
-
-
-      
 
       <ul class="pagination blog-pager">
         
-        <li class="page-item previous">
-          <a class="page-link" href="/2022-01-05-VINS-Fusion-5/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (5) Marginalization">&larr; Previous Post</a>
-        </li>
-        
-        
-        <li class="page-item next">
-          <a class="page-link" href="/2022-03-19-rpg-trajectories/" data-toggle="tooltip" data-placement="top" title="RPG trajectory evaluation on multiple trajectories">Next Post &rarr;</a>
-        </li>
         
       </ul>
       
-  
-  
-  
-
-  
-
-
-  
-
-  
-
-
 
     </div>
   </div>

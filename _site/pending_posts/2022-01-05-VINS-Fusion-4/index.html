@@ -15,7 +15,7 @@
   <meta name="author" content="Dong-Uk Seo">
   
 
-  <meta name="description" content="(4) Sliding window &amp;amp; Optimization 파트 중요 코드 정리 1. Optimizing local parameters 1) void Estimator::vector2double() for (int i = 0; i &amp;lt;= WINDOW_SIZE; i++) { para_Pose[i][0] = Ps[i].x(); para_Pose[i][1] = Ps[i].y(); para_Pose[i][2] = Ps[i].z(); Quaterniond q{Rs[i]}; para_Pose[i][3] = q.x(); para_Pose[i][4] = q.y(); para_Pose[i][5] = q.z(); para_Pose[i][6] = q.w(); if(USE_IMU)...">
+  <meta name="description" content="# (4) Sliding window &amp; Optimization 파트 중요 코드 정리 ## 1. Optimizing local parameters 1) void Estimator::vector2double() ```cpp for (int i = 0; i 0.2) || openExEstimation) openExEstimation = 1; else problem.SetParameterBlockConstant(para_Ex_Pose[i]); } problem.AddParameterBlock(para_Td[0], 1); if (!ESTIMATE_TD || Vs[0].norm() sum_dt &gt; 10.0) continue; IMUFactor* imu_factor = new IMUFactor(pre_integrations[j]); problem.AddResidualBlock(imu_factor,...">
 
   
 
@@ -75,16 +75,14 @@
   
   <meta property="og:site_name" content="Dong-Uk Seo">
   <meta property="og:title" content="VINS-Fusion Code Review - (4) Sliding window &amp; Optimization">
-  <meta property="og:description" content="(4) Sliding window &amp;amp; Optimization 파트 중요 코드 정리 1. Optimizing local parameters 1) void Estimator::vector2double() for (int i = 0; i &amp;lt;= WINDOW_SIZE; i++) { para_Pose[i][0] = Ps[i].x(); para_Pose[i][1] = Ps[i].y(); para_Pose[i][2] = Ps[i].z(); Quaterniond q{Rs[i]}; para_Pose[i][3] = q.x(); para_Pose[i][4] = q.y(); para_Pose[i][5] = q.z(); para_Pose[i][6] = q.w(); if(USE_IMU)...">
+  <meta property="og:description" content="# (4) Sliding window &amp; Optimization 파트 중요 코드 정리 ## 1. Optimizing local parameters 1) void Estimator::vector2double() ```cpp for (int i = 0; i 0.2) || openExEstimation) openExEstimation = 1; else problem.SetParameterBlockConstant(para_Ex_Pose[i]); } problem.AddParameterBlock(para_Td[0], 1); if (!ESTIMATE_TD || Vs[0].norm() sum_dt &gt; 10.0) continue; IMUFactor* imu_factor = new IMUFactor(pre_integrations[j]); problem.AddResidualBlock(imu_factor,...">
 
   
 
   
-  <meta property="og:type" content="article">
-  <meta property="og:article:author" content="Dong-Uk Seo">
-  <meta property="og:article:published_time" content="2022-01-05T00:00:00-05:00">
-  <meta property="og:url" content="http://localhost:4000/2022-01-05-VINS-Fusion-4/">
-  <link rel="canonical" href="http://localhost:4000/2022-01-05-VINS-Fusion-4/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://localhost:4000/pending_posts/2022-01-05-VINS-Fusion-4/">
+  <link rel="canonical" href="http://localhost:4000/pending_posts/2022-01-05-VINS-Fusion-4/">
   
 
   
@@ -94,7 +92,7 @@
   <meta name="twitter:creator" content="@">
 
   <meta property="twitter:title" content="VINS-Fusion Code Review - (4) Sliding window &amp; Optimization">
-  <meta property="twitter:description" content="(4) Sliding window &amp;amp; Optimization 파트 중요 코드 정리 1. Optimizing local parameters 1) void Estimator::vector2double() for (int i = 0; i &amp;lt;= WINDOW_SIZE; i++) { para_Pose[i][0] = Ps[i].x(); para_Pose[i][1] = Ps[i].y(); para_Pose[i][2] = Ps[i].z(); Quaterniond q{Rs[i]}; para_Pose[i][3] = q.x(); para_Pose[i][4] = q.y(); para_Pose[i][5] = q.z(); para_Pose[i][6] = q.w(); if(USE_IMU)...">
+  <meta property="twitter:description" content="# (4) Sliding window &amp; Optimization 파트 중요 코드 정리 ## 1. Optimizing local parameters 1) void Estimator::vector2double() ```cpp for (int i = 0; i 0.2) || openExEstimation) openExEstimation = 1; else problem.SetParameterBlockConstant(para_Ex_Pose[i]); } problem.AddParameterBlock(para_Td[0], 1); if (!ESTIMATE_TD || Vs[0].norm() sum_dt &gt; 10.0) continue; IMUFactor* imu_factor = new IMUFactor(pre_integrations[j]); problem.AddResidualBlock(imu_factor,...">
 
   
 
@@ -168,54 +166,6 @@
         }, \
        \
         { \
-          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
-          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-6/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
-          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-5/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
-          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-4/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
-          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-3/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
-          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-2/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
-          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-1/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
           "title"    : "Frame간의 Transformation matrix", \
           "desc"     : "Frame간의 Transformation matrix", \
           "category" : "SLAM", \
@@ -249,6 +199,54 @@
         }, \
        \
         { \
+          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
+          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-1/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-2/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
+          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-3/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-4/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
+          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-5/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-6/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
           "title"    : "About Me", \
           "desc"     : "About Me", \
           "category" : "page", \
@@ -277,14 +275,6 @@
           "desc"     : "", \
           "category" : "page", \
           "url"      : "/tags/", \
-          "date"     : "January 1, 1970" \
-        }, \
-       \
-        { \
-          "title"    : "", \
-          "desc"     : "", \
-          "category" : "page", \
-          "url"      : "/page2/", \
           "date"     : "January 1, 1970" \
         } \
        \
@@ -322,7 +312,7 @@
           
 
           
-            <span class="post-meta">Posted on January 5, 2022</span>
+            <span class="post-meta">Posted on </span>
             
             
           
@@ -1162,39 +1152,12 @@ qic, tic는 coordinate transform 기준이므로 논문에서의 수식(점변�
       
 
       
-        <!-- Check if any share-links are active -->
-
-
-
-
-
-      
 
       <ul class="pagination blog-pager">
         
-        <li class="page-item previous">
-          <a class="page-link" href="/2022-01-05-VINS-Fusion-3/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (3) Initialization">&larr; Previous Post</a>
-        </li>
-        
-        
-        <li class="page-item next">
-          <a class="page-link" href="/2022-01-05-VINS-Fusion-5/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (5) Marginalization">Next Post &rarr;</a>
-        </li>
         
       </ul>
       
-  
-  
-  
-
-  
-
-
-  
-
-  
-
-
 
     </div>
   </div>

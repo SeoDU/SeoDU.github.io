@@ -15,7 +15,7 @@
   <meta name="author" content="Dong-Uk Seo">
   
 
-  <meta name="description" content="(2) IMU processing 파트 중요 코드 정리 1. IMU - fast prediction imu_callback() ... estimator.inputIMU(t, acc, gyr); ... imu message로부터 time (second), linear_acceleration (x,y,z), angular_velocity(roll,pitch,yaw)를 얻어서 inputIMU에 넣는다. void inputIMU(double t, const Vector3d &amp;amp;linearAcceleration, const Vector3d &amp;amp;angularVelocity) if (solver_flag == NON_LINEAR) { fastPredictIMU(t, linearAcceleration, angularVelocity); pubLatestOdometry(latest_P, latest_Q, latest_V, t); }...">
+  <meta name="description" content="# (2) IMU processing 파트 중요 코드 정리 ## 1. IMU - fast prediction 1. imu_callback() ```cpp ... estimator.inputIMU(t, acc, gyr); ... ``` - imu message로부터 time (second), linear_acceleration (x,y,z), angular_velocity(roll,pitch,yaw)를 얻어서 inputIMU에 넣는다. 2. void inputIMU(double t, const Vector3d &amp;linearAcceleration, const Vector3d &amp;angularVelocity) ```cpp if (solver_flag == NON_LINEAR) {...">
 
   
 
@@ -75,16 +75,14 @@
   
   <meta property="og:site_name" content="Dong-Uk Seo">
   <meta property="og:title" content="VINS-Fusion Code Review - (2) IMU Processing">
-  <meta property="og:description" content="(2) IMU processing 파트 중요 코드 정리 1. IMU - fast prediction imu_callback() ... estimator.inputIMU(t, acc, gyr); ... imu message로부터 time (second), linear_acceleration (x,y,z), angular_velocity(roll,pitch,yaw)를 얻어서 inputIMU에 넣는다. void inputIMU(double t, const Vector3d &amp;amp;linearAcceleration, const Vector3d &amp;amp;angularVelocity) if (solver_flag == NON_LINEAR) { fastPredictIMU(t, linearAcceleration, angularVelocity); pubLatestOdometry(latest_P, latest_Q, latest_V, t); }...">
+  <meta property="og:description" content="# (2) IMU processing 파트 중요 코드 정리 ## 1. IMU - fast prediction 1. imu_callback() ```cpp ... estimator.inputIMU(t, acc, gyr); ... ``` - imu message로부터 time (second), linear_acceleration (x,y,z), angular_velocity(roll,pitch,yaw)를 얻어서 inputIMU에 넣는다. 2. void inputIMU(double t, const Vector3d &amp;linearAcceleration, const Vector3d &amp;angularVelocity) ```cpp if (solver_flag == NON_LINEAR) {...">
 
   
 
   
-  <meta property="og:type" content="article">
-  <meta property="og:article:author" content="Dong-Uk Seo">
-  <meta property="og:article:published_time" content="2022-01-05T00:00:00-05:00">
-  <meta property="og:url" content="http://localhost:4000/2022-01-05-VINS-Fusion-2/">
-  <link rel="canonical" href="http://localhost:4000/2022-01-05-VINS-Fusion-2/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://localhost:4000/pending_posts/2022-01-05-VINS-Fusion-2/">
+  <link rel="canonical" href="http://localhost:4000/pending_posts/2022-01-05-VINS-Fusion-2/">
   
 
   
@@ -94,7 +92,7 @@
   <meta name="twitter:creator" content="@">
 
   <meta property="twitter:title" content="VINS-Fusion Code Review - (2) IMU Processing">
-  <meta property="twitter:description" content="(2) IMU processing 파트 중요 코드 정리 1. IMU - fast prediction imu_callback() ... estimator.inputIMU(t, acc, gyr); ... imu message로부터 time (second), linear_acceleration (x,y,z), angular_velocity(roll,pitch,yaw)를 얻어서 inputIMU에 넣는다. void inputIMU(double t, const Vector3d &amp;amp;linearAcceleration, const Vector3d &amp;amp;angularVelocity) if (solver_flag == NON_LINEAR) { fastPredictIMU(t, linearAcceleration, angularVelocity); pubLatestOdometry(latest_P, latest_Q, latest_V, t); }...">
+  <meta property="twitter:description" content="# (2) IMU processing 파트 중요 코드 정리 ## 1. IMU - fast prediction 1. imu_callback() ```cpp ... estimator.inputIMU(t, acc, gyr); ... ``` - imu message로부터 time (second), linear_acceleration (x,y,z), angular_velocity(roll,pitch,yaw)를 얻어서 inputIMU에 넣는다. 2. void inputIMU(double t, const Vector3d &amp;linearAcceleration, const Vector3d &amp;angularVelocity) ```cpp if (solver_flag == NON_LINEAR) {...">
 
   
 
@@ -168,54 +166,6 @@
         }, \
        \
         { \
-          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
-          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-6/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
-          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-5/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
-          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-4/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
-          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-3/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
-          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-2/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
-          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
-          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
-          "category" : "Visual SLAM", \
-          "url"      : "/2022-01-05-VINS-Fusion-1/", \
-          "date"     : "January  5, 2022" \
-        }, \
-       \
-        { \
           "title"    : "Frame간의 Transformation matrix", \
           "desc"     : "Frame간의 Transformation matrix", \
           "category" : "SLAM", \
@@ -249,6 +199,54 @@
         }, \
        \
         { \
+          "title"    : "VINS-Fusion Code Review - (1) Image Processing", \
+          "desc"     : "VINS-Fusion Code Review - (1) Image Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-1/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "desc"     : "VINS-Fusion Code Review - (2) IMU Processing", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-2/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (3) Initialization", \
+          "desc"     : "VINS-Fusion Code Review - (3) Initialization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-3/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "desc"     : "VINS-Fusion Code Review - (4) Sliding window &amp; Optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-4/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (5) Marginalization", \
+          "desc"     : "VINS-Fusion Code Review - (5) Marginalization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-5/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
+          "title"    : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "desc"     : "VINS-Fusion Code Review - (6) Graph optimization", \
+          "category" : "Visual SLAM", \
+          "url"      : "/pending_posts/2022-01-05-VINS-Fusion-6/", \
+          "date"     : "January 1, 1970" \
+        }, \
+       \
+        { \
           "title"    : "About Me", \
           "desc"     : "About Me", \
           "category" : "page", \
@@ -277,14 +275,6 @@
           "desc"     : "", \
           "category" : "page", \
           "url"      : "/tags/", \
-          "date"     : "January 1, 1970" \
-        }, \
-       \
-        { \
-          "title"    : "", \
-          "desc"     : "", \
-          "category" : "page", \
-          "url"      : "/page2/", \
           "date"     : "January 1, 1970" \
         } \
        \
@@ -322,7 +312,7 @@
           
 
           
-            <span class="post-meta">Posted on January 5, 2022</span>
+            <span class="post-meta">Posted on </span>
             
             
           
@@ -637,39 +627,12 @@
       
 
       
-        <!-- Check if any share-links are active -->
-
-
-
-
-
-      
 
       <ul class="pagination blog-pager">
         
-        <li class="page-item previous">
-          <a class="page-link" href="/2022-01-05-VINS-Fusion-1/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (1) Image Processing">&larr; Previous Post</a>
-        </li>
-        
-        
-        <li class="page-item next">
-          <a class="page-link" href="/2022-01-05-VINS-Fusion-3/" data-toggle="tooltip" data-placement="top" title="VINS-Fusion Code Review - (3) Initialization">Next Post &rarr;</a>
-        </li>
         
       </ul>
       
-  
-  
-  
-
-  
-
-
-  
-
-  
-
-
 
     </div>
   </div>
