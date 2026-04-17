@@ -33,22 +33,34 @@ Also, the process collaborated with multi-agent and localization in the dense ma
 <br/>
 
 ### PUBLICATION
+* **GaussianFlow SLAM**: Monocular Gaussian Splatting SLAM Guided by GaussianFlow    
+<span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Jinwoo Jeon, Eungchang Mason Lee, and Hyun Myung    
+The IEEE Robotics and Automation Letters (RA-L 2026), accepted
+
+* **AIM-SLAM**: Dense Monocular SLAM via Adaptive and Informative Multi-View Keyframe Prioritization with Foundation Model     
+Jinwoo Jeon, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Eungchang Mason Lee, and Hyun Myung    
+IEEE International Conference on Robotics and Automation (ICRA 2026)
+
+* **PanoNetVLAD**: Visual loop closure detection in continuous space represented with panoramic view using multiple cameras    
+Sungjae Shin, Yeeun Kim, Byeongho Yu, Eungchang Mason Lee, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, and Hyun Myung
+The 23rd International Conference on Control, Automation and Systems (ICCAS 2023)
+
 * **Enhancing Robustness of Line Tracking Through Semi-Dense Epipolar Search in Line-based SLAM**    
-<span style="color:black">Dong-Uk Seo</span>, HYUNGTAE LIM, Eungchang Mason Lee, Hyunjun Lim, Hyun Myung    
+<span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, HYUNGTAE LIM, Eungchang Mason Lee, Hyunjun Lim, and Hyun Myung
 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2023)
 
 * **PaGO-LOAM**: Robust Ground-Optimized LiDAR Odometry (Best paper finalist)    
-<span style="color:black">Dong-Uk Seo<sup>*</sup></span>, Hyungtae Lim<sup>*</sup>, Seungjae Lee, Hyun Myung    
+<span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo<sup>*</sup></span>, Hyungtae Lim<sup>*</sup>, Seungjae Lee, and Hyun Myung
 Int'l Conf. on Ubiquitous Robots (UR 2022)
 
 * **Struct-MDC**: Mesh-Refined Unsupervised Depth Completion Leveraging
 Structural Regularities from Visual SLAM    
-Jinwoo Jeon, Hyunjun Lim, <span style="color:black">Dong-Uk Seo</span>, Hyun Myung    
+Jinwoo Jeon, Hyunjun Lim, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, and Hyun Myung    
 The IEEE Robotics and Automation Letters (RA-L 2022)
 
 * **QR-SCAN**: Traversable Region Scan for Quadruped Robot Exploration
 using Lightweight Precomputed Trajectory    
-EungChang Mason Lee, <span style="color:black">DongUk Seo</span>, JinWoo Jeon, and Hyun Myung    
+EungChang Mason Lee, <span style="color:black; text-shadow: 0 0 0.4px black">DongUk Seo</span>, JinWoo Jeon, and Hyun Myung    
 The 21st International Conference on Control, Automation and Systems (ICCAS 2021)
 
 <br/>
