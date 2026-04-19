@@ -3,6 +3,8 @@ layout: page
 title: ""
 ---
 
+<style>.page-heading h1 { display: none; } .intro-header.no-img { padding: 0; min-height: 0; }</style>
+
 ## Dong-Uk Seo
 
 <div style="width:300px; height:300px;">
