@@ -1,5 +1,6 @@
 ---
 layout: page
+hide-title: true
 ---
 
 ## Dong-Uk Seo
