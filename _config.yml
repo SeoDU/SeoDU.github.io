@@ -20,7 +20,6 @@ author: Dong-Uk Seo
 ###############################################
 
 navbar-links:
-  About Me: "aboutme"
   Contents: "tags"
 #  Resources:
 #    - Beautiful Jekyll: "https://beautifuljekyll.com"
@@ -278,6 +277,10 @@ defaults:
 
 # Exclude these files from production site
 exclude:
+  - index.html
+  - aboutme.md
+  - tmp/
+  - vendor/
   - CHANGELOG.md
   - CNAME
   - Gemfile

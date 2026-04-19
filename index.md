@@ -1,22 +1,24 @@
 ---
 layout: page
-published: false
 ---
 
-### Dong-Uk Seo
+## Dong-Uk Seo
 
-![photo](/assets/img/me/sdu_profile.jpeg){: width="40%" height="40%"}   
+<div style="width:300px; height:300px;">
+  <img src="/assets/img/me/sdu_profile.jpeg" style="width:100%; height:100%; ">
+</div>
 
-**Office**: KAIST Urban Robotics Lab ([URL](http://urobot.kaist.ac.kr/))  
-**E-mail**: dongukseo@kaist.ac.kr    
-    
+
+**Office**: KAIST Urban Robotics Lab ([URL](http://urobot.kaist.ac.kr/))    
+**E-mail**: dongukseo@kaist.ac.kr
+
 I'm currently interested in research to enable SLAM to be applied in social industries in a practical view.
-Specifically striving to research LiDAR-Visual-Inertial fusion SLAM, aiming for long-term autonomy that is robust to environmental changes.     
-Also, the process collaborated with multi-agent and localization in the dense map representation are of my interests. 
+Specifically striving to research LiDAR-Visual-Inertial fusion SLAM, aiming for long-term autonomy that is robust to environmental changes.
+Also, the process collaborated with multi-agent and localization in the dense map representation are of my interests.
 
 * LiDAR-Visual-Inertial SLAM framework.
 * Multi-agent collaborated localization and map reconstruction.
-* Learning-based method for dense map reconstruction in visual SLAM.    
+* Learning-based method for dense map reconstruction in visual SLAM.
 
 [Youtube](https://www.youtube.com/channel/UCaON-AWswqdv9hzrOxZDdWA) / [Github](https://github.com/SeoDU/) / [CV](/assets/CV.pdf)
 
@@ -24,21 +26,21 @@ Also, the process collaborated with multi-agent and localization in the dense ma
 
 ### EDUCATION
 * **KAIST**, South Korea (Mar. 2023 ~ )
-  * Ph.D. candidate in Department of Electrical Engineering 
+  * Ph.D. candidate in Department of Electrical Engineering
 * **KAIST**, South Korea (Mar. 2021 ~ Feb. 2023)
-  * M.S. candidate in Department of Electrical Engineering 
+  * M.S. candidate in Department of Electrical Engineering
 * **Yonsei University**, South Korea (Mar. 2014 ~ Aug. 2020)
-  * Bachelor's Degree in Department of Electrical & Electronic Engineering    
+  * Bachelor's Degree in Department of Electrical & Electronic Engineering
 
 <br/>
 
 ### PUBLICATION
 * **GaussianFlow SLAM**: Monocular Gaussian Splatting SLAM Guided by GaussianFlow \[[paper](#)\]    
-<span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Jinwoo Jeon, Eungchang Mason Lee, and Hyun Myung    
+<span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Jinwoo Jeon, Eungchang Mason Lee, and Hyun Myung
 The IEEE Robotics and Automation Letters (RA-L 2026), accepted
 
 * **AIM-SLAM**: Dense Monocular SLAM via Adaptive and Informative Multi-View Keyframe Prioritization with Foundation Model \[[paper](https://arxiv.org/abs/2603.05097)\]    
-Jinwoo Jeon, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Eungchang Mason Lee, and Hyun Myung    
+Jinwoo Jeon, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Eungchang Mason Lee, and Hyun Myung
 IEEE International Conference on Robotics and Automation (ICRA 2026)
 
 * **PanoNetVLAD**: Visual loop closure detection in continuous space represented with panoramic view using multiple cameras \[[paper](https://ieeexplore.ieee.org/document/10316996)\]    
@@ -55,13 +57,12 @@ Int'l Conf. on Ubiquitous Robots (UR 2022)
 
 * **Struct-MDC**: Mesh-Refined Unsupervised Depth Completion Leveraging
 Structural Regularities from Visual SLAM \[[paper](https://arxiv.org/abs/2204.13877)\]    
-Jinwoo Jeon, Hyunjun Lim, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, and Hyun Myung    
+Jinwoo Jeon, Hyunjun Lim, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, and Hyun Myung
 The IEEE Robotics and Automation Letters (RA-L 2022)
 
 * **QR-SCAN**: Traversable Region Scan for Quadruped Robot Exploration
 using Lightweight Precomputed Trajectory \[[paper](https://ieeexplore.ieee.org/document/9650025/)\]    
-EungChang Mason Lee, <span style="color:black; text-shadow: 0 0 0.4px black">DongUk Seo</span>, JinWoo Jeon, and Hyun Myung    
+EungChang Mason Lee, <span style="color:black; text-shadow: 0 0 0.4px black">DongUk Seo</span>, JinWoo Jeon, and Hyun Myung
 The 21st International Conference on Control, Automation and Systems (ICCAS 2021)
 
 <br/>
-  
