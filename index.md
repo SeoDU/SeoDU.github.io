@@ -1,6 +1,6 @@
 ---
 layout: page
-hide-title: true
+hide_title: true
 ---
 
 ## Dong-Uk Seo

@@ -2,7 +2,7 @@
 
 {% assign date_format = site.date_format | default: "%B %-d, %Y" %}
 
-{% if page.cover-img or (page.title and page.hide-title != true) %}
+{% if page.cover-img or (page.title and page.hide_title != true) %}
 
 {% if page.cover-img %}
   <div id="header-big-imgs" data-num-img={% if page.cover-img.first %}{{ page.cover-img.size }}{% else %}1{% endif %}
