@@ -38,7 +38,7 @@ Also, the process collaborated with multi-agent and localization in the dense ma
 <br/>
 
 ### PUBLICATION
-* **GaussianFlow SLAM**: Monocular Gaussian Splatting SLAM Guided by GaussianFlow \[[paper](#)\]    
+* **GaussianFlow SLAM**: Monocular Gaussian Splatting SLAM Guided by GaussianFlow \[[paper](https://arxiv.org/abs/2604.15612)\]    
 <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Jinwoo Jeon, Eungchang Mason Lee, and Hyun Myung
 The IEEE Robotics and Automation Letters (RA-L 2026), accepted
 
