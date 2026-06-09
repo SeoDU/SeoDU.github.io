@@ -40,7 +40,7 @@ Also, the process collaborated with multi-agent and localization in the dense ma
 ### PUBLICATION
 * **GaussianFlow SLAM**: Monocular Gaussian Splatting SLAM Guided by GaussianFlow \[[paper](https://arxiv.org/abs/2604.15612)\] \[[project page](https://gaussianflow-slam.github.io/)\]    
 <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Jinwoo Jeon, Eungchang Mason Lee, and Hyun Myung
-The IEEE Robotics and Automation Letters (RA-L 2026), accepted
+The IEEE Robotics and Automation Letters (RA-L 2026)
 
 * **AIM-SLAM**: Dense Monocular SLAM via Adaptive and Informative Multi-View Keyframe Prioritization with Foundation Model \[[paper](https://arxiv.org/abs/2603.05097)\]    
 Jinwoo Jeon, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Eungchang Mason Lee, and Hyun Myung
@@ -67,5 +67,9 @@ The IEEE Robotics and Automation Letters (RA-L 2022)
 using Lightweight Precomputed Trajectory \[[paper](https://ieeexplore.ieee.org/document/9650025/)\]    
 EungChang Mason Lee, <span style="color:black; text-shadow: 0 0 0.4px black">DongUk Seo</span>, JinWoo Jeon, and Hyun Myung
 The 21st International Conference on Control, Automation and Systems (ICCAS 2021)
+
+### AWARDS
+* **1st Place, SLAM Category** — Hilti × Trimble 360 Visual-Inertial SLAM Challenge 2026 \[[link](https://hilti-challenge.com/)\] (ICRA 2026),        
+Jinwoo Jeon, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Junwan Choi, Seunghun Lee, Jihun Nam, Hyungtae Lim, and Hyun Myung 
 
 <br/>
