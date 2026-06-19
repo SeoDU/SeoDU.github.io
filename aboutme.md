@@ -33,9 +33,14 @@ Also, the process collaborated with multi-agent and localization in the dense ma
 <br/>
 
 ### PUBLICATION
+
+* **PLED-VINS: A Point-Line Event-Based Visual Inertial SLAM for Dynamic Environments** \[[paper](#)\]    
+<span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, HYUNGTAE LIM, Eungchang Mason Lee, Hyunjun Lim, and Hyun Myung
+IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2026)
+
 * **GaussianFlow SLAM**: Monocular Gaussian Splatting SLAM Guided by GaussianFlow \[[paper](#)\]    
 <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Jinwoo Jeon, Eungchang Mason Lee, and Hyun Myung    
-The IEEE Robotics and Automation Letters (RA-L 2026), accepted
+The IEEE Robotics and Automation Letters (RA-L 2026)
 
 * **AIM-SLAM**: Dense Monocular SLAM via Adaptive and Informative Multi-View Keyframe Prioritization with Foundation Model \[[paper](https://arxiv.org/abs/2603.05097)\]    
 Jinwoo Jeon, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Eungchang Mason Lee, and Hyun Myung    

@@ -37,10 +37,19 @@ Also, the process collaborated with multi-agent and localization in the dense ma
 
 <br/>
 
-### PUBLICATION
+### PUBLICATION    
+
+* **Robust Structureless Monocular Visual-Inertial Initialization Exploiting Line Features and Vanishing Points** \[[paper](#)\]    
+Junwan Choi, Woongrae Jo, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Jinwoo Jeon, Hyun Myung    
+IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2026)
+
+* **PLED-VINS: A Point-Line Event-Based Visual Inertial SLAM for Dynamic Environments** \[[paper](#)\]    
+Seunghun Lee<sup>*</sup>, Jihun Nam<sup>*</sup>, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, and Hyun Myung    
+IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2026)
+
 * **GaussianFlow SLAM**: Monocular Gaussian Splatting SLAM Guided by GaussianFlow \[[paper](https://arxiv.org/abs/2604.15612)\] \[[project page](https://gaussianflow-slam.github.io/)\]    
-<span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Jinwoo Jeon, Eungchang Mason Lee, and Hyun Myung
-The IEEE Robotics and Automation Letters (RA-L 2026)
+<span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Jinwoo Jeon, Eungchang Mason Lee, and Hyun Myung    
+The IEEE Robotics and Automation Letters (RA-L 2026)    
 
 * **AIM-SLAM**: Dense Monocular SLAM via Adaptive and Informative Multi-View Keyframe Prioritization with Foundation Model \[[paper](https://arxiv.org/abs/2603.05097)\]    
 Jinwoo Jeon, <span style="color:black; text-shadow: 0 0 0.4px black">Dong-Uk Seo</span>, Eungchang Mason Lee, and Hyun Myung
